@@ -1,12 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class ColonyInfoDB : BaseDataBlob
     {
+        private Entity _factionEntity;
+
+        public Entity FactionEntity
+        {
+            get
+            {
+                return _factionEntity;
+            }
+            internal set
+            {
+                if(value.HasDataBlob<FactionInfoDB>())
+                    _factionEntity = value;
+                else
+                    throw new Exception("Entity Not a faction or does not contain a FactionInfoDB");                
+            }
+        }
+
+        /// <summary>
+        /// Species Entity and amount
+        /// </summary>
         public JDictionary<Entity, long> Population
         {
             get { return _population; }
@@ -18,37 +37,37 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Raw Mined minerals. Mines push here, Refinary pulls from here, Construction pulls from here.
         /// </summary>
-        public JDictionary<Guid, float> MineralStockpile
+        public JDictionary<Guid, int> MineralStockpile
         {
             get { return _mineralStockpile; }
             internal set { _mineralStockpile = value; }
         }
         [JsonProperty]
-        private JDictionary<Guid, float> _mineralStockpile;
+        private JDictionary<Guid, int> _mineralStockpile;
 
         /// <summary>
         ///refined Fuel, or refined minerals if the modder so desires.
         /// Refinary pushes here, Construction pulls from here.
         /// </summary>
-        public JDictionary<Guid, float> RefinedStockpile
+        public JDictionary<Guid, int> RefinedStockpile
         {
             get { return _refinedStockpile; }
             internal set { _refinedStockpile = value; }
         }
         [JsonProperty]
-        private JDictionary<Guid, float> _refinedStockpile;
+        private JDictionary<Guid, int> _refinedStockpile;
 
         /// <summary>
         /// constructed parts stockpile.
         /// Construction pulls and pushes from here.
         /// </summary>
-        public JDictionary<Guid, float> ComponentStockpile
+        public JDictionary<Guid, int> ComponentStockpile
         {
             get { return _componentStockpile; }
             internal set { _componentStockpile = value; }
         }
         [JsonProperty]
-        private JDictionary<Guid, float> _componentStockpile;
+        private JDictionary<Guid, int> _componentStockpile;
 
         /// <summary>
         /// Construction pushes here.
@@ -70,6 +89,9 @@ namespace Pulsar4X.ECSLib
         }
         [JsonProperty]
         private List<Entity> _fighterStockpile;
+
+
+        public JDictionary<Entity, int> Installations { get;internal set; }
 
 
         public Entity PlanetEntity
@@ -97,35 +119,39 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <param name="popCount">Species and population number</param>
         /// <param name="planet"> the planet entity this colony is on</param>
-        public ColonyInfoDB(JDictionary<Entity, long> popCount, Entity planet)
+        public ColonyInfoDB(JDictionary<Entity, long> popCount, Entity planet, Entity faction)
         {
+            FactionEntity = faction;
             Population = popCount;
             PlanetEntity = planet;
             
-            MineralStockpile =  new JDictionary<Guid, float>();
-            RefinedStockpile = new JDictionary<Guid, float>();
-            ComponentStockpile = new JDictionary<Guid, float>();
+            MineralStockpile =  new JDictionary<Guid, int>();
+            RefinedStockpile = new JDictionary<Guid, int>();
+            ComponentStockpile = new JDictionary<Guid, int>();
             OrdinanceStockpile = new JDictionary<Guid, float>();
             FighterStockpile = new List<Entity>();
+            Installations = new JDictionary<Entity, int>();
             Scientists = new List<Entity>();
         }
 
-        public ColonyInfoDB(Entity species, long populationCount, Entity planet):this(
+        public ColonyInfoDB(Entity species, long populationCount, Entity planet, Entity faction):this(
             new JDictionary<Entity, long> {{species, populationCount}},
-            planet
+            planet, faction
             )
         {
         }
 
         public ColonyInfoDB(ColonyInfoDB colonyInfoDB)
         {
+            FactionEntity = colonyInfoDB.FactionEntity;
             Population = new JDictionary<Entity, long>(colonyInfoDB.Population);
             PlanetEntity = colonyInfoDB.PlanetEntity;
-            MineralStockpile = new JDictionary<Guid, float>(colonyInfoDB.MineralStockpile);
-            RefinedStockpile = new JDictionary<Guid, float>(colonyInfoDB.RefinedStockpile);
-            ComponentStockpile = new JDictionary<Guid, float>(colonyInfoDB.ComponentStockpile);
+            MineralStockpile = new JDictionary<Guid, int>(colonyInfoDB.MineralStockpile);
+            RefinedStockpile = new JDictionary<Guid, int>(colonyInfoDB.RefinedStockpile);
+            ComponentStockpile = new JDictionary<Guid, int>(colonyInfoDB.ComponentStockpile);
             OrdinanceStockpile = new JDictionary<Guid, float>(colonyInfoDB.OrdinanceStockpile);
             FighterStockpile = new List<Entity>(colonyInfoDB.FighterStockpile);
+            Installations = new JDictionary<Entity, int>(colonyInfoDB.Installations);
             Scientists = new List<Entity>(colonyInfoDB.Scientists);
         }
 

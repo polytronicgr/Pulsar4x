@@ -8,6 +8,7 @@ namespace Pulsar4X.ECSLib
 {
     public static class InstallationProcessor
     {
+        /*
         #region automaticEachTickStuff
         private const int _timeBetweenRuns = 68400; //one terran day.
 
@@ -38,14 +39,15 @@ namespace Pulsar4X.ECSLib
         /// <param name="factionEntity"></param>
         public static void PerEconTic(StaticDataStore staticData, Entity colonyEntity)
         {
-            Entity factionEntity = colonyEntity.GetDataBlob<ColonyInfoDB>().OwningEntity; 
-            FactionAbilitiesDB factionAbilities = factionEntity.GetDataBlob<FactionAbilitiesDB>();
-            TechDB factionTech = factionEntity.GetDataBlob<TechDB>();
-            Employment(staticData, colonyEntity); //check if installations still work
-            Mine(staticData, factionEntity, colonyEntity); //mine new materials.
-            Construction(staticData, factionEntity, colonyEntity); //construct, refine, etc.
+            //TODO this is broken, and old anyway (OwningEntity here returns the colonyEntity, ie the blobs owner not the faction entity)
+            //Entity factionEntity = colonyEntity.GetDataBlob<ColonyInfoDB>().OwningEntity; 
+            //FactionAbilitiesDB factionAbilities = factionEntity.GetDataBlob<FactionAbilitiesDB>();
+            //FactionTechDB factionTech = factionEntity.GetDataBlob<FactionTechDB>();
+            //Employment(staticData, colonyEntity); //check if installations still work
+            //Mine(staticData, factionEntity, colonyEntity); //mine new materials.
+            //Construction(staticData, factionEntity, colonyEntity); //construct, refine, etc.
 
-            DoResearch(staticData, colonyEntity, factionAbilities, factionTech);
+            //DoResearch(staticData, colonyEntity, factionAbilities, factionTech);
         }
 
         /// <summary>
@@ -77,35 +79,35 @@ namespace Pulsar4X.ECSLib
         }
 
         /// <summary>
-        /// run every econ tic 
+        /// run every econ tic DEFUNCT
         /// extracts minerals from planet surface by mineing ability;
         /// </summary>
         /// <param name="staticData"></param>
         /// <param name="factionEntity"></param>
         public static void Mine(StaticDataStore staticData, Entity factionEntity, Entity colonyEntity)
         {
-            int installationMineingAbility = InstallationAbilityofType(staticData, colonyEntity.GetDataBlob<InstallationsDB>(), AbilityType.Mine);
-            float factionMineingBonus = BonusesForType(factionEntity, colonyEntity, AbilityType.Mine);
-            float totalMineingAbility = installationMineingAbility * factionMineingBonus;
-            Entity planetEntity = colonyEntity.GetDataBlob<ColonyInfoDB>().PlanetEntity;
-            SystemBodyDB planetDB = planetEntity.GetDataBlob<SystemBodyDB>();
-            JDictionary<Guid, float> colonyMineralStockpile = colonyEntity.GetDataBlob<ColonyInfoDB>().MineralStockpile;
+            //int installationMineingAbility = InstallationAbilityofType(staticData, colonyEntity.GetDataBlob<InstallationsDB>(), AbilityType.Mine);
+            //float factionMineingBonus = BonusesForType(factionEntity, colonyEntity, AbilityType.Mine);
+            //float totalMineingAbility = installationMineingAbility * factionMineingBonus;
+            //Entity planetEntity = colonyEntity.GetDataBlob<ColonyInfoDB>().PlanetEntity;
+            //SystemBodyDB planetDB = planetEntity.GetDataBlob<SystemBodyDB>();
+            //JDictionary<Guid, float> colonyMineralStockpile = colonyEntity.GetDataBlob<ColonyInfoDB>().MineralStockpile;
             
-            JDictionary<Guid, MineralDepositInfo> planetRawMinerals = planetDB.Minerals;
+            //JDictionary<Guid, MineralDepositInfo> planetRawMinerals = planetDB.Minerals;
 
-            foreach (KeyValuePair<Guid, MineralDepositInfo> depositKeyValuePair in planetRawMinerals)
-            {
-                Guid mineralGuid = depositKeyValuePair.Key;
-                int amountOnPlanet = depositKeyValuePair.Value.Amount;
-                double accessibility = depositKeyValuePair.Value.Accessibility;
-                double abilitiestoMine = totalMineingAbility * accessibility;
-                int amounttomine = (int)Math.Min(abilitiestoMine, amountOnPlanet);
-                colonyMineralStockpile.SafeValueAdd<Guid>(mineralGuid, amounttomine);             
-                MineralDepositInfo mineralDeposit = depositKeyValuePair.Value;
-                mineralDeposit.Amount -= amounttomine;
-                double accecability = Math.Pow((float)mineralDeposit.Amount / mineralDeposit.HalfOriginalAmount, 3) * mineralDeposit.Accessibility;
-                mineralDeposit.Accessibility = GMath.Clamp(accecability, 0.1, mineralDeposit.Accessibility);
-            }
+            //foreach (KeyValuePair<Guid, MineralDepositInfo> depositKeyValuePair in planetRawMinerals)
+            //{
+            //    Guid mineralGuid = depositKeyValuePair.Key;
+            //    int amountOnPlanet = depositKeyValuePair.Value.Amount;
+            //    double accessibility = depositKeyValuePair.Value.Accessibility;
+            //    double abilitiestoMine = totalMineingAbility * accessibility;
+            //    int amounttomine = (int)Math.Min(abilitiestoMine, amountOnPlanet);
+            //    colonyMineralStockpile.SafeValueAdd<Guid>(mineralGuid, amounttomine);             
+            //    MineralDepositInfo mineralDeposit = depositKeyValuePair.Value;
+            //    mineralDeposit.Amount -= amounttomine;
+            //    double accecability = Math.Pow((float)mineralDeposit.Amount / mineralDeposit.HalfOriginalAmount, 3) * mineralDeposit.Accessibility;
+            //    mineralDeposit.Accessibility = GMath.Clamp(accecability, 0.1, mineralDeposit.Accessibility);
+            //}
             
         }
 
@@ -175,9 +177,9 @@ namespace Pulsar4X.ECSLib
         }
 
 
-        private static JDictionary<Guid,float> FindResource(ColonyInfoDB colony, Guid key)
+        private static JDictionary<Guid,int> FindResource(ColonyInfoDB colony, Guid key)
         {
-            JDictionary<Guid, float> resourceDictionary = null;
+            JDictionary<Guid, int> resourceDictionary = null;
             if (colony.MineralStockpile.ContainsKey(key))
                 resourceDictionary = colony.MineralStockpile;
             else if (colony.RefinedStockpile.ContainsKey(key))
@@ -196,7 +198,7 @@ namespace Pulsar4X.ECSLib
         /// <param name="rawMaterials"></param>
         /// <param name="colonyInfo"></param>
         /// <param name="stockpileOut"></param>
-        public static void GenericConstructionJobs(double ablityPointsThisColony, List<ConstructionJob> jobList, ColonyInfoDB colonyInfo, JDictionary<Guid,float> stockpileOut)
+        public static void GenericConstructionJobs(double ablityPointsThisColony, List<ConstructionJob> jobList, ColonyInfoDB colonyInfo, JDictionary<Guid,int> stockpileOut)
         {
             List<ConstructionJob> newJobList = new List<ConstructionJob>();
 
@@ -269,7 +271,7 @@ namespace Pulsar4X.ECSLib
         /// <param name="colonyEntity"></param>
         /// <param name="factionAbilities"></param>
         /// <param name="factionTechs"></param>
-        public static void DoResearch(StaticDataStore staticData, Entity colonyEntity, FactionAbilitiesDB factionAbilities,  TechDB factionTechs)
+        public static void DoResearch(StaticDataStore staticData, Entity colonyEntity, FactionAbilitiesDB factionAbilities,  FactionTechDB factionTechs)
         {
             InstallationsDB installations = colonyEntity.GetDataBlob<InstallationsDB>();
             Dictionary<InstallationSD,int> labs = InstallationsWithAbility(staticData, installations, AbilityType.Research);
@@ -281,7 +283,8 @@ namespace Pulsar4X.ECSLib
                 int numProjectLabs = scientist.GetDataBlob<TeamsDB>().TeamSize;
                 float bonus = scientist.GetDataBlob<ScientistBonusDB>().Bonuses[research.Category];
                 //bonus *= BonusesForType(factionEntity, colonyEntity, InstallationAbilityType.Research);
-                int researchmax = research.Cost;
+                
+                int researchmax = TechProcessor.CostFormula(factionTechs, research);
 
                 int researchPoints = 0;             
                 foreach (var kvp in labs)
@@ -301,7 +304,7 @@ namespace Pulsar4X.ECSLib
                     factionTechs.ResearchableTechs[research] += researchPoints;
                     if (factionTechs.ResearchableTechs[research] >= researchmax)
                     {
-                        TechProcessor.ApplyTech(factionAbilities, factionTechs, research); //apply effects from tech, and add it to researched techs
+                        TechProcessor.ApplyTech(factionTechs, research); //apply effects from tech, and add it to researched techs
                         scientist.GetDataBlob<TeamsDB>().TeamTask = null; //team task is now nothing. 
                     }
                 }
@@ -358,7 +361,7 @@ namespace Pulsar4X.ECSLib
              * Should it be in the processor and the processor look up each time, 
              * or should the faction hold the dictionary and the processor update the dictionary, 
              * either on something changeing, or at a designated tic.          
-             */
+             *
             return totalBonus;
         }
 
@@ -400,5 +403,7 @@ namespace Pulsar4X.ECSLib
             return facilities;
         }
         #endregion
+         */
     }
+
 }

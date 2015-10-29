@@ -41,6 +41,10 @@ namespace Pulsar4X.ECSLib
         [PublicAPI]
         public ReadOnlyCollection<StarSystem> Systems { get { return new ReadOnlyCollection<StarSystem>(StarSystems); } }
 
+        [PublicAPI] 
+        [JsonProperty]
+        public Guid GameMasterFaction;
+
         /// <summary>
         /// Global Entity Manager.
         /// </summary>
@@ -106,7 +110,8 @@ namespace Pulsar4X.ECSLib
         internal void RunProcessors(List<StarSystem> systems, int deltaSeconds)
         {
             OrbitProcessor.Process(this, systems, deltaSeconds);
-            InstallationProcessor.Process(this, systems, deltaSeconds);
+            ShipMovementProcessor.Process(this, systems,deltaSeconds);
+            EconProcessor.Process(this, systems, deltaSeconds);
         }
 
         internal void PostGameLoad()
@@ -129,7 +134,8 @@ namespace Pulsar4X.ECSLib
         private static void InitializeProcessors()
         {
             OrbitProcessor.Initialize();
-            InstallationProcessor.Initialize();
+            ShipMovementProcessor.Initialize();
+            //InstallationProcessor.Initialize();
         }
 
         #endregion
@@ -154,6 +160,7 @@ namespace Pulsar4X.ECSLib
 
             Game newGame = new Game {GameName = gameName, CurrentDateTime = startDateTime};
             // TODO: Provide options for loading other Static Data DataSets.
+            FactionFactory.CreateGameMaster(newGame);
             newGame.StaticData = StaticDataManager.LoadFromDefaultDataDirectory();
 
             for (int i = 0; i < numSystems; i++)
@@ -167,6 +174,7 @@ namespace Pulsar4X.ECSLib
             }
 
             newGame.PostGameLoad();
+            
             return newGame;
         }
 

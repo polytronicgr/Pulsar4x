@@ -12,7 +12,9 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using Microsoft.Win32;
 using Pulsar4X.ECSLib;
+using Pulsar4X.ViewModel;
 using Pulsar4X.WPFUI.Properties;
+using Pulsar4X.WPFUI.UserControls;
 using Xceed.Wpf.AvalonDock.Layout;
 
 namespace Pulsar4X.WPFUI
@@ -51,10 +53,12 @@ namespace Pulsar4X.WPFUI
             MenuItem_Boarderless.IsChecked = WindowStyle == WindowStyle.None;
 
             _pulseCancellationToken = new CancellationToken();
-
+            DataContext = App.Current.GameVM; //set data context
             App.Current.PropertyChanged += AppOnPropertyChanged;
             // Get the initial state of the game from the app. (This fires the PropertyChanged event we just hooked into.
-            App.Current.Game = App.Current.Game;
+            //App.Current.Game = App.Current.Game;
+            App.Current.GameVM = App.Current.GameVM;
+            
         }
 
         /// <summary>
@@ -67,46 +71,42 @@ namespace Pulsar4X.WPFUI
             switch (propertyChangedEventArgs.PropertyName)
             {
                 case "Game":
-                    bool isEnabled = App.Current.Game == null;
+                    //bool isEnabled = App.Current.Game != null;
+                    bool isEnabled = App.Current.GameVM.HasGame;
                     TBT_Toolbar.IsEnabled = isEnabled;
                     MI_SaveGame.IsEnabled = isEnabled;
                     break;
             }
         }
 
-        private async void NewGame_Click(object sender, RoutedEventArgs e)
+        private  void NewGame_Click(object sender, RoutedEventArgs e)
         {
-            // Todo: New Game window to set the game parameters.
-            try
-            {
-                Status_TextBlock.Text = "Creating new game...";
-                App.Current.Game = await Task.Run(() => Game.NewGame("Test Game", new DateTime(2050, 1, 1), 100, new Progress<double>(OnProgressUpdate)));
-                MessageBox.Show(this, "Game Created.", "Result");
-                Status_TextBlock.Text = "Game Created.";
-                Status_ProgressBar.Value = 0;
-            }
-            catch (Exception exception)
-            {
-                DisplayException("creating a new game", exception);
-            }
-
-            e.Handled = true;
+            NewGameOptionsVM gameoptions = NewGameOptionsVM.Create(App.Current.GameVM);
+            UserControl control = new NewGameOptions(gameoptions);
+            
+            LayoutDocument doc = new LayoutDocument();
+            string title = ((ITabControl)control).Title;
+            doc.Title = title;
+            doc.ToolTip = title;
+            doc.Content = control;
+            LayoutPane.Children.Add(doc);           
         }
 
-        private async void LoadGame_Click(object sender, RoutedEventArgs e)
+
+
+        private void LoadGame_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.Filter = "json Save File|*.json";
-            if(fileDialog.ShowDialog() == true)
+            if (fileDialog.ShowDialog() == true)
             {
                 string pathToFile = fileDialog.FileName;
                 try
                 {
-                    Status_TextBlock.Text = "Game Loading...";
-                    App.Current.Game = await Task.Run(() => SaveGame.Load(pathToFile, new Progress<double>(OnProgressUpdate)));
-                    MessageBox.Show(this, "Game Loaded.", "Result");
-                    Status_TextBlock.Text = "Game Loaded.";
-                    Status_ProgressBar.Value = 0;
+
+                    App.Current.GameVM.LoadGame(pathToFile);
+
+                    
                 }
                 catch (Exception exception)
                 {
@@ -116,21 +116,19 @@ namespace Pulsar4X.WPFUI
             e.Handled = true;
         }
 
-        private async void SaveGame_Click(object sender, RoutedEventArgs e)
+        private void SaveGame_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog fileDialog = new SaveFileDialog();
             fileDialog.Filter = "json Save File|*.json";
-            if(fileDialog.ShowDialog() == true)
+            if (fileDialog.ShowDialog() == true)
             {
                 string pathToFile = fileDialog.FileName;
                 try
                 {
-                    Status_TextBlock.Text = "Game Saving...";
-                    await Task.Run(() => SaveGame.Save(App.Current.Game, pathToFile, new Progress<double>(OnProgressUpdate)));
-                    //await Task.Run(() => SaveGame.Save(CurrentGame, pathToFile, true)); // Compressed
+
+                    App.Current.GameVM.SaveGame(pathToFile);
                     MessageBox.Show(this, "Game Saved.", "Result");
-                    Status_TextBlock.Text = "Game Saved.";
-                    Status_ProgressBar.Value = 0;
+
                 }
                 catch (Exception exception)
                 {
@@ -141,21 +139,6 @@ namespace Pulsar4X.WPFUI
             e.Handled = true;
         }
 
-        /// <summary>
-        /// OnProgressUpdate eventhandler for the Progress class.
-        /// Called from the task thread, this call must be marshalled to the UI thread.
-        /// </summary>
-        private void OnProgressUpdate(double progress)
-        {
-            // The Dispatcher contains the UI thread. Make sure we are on the UI thread.
-            if (Thread.CurrentThread != Dispatcher.Thread)
-            {
-                Dispatcher.BeginInvoke(new ProgressUpdate(OnProgressUpdate), progress);
-                return;
-            }
-
-            Status_ProgressBar.Value = progress * 100;
-        }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
@@ -253,6 +236,9 @@ namespace Pulsar4X.WPFUI
                 case "TBB_Ships":
                     control = new Ships();
                     break;
+                case "TBB_Colonies":
+                    control = new ColonyScreenView();
+                    break;
                 case "TBB_TaskGroups":
                     control = new TaskGroups();
                     break;
@@ -270,6 +256,9 @@ namespace Pulsar4X.WPFUI
                     break;
                 case "TBB_ShipDesign":
                     control = new ShipDesign();
+                    break;
+                case "TBB_ComponentDesign":
+                    control = new ComponentDesign();
                     break;
                 case "TBB_Intelligence":
                     control = new Intelligence();
@@ -305,19 +294,20 @@ namespace Pulsar4X.WPFUI
             {
                 return;
             }
-
+            App.Current.GameVM.AdvanceTime(pulseLength, _pulseCancellationToken);
             var pulseProgress = new Progress<double>(UpdatePulseProgress);
 
-            int secondsPulsed;
+            //int secondsPulsed;
 
-            try
-            {
-                secondsPulsed = await Task.Run(() => App.Current.Game.AdvanceTime((int)pulseLength.TotalSeconds, _pulseCancellationToken, pulseProgress));
-            }
-            catch (Exception exception)
-            {
-                DisplayException("executing a pulse", exception);
-            }
+            //try
+            //{
+            //    secondsPulsed = await Task.Run(() => App.Current.Game.AdvanceTime((int)pulseLength.TotalSeconds, _pulseCancellationToken, pulseProgress));
+            //    App.Current.GameVM.Refresh();
+            //}
+            //catch (Exception exception)
+            //{
+            //    DisplayException("executing a pulse", exception);
+            //}
             e.Handled = true;
         }
 

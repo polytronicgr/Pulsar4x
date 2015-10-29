@@ -33,7 +33,7 @@ namespace Pulsar4X.ECSLib
                 className = "New Class"; // <- Hack for now.
             }
 
-            // lets start by creating all the Datablobs that make up a ship class:
+            // lets start by creating all the Datablobs that make up a ship class: TODO only need to add datablobs for compoents it has abilites for.
             var shipInfo = new ShipInfoDB();
             var armor = new ArmorDB();
             var beamWeapons = new BeamWeaponsDB();
@@ -82,7 +82,7 @@ namespace Pulsar4X.ECSLib
             Entity shipClassEntity = new Entity(game.GlobalManager, shipDBList); 
 
             // also gets factionDB:
-            FactionDB factionDB = faction.GetDataBlob<FactionDB>();
+            FactionInfoDB factionDB = faction.GetDataBlob<FactionInfoDB>();
 
             // and add it to the faction:
             factionDB.ShipClasses.Add(shipClassEntity);
@@ -102,6 +102,24 @@ namespace Pulsar4X.ECSLib
             ///< @todo update ship to reflect added components
             
             return shipClassEntity;
+        }
+
+        public static Entity AddShipComponent(Entity ship, Entity component)
+        {
+            if(!ship.HasDataBlob<ShipInfoDB>())
+                throw new Exception("Entity is not a ship or does not contain a ShipInfoDB datablob");
+            ShipInfoDB shipinfo = ship.GetDataBlob<ShipInfoDB>();
+
+            if(!component.HasDataBlob<ComponentInfoDB>())
+                throw new Exception("Entity is not a ShipComponent or does not contain a ShipComponent datablob");
+            ComponentInfoDB componentInfo = component.GetDataBlob<ComponentInfoDB>();
+            
+            shipinfo.ComponentList.Add(component);
+            shipinfo.InternalHTK += componentInfo.HTK;
+            shipinfo.Tonnage += componentInfo.SizeInTons; 
+            ReCalcProcessor.ReCalcAbilities(ship);
+
+            return ship;
         }
     }
 }

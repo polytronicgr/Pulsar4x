@@ -30,16 +30,20 @@ namespace Pulsar4X.ECSLib
 
         public bool IsMilitary { get; set; }
 
+        public int Tonnage { get; set; }
+
+        public double TCS { get {return Tonnage * 0.02;} }
+
         /// <summary>
-        /// List of the ships components. Each component is an entity, thus the list stores its int ID.
+        /// List of the ships components. 
         /// The Components should be in the same EntityManager as the Ship.
         /// </summary>
-        public List<int> ComponentList { get; set; } 
+        public List<Entity> ComponentList { get; set; } 
 
 
         public ShipInfoDB()
         {
-            ComponentList = new List<int>();
+            ComponentList = new List<Entity>();
         }
 
         public ShipInfoDB(ShipInfoDB shipInfoDB)

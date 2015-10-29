@@ -28,12 +28,14 @@ namespace Pulsar4X.ECSLib
     [StaticDataAttribute(true, IDPropertyName = "ID")]
     public struct TechSD
     {
-        public string Name;
+        public string Name { get; set; }
         public string Description;
         public Guid ID;
+        public int MaxLevel;
+        public string DataFormula;
 
         public ResearchCategories Category;        
-        public List<Guid> Requirements;
-        public int Cost;
+        public JDictionary<Guid,int> Requirements;        
+        public string CostFormula; 
     }
 }

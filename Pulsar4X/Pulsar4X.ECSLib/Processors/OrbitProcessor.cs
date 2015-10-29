@@ -97,6 +97,13 @@ namespace Pulsar4X.ECSLib
                 // RECURSION!
                 UpdateOrbit(child, entityPosition, currentTime, ref orbitsProcessed);
             }
+            // use this to dump positions to plot orbits
+            /*
+            string name = entity.GetDataBlob<NameDB>().DefaultName;
+            if (name.Equals("Mercury")) {
+              Console.WriteLine(newPosition.X + " " + newPosition.Y);
+            }
+            */
         }
 
         #region Orbit Position Calculations
@@ -112,14 +119,19 @@ namespace Pulsar4X.ECSLib
             {
                 return new Vector4(0, 0, 0, 0);
             }
+            return GetPosition(orbit, GetTrueAnomaly(orbit, time));
+        }
 
+        public static double GetTrueAnomaly(OrbitDB orbit, DateTime time)
+        {
             TimeSpan timeSinceEpoch = time - orbit.Epoch;
 
-            while (timeSinceEpoch > orbit.OrbitalPeriod)
+            // Don't attempt to calculate large timeframes.
+            if (timeSinceEpoch > orbit.OrbitalPeriod && orbit.OrbitalPeriod.Ticks != 0)
             {
-                // Don't attempt to calculate large timeframes.
-                timeSinceEpoch -= orbit.OrbitalPeriod;
-                orbit.Epoch += orbit.OrbitalPeriod;
+                long years = (timeSinceEpoch.Ticks / orbit.OrbitalPeriod.Ticks);
+                timeSinceEpoch -= TimeSpan.FromTicks(years * orbit.OrbitalPeriod.Ticks);
+                orbit.Epoch += TimeSpan.FromTicks(years * orbit.OrbitalPeriod.Ticks);
             }
 
             // http://en.wikipedia.org/wiki/Mean_anomaly (M = M0 + nT)
@@ -128,12 +140,9 @@ namespace Pulsar4X.ECSLib
             // Add nT
             currentMeanAnomaly += Angle.ToRadians(orbit.MeanMotion) * timeSinceEpoch.TotalSeconds;
 
+
             double eccentricAnomaly = GetEccentricAnomaly(orbit, currentMeanAnomaly);
-
-            // http://en.wikipedia.org/wiki/True_anomaly#From_the_eccentric_anomaly
-            double trueAnomaly = Math.Atan2(Math.Sqrt(1 - orbit.Eccentricity * orbit.Eccentricity) * Math.Sin(eccentricAnomaly), Math.Cos(eccentricAnomaly) - orbit.Eccentricity);
-
-            return GetPosition(orbit, trueAnomaly);
+            return Math.Atan2(Math.Sqrt(1 - orbit.Eccentricity * orbit.Eccentricity) * Math.Sin(eccentricAnomaly), Math.Cos(eccentricAnomaly) - orbit.Eccentricity);
         }
 
         /// <summary>
@@ -143,6 +152,7 @@ namespace Pulsar4X.ECSLib
         /// <param name="trueAnomaly">Angle in Radians.</param>
         public static Vector4 GetPosition(OrbitDB orbit, double trueAnomaly)
         {
+            
             if (orbit.IsStationary)
             {
                 return new Vector4(0, 0, 0, 0);
@@ -158,12 +168,17 @@ namespace Pulsar4X.ECSLib
             // Convert KM to AU
             radius = Distance.ToAU(radius);
 
-            // Spherical to Cartesian conversion.
-            double x = radius * Math.Sin(inclination) * Math.Cos(trueAnomaly);
-            double y = radius * Math.Sin(inclination) * Math.Sin(trueAnomaly);
-            double z = radius * Math.Cos(inclination);
+            //https://downloads.rene-schwarz.com/download/M001-Keplerian_Orbit_Elements_to_Cartesian_State_Vectors.pdf
+            double lofAN = Angle.ToRadians(orbit.LongitudeOfAscendingNode);
+            double aofP = Angle.ToRadians(orbit.ArgumentOfPeriapsis);
+            double tA = trueAnomaly;
+            double incl = inclination;
 
-            return new Vector4(x, y, z, 0);
+            double x = Math.Cos(lofAN) * Math.Cos(aofP + tA) - Math.Sin(lofAN) * Math.Sin(aofP + tA) * Math.Cos(incl);
+            double y = Math.Sin(lofAN) * Math.Cos(aofP + tA) + Math.Cos(lofAN) * Math.Sin(aofP + tA) * Math.Cos(incl);
+            double z = Math.Sin(incl) * Math.Sin(aofP + tA);
+
+            return new Vector4(x, y, z, 0) * radius;
         }
 
         /// <summary>

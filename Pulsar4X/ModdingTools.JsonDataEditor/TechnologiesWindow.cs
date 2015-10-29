@@ -79,14 +79,14 @@ namespace ModdingTools.JsonDataEditor
             int newCost;
             if(Int32.TryParse(costTextBox.Text, out newCost) && newCost > 0)
             {
-                newTechSD.Cost = newCost;
+                newTechSD.CostFormula = newCost.ToString();
                 costTextBox.BackColor = Color.White;
             }
             else
                 costTextBox.BackColor = Color.Red;
 
             List<DataHolder> requirements = requirementsListBox.Items.Cast<DataHolder>().ToList();
-            newTechSD.Requirements = requirements.ConvertAll(entry => entry.Guid);
+            //newTechSD.Requirements = requirements.ConvertAll(entry => entry.Guid);
 
             Data.SaveToDataStore(newTechSD);
         }
@@ -97,7 +97,17 @@ namespace ModdingTools.JsonDataEditor
 
             TechSD techSD;
             if(_selectedItemGuid == Guid.Empty)
-                techSD = new TechSD {Name = "Name", Description = "Description", Category = ResearchCategories.BiologyGenetics, ID = Guid.Empty, Cost = 1000, Requirements = new List<Guid>()};
+                techSD = new TechSD {
+                    Name = "Name", 
+                    Description = "Description", 
+                    ID = Guid.Empty, 
+                    MaxLevel = 1,
+                    DataFormula = "1",
+
+                    Category = ResearchCategories.BiologyGenetics, 
+                    Requirements = new JDictionary<Guid, int>(),
+                    CostFormula = "1000", 
+                };
             else
                 techSD = Data.TechData[_selectedItemGuid].StaticData;
 
@@ -105,11 +115,11 @@ namespace ModdingTools.JsonDataEditor
             nameTextBox.Text = techSD.Name;
             descTextBox.Text = techSD.Description;
             categoryComboBox.SelectedItem = techSD.Category;
-            costTextBox.Text = techSD.Cost.ToString();
+            costTextBox.Text = techSD.CostFormula;
 
             requirementsListBox.BeginUpdate();
             requirementsListBox.Items.Clear();
-            foreach(Guid requirementGuid in techSD.Requirements)
+            foreach(Guid requirementGuid in techSD.Requirements.Keys)
             {
                 requirementsListBox.Items.Add(Data.TechData[requirementGuid]);
             }
@@ -168,7 +178,12 @@ namespace ModdingTools.JsonDataEditor
 
         private void newTechButton_Click(object sender, EventArgs e)
         {
-            TechSD newTechSD = new TechSD() {Name = "New Tech", Description = "Description Here", ID = Guid.NewGuid(), Cost = 1000, Requirements = new List<Guid>()};
+            TechSD newTechSD = new TechSD() {
+                Name = "New Tech", 
+                Description = "Description Here", 
+                ID = Guid.NewGuid(), 
+                CostFormula = "", 
+                Requirements = new JDictionary<Guid, int>()};
             Data.SaveToDataStore(newTechSD);
         }
 
@@ -209,6 +224,11 @@ namespace ModdingTools.JsonDataEditor
                 return;
             _selectedItemGuid = ((DataHolder)availibleTechs.SelectedItem).Guid;
             UpdateSelectedItem();
+        }
+
+        private void costLabel_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

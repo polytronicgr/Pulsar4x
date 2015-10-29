@@ -30,11 +30,11 @@ namespace Pulsar4X.ECSLib
     /// <summary>
     /// Small struct to store specifics of a minerial deposit.
     /// </summary>
-    public struct MineralDepositInfo
+    public class MineralDepositInfo
     {
-        public int Amount;
-        public int HalfOriginalAmount;
-        public double Accessibility;
+        public int Amount { get; internal set; }
+        public int HalfOriginalAmount { get; internal set; }
+        public double Accessibility { get; internal set; }
     }
 
     public class SystemBodyDB : BaseDataBlob
@@ -120,6 +120,11 @@ namespace Pulsar4X.ECSLib
             internal set { _supportsPopulations = value; }
         }
 
+
+            
+        [PublicAPI]
+        public List<Entity> Colonies {get{return _colonies;} internal set { _colonies = value; } }
+
         [PublicAPI]
         public TimeSpan LengthOfDay
         {
@@ -132,10 +137,14 @@ namespace Pulsar4X.ECSLib
         /// minerial definition (MineralSD) from the StaticDataStore.
         /// </summary>
         [PublicAPI]
-        public JDictionary<Guid, MineralDepositInfo> Minerals { get { return new JDictionary<Guid, MineralDepositInfo>(_minerals);}}
+        public JDictionary<Guid, MineralDepositInfo> Minerals
+        {
+            get { return _minerals;}
+            internal set { _minerals = value; }
+        }
 
         [JsonProperty]
-        private readonly JDictionary<Guid, MineralDepositInfo> _minerals;
+        private JDictionary<Guid, MineralDepositInfo> _minerals;
         [JsonProperty]
         private BodyType _type;
         [JsonProperty]
@@ -152,6 +161,8 @@ namespace Pulsar4X.ECSLib
         private float _atmosphericDust;
         [JsonProperty]
         private bool _supportsPopulations;
+        [JsonProperty]
+        private List<Entity> _colonies;
         [JsonProperty]
         private TimeSpan _lengthOfDay;
 

@@ -16,7 +16,7 @@
             <MenuItem Header="_File">
                 <MenuItem Header="New Game"  Click="NewGame_Click"/>
                 <Separator/>
-                <MenuItem Name="MI_SaveGame" Header="Save Game" Click="SaveGame_Click" IsEnabled="False"/>
+                <MenuItem Name="MI_SaveGame" Header="Save Game" Click="SaveGame_Click" IsEnabled="{Binding HasGame}"/>
                 <MenuItem Header="Load Game" Click="LoadGame_Click"/>
                 <Separator/>
                 <MenuItem Header="Exit" Click="Exit_Click"/>
@@ -34,7 +34,7 @@
             </MenuItem>
         </Menu>
 
-        <ToolBarTray Name="TBT_Toolbar" Grid.Row="1" Orientation="Horizontal" IsEnabled="False">
+        <ToolBarTray Name="TBT_Toolbar" Grid.Row="1" Orientation="Horizontal" IsEnabled="{Binding HasGame}">
             <ToolBar Band="1">
                 <Button Name="TBB_SystemMap" Content="System Map" Click="TBB_Click"></Button>
                 <Separator/>
@@ -46,6 +46,8 @@
             </ToolBar>
             <ToolBar Band="1" BandIndex="2">
                 <Button Name="TBB_Ships" Content="Ships" Click="TBB_Click"></Button>
+                <Separator/>
+                <Button Name="TBB_Colonies" Content="Colonies" Click="TBB_Click"></Button>
                 <Separator/>
                 <Button Name="TBB_TaskGroups" Content="TaskGroups" Click="TBB_Click"></Button>
                 <Separator/>
@@ -59,6 +61,8 @@
                 <Button Name="TBB_Leaders" Content="Leaders" Click="TBB_Click"></Button>
                 <Separator/>
                 <Button Name="TBB_ShipDesign" Content="Ship Design" Click="TBB_Click"></Button>
+                <Separator/>
+                <Button Name="TBB_ComponentDesign" Content="Component Design" Click="TBB_Click"></Button>
                 <Separator/>
                 <Button Name="TBB_Intelligence" Content="Intelligence" Click="TBB_Click"></Button>
                 <Separator/>
@@ -122,10 +126,12 @@
 
         <StatusBar Grid.Row="3" VerticalAlignment="Bottom" Background="Beige" >
             <StatusBarItem>
-                <TextBlock Name="Status_TextBlock">No Game Loaded.</TextBlock>
+                <TextBlock Name="Status_TextBlock" Text="{Binding StatusText}" > </TextBlock>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
-                <ProgressBar Width="100" Height="20" Name="Status_ProgressBar"/>
+                <ProgressBar Width="100" Height="20" Name="Status_ProgressBar" 
+                             Value="{Binding ProgressValue, Mode=OneWay}"
+                    Visibility="{Binding ProgressVisibility}" />
             </StatusBarItem>
         </StatusBar>
     </Grid>

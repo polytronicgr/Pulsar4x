@@ -91,8 +91,8 @@ namespace Pulsar4X.Tests
 
             Assert.AreEqual(1, game.Systems.Count);
             Assert.AreEqual(testTime, game.CurrentDateTime);
-            List<Entity> entities = game.GlobalManager.GetAllEntitiesWithDataBlob<FactionDB>();
-            Assert.AreEqual(2, entities.Count);
+            List<Entity> entities = game.GlobalManager.GetAllEntitiesWithDataBlob<FactionInfoDB>();
+            Assert.AreEqual(3, entities.Count);
             entities = game.GlobalManager.GetAllEntitiesWithDataBlob<SpeciesDB>();
             Assert.AreEqual(2, entities.Count);
 
@@ -102,6 +102,14 @@ namespace Pulsar4X.Tests
             Assert.AreSame(speciesName.OwningEntity, species);
 
             // <?TODO: Expand this out to cover many more DBs, entities, and cases.
+        }
+
+        [Test]
+        public void TestSingleSystemSave()
+        {
+            StarSystemFactory starsysfac = new StarSystemFactory(game);
+            StarSystem sol  = starsysfac.CreateSol(game);
+            StaticDataManager.ExportStaticData(sol, "./solsave.json");
         }
     }
 }

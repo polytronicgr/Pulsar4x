@@ -62,6 +62,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -100,8 +101,23 @@
     <Compile Include="About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\ColonyResearchView.xaml.cs">
+      <DependentUpon>ColonyResearchView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\JobAbilityView.xaml.cs">
+      <DependentUpon>JobAbilityView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\AbilitySelectionList.xaml.cs">
+      <DependentUpon>AbilitySelectionList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ColonyScreenView.xaml.cs">
+      <DependentUpon>ColonyScreenView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Combat.xaml.cs">
       <DependentUpon>Combat.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ComponentDesign.xaml.cs">
+      <DependentUpon>ComponentDesign.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\DebugLog.xaml.cs">
       <DependentUpon>DebugLog.xaml</DependentUpon>
@@ -112,6 +128,12 @@
     <Compile Include="UserControls\GalaticMap.xaml.cs">
       <DependentUpon>GalaticMap.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\GMControls.xaml.cs">
+      <DependentUpon>GMControls.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\IndustryView.xaml.cs">
+      <DependentUpon>IndustryView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Intelligence.xaml.cs">
       <DependentUpon>Intelligence.xaml</DependentUpon>
     </Compile>
@@ -119,11 +141,32 @@
     <Compile Include="UserControls\Leaders.xaml.cs">
       <DependentUpon>Leaders.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\MinMaxSlider.xaml.cs">
+      <DependentUpon>MinMaxSlider.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\NewGameOptions.xaml.cs">
+      <DependentUpon>NewGameOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\PlanetMineralDepositView.xaml.cs">
+      <DependentUpon>PlanetMineralDepositView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Populations.xaml.cs">
       <DependentUpon>Populations.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\Races.xaml.cs">
       <DependentUpon>Races.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\RawMineralStockpile.xaml.cs">
+      <DependentUpon>RawMineralStockpile.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\JobUC.xaml.cs">
+      <DependentUpon>JobUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\RefinedMatsStockpileView.xaml.cs">
+      <DependentUpon>RefinedMatsStockpileView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ScientistUC.xaml.cs">
+      <DependentUpon>ScientistUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\ShipDesign.xaml.cs">
       <DependentUpon>ShipDesign.xaml</DependentUpon>
@@ -143,17 +186,32 @@
     <Compile Include="UserControls\TaskGroups.xaml.cs">
       <DependentUpon>TaskGroups.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\FactionVM.cs" />
-    <Compile Include="ViewModels\GameVM.cs" />
-    <Compile Include="ViewModels\IViewModel.cs" />
-    <Compile Include="ViewModels\PlanetVM.cs" />
-    <Compile Include="ViewModels\StarVM.cs" />
-    <Compile Include="ViewModels\SystemVM.cs" />
+    <Compile Include="ViewModels\Helpers.cs" />
     <Page Include="About.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\ColonyResearchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\JobAbilityView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AbilitySelectionList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ColonyScreenView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\Combat.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ComponentDesign.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -169,6 +227,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\GMControls.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\IndustryView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\Intelligence.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -177,11 +243,39 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\MinMaxSlider.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\NewGameOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\PlanetMineralDepositView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\Populations.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\Races.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\RawMineralStockpile.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\JobUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\RefinedMatsStockpileView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ScientistUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -254,6 +348,10 @@
     <ProjectReference Include="..\Pulsar4X.ECSLib\Pulsar4X.ECSLib.csproj">
       <Project>{e716fa06-ecdf-b446-96b4-b790aab5713b}</Project>
       <Name>Pulsar4X.ECSLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ViewModelLib\Pulsar4x.ViewModels.csproj">
+      <Project>{37f5b88b-f1aa-410e-9fcb-4ca26a4dd887}</Project>
+      <Name>Pulsar4x.ViewModels</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
