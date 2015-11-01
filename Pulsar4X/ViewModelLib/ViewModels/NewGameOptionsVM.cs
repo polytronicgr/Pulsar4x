@@ -20,6 +20,8 @@ namespace Pulsar4X.ViewModel
 
         public int NumberOfSystems { get; set; }
 
+        public bool NetworkHost { get; set; }
+        public int HostPortNum { get; set; }
 
         public NewGameOptionsVM()
         {
@@ -29,6 +31,8 @@ namespace Pulsar4X.ViewModel
             FactionPassword = "FPnotImplemented";
             GmPassword = "GMPWnotImplemented";
             NumberOfSystems = 50;
+            NetworkHost = true;
+            HostPortNum = 28888;
         }
 
 

@@ -18,6 +18,7 @@
                 <Separator/>
                 <MenuItem Name="MI_SaveGame" Header="Save Game" Click="SaveGame_Click" IsEnabled="{Binding HasGame}"/>
                 <MenuItem Header="Load Game" Click="LoadGame_Click"/>
+                <MenuItem Name="ConnectToServer" Header="Connect To Server" Click="ConnectToServer_OnClick"></MenuItem>
                 <Separator/>
                 <MenuItem Header="Exit" Click="Exit_Click"/>
             </MenuItem>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO.Pipes;
 using System.Reflection.Emit;
@@ -7,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Pulsar4X.ECSLib;
+using Pulsar4x.Networking;
 
 namespace Pulsar4X.ViewModel
 {
@@ -18,7 +20,10 @@ namespace Pulsar4X.ViewModel
         private BindingList<SystemVM> _systems;
 
         private Entity _playerFaction;
- 
+
+        //private NetworkHost _networkHost { get; set; }
+        public NetworkBase NetworkModule { get; set; }
+        public ObservableCollection<string> NetworkMessages { get { return NetworkModule.Messages; } }
         //progress bar in MainWindow should be bound to this
         public double ProgressValue
         {
@@ -115,8 +120,16 @@ namespace Pulsar4X.ViewModel
 
                 PlayerFaction = DefaultStartFactory.DefaultHumans(newGame, options.FactionName);
             }
+            if (options.NetworkHost)
+            {
+                NetworkHost netHost = new NetworkHost(this, options.HostPortNum);
+                NetworkModule = netHost;
+                netHost.ServerStart();
+            }
             ProgressValue = 0;//reset the progressbar
+            
             StatusText = "Game Created.";
+
         }
 
         public async void LoadGame(string pathToFile)

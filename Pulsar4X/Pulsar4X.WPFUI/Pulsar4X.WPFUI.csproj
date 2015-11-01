@@ -144,6 +144,9 @@
     <Compile Include="UserControls\MinMaxSlider.xaml.cs">
       <DependentUpon>MinMaxSlider.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\NetworkClientConnectView.xaml.cs">
+      <DependentUpon>NetworkClientConnectView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\NewGameOptions.xaml.cs">
       <DependentUpon>NewGameOptions.xaml</DependentUpon>
     </Compile>
@@ -244,6 +247,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\MinMaxSlider.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\NetworkClientConnectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -349,9 +356,9 @@
       <Project>{e716fa06-ecdf-b446-96b4-b790aab5713b}</Project>
       <Name>Pulsar4X.ECSLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ViewModelLib\Pulsar4x.ViewModels.csproj">
+    <ProjectReference Include="..\ViewModelLib\Pulsar4X.ViewModel.csproj">
       <Project>{37f5b88b-f1aa-410e-9fcb-4ca26a4dd887}</Project>
-      <Name>Pulsar4x.ViewModels</Name>
+      <Name>Pulsar4X.ViewModel</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

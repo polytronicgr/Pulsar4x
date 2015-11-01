@@ -440,5 +440,18 @@ namespace Pulsar4X.WPFUI
             }
         }
     #endregion
+
+        private void ConnectToServer_OnClick(object sender, RoutedEventArgs e)
+        {
+            NetworkClientConnectVM vm = new NetworkClientConnectVM(App.Current.GameVM);
+            UserControl control = new NetworkClientConnectView();
+            control.DataContext = vm;
+            LayoutDocument doc = new LayoutDocument();
+            string title = "Connect to Server";
+            doc.Title = title;
+            doc.ToolTip = title;
+            doc.Content = control;
+            LayoutPane.Children.Add(doc); 
+        }
     }
 }
