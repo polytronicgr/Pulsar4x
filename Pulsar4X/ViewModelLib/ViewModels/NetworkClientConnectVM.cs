@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Pulsar4x.Networking;
+using Pulsar4X.ECSLib;
 
 
 namespace Pulsar4X.ViewModel
@@ -16,7 +18,7 @@ namespace Pulsar4X.ViewModel
         private GameVM _gameVM { get; set; }
         public string HostAddress { get; set; }
         public int HostPortNum { get; set; }
-
+        private NetworkClient NetClient { get { return _gameVM.NetworkModule as NetworkClient; } }
         public string GameName { get; set; }
 
         public ObservableCollection<String> ServerMessages { get; set; }
@@ -47,7 +49,7 @@ namespace Pulsar4X.ViewModel
             NetworkClient netClient = new NetworkClient(_gameVM, HostAddress, HostPortNum);
             _gameVM.NetworkModule = netClient;
             netClient.ClientConnect();
-            netClient.SendFactionListRequest();
+            //netClient.SendFactionListRequest();
         }
 
         private ICommand _connectButton;
@@ -59,7 +61,28 @@ namespace Pulsar4X.ViewModel
             }
         }
 
+        private ICommand _getFactions;
+        public ICommand GetFactions
+        {
+            get
+            {
+                if (_gameVM != null)
+                    return _getFactions ?? (_getFactions = new CommandHandler(NetClient.SendFactionListRequest, NetClient.IsConnectedToServer) );
+                return _getFactions ?? (_getFactions = new CommandHandler(null, false));
+            }
+            set { OnPropertyChanged();}
+        }
+
+
         public event PropertyChangedEventHandler PropertyChanged;
+        [NotifyPropertyChangedInvocator]
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
         public void Refresh(bool partialRefresh = false)
         {
             throw new NotImplementedException();

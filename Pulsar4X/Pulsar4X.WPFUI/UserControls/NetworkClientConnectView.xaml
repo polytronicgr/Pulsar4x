@@ -28,6 +28,8 @@
         <ComboBox HorizontalAlignment="Left" Margin="10,38,0,0" Grid.Row="1" VerticalAlignment="Top" Width="280"
                   ItemsSource="{Binding Path=Factions}"/>
         <TextBox Margin="10,105,10,10" Grid.Row="1" TextWrapping="Wrap" Text="{Binding Path=ServerMessages, Mode=OneWay}"/>
+        <Button Content="GetList" Margin="0,10,10,0" Grid.Row="1" VerticalAlignment="Top" RenderTransformOrigin="1.227,0.5" HorizontalAlignment="Right" Width="75"
+                Command="{Binding Path=GetFactions}" />
 
 
     </Grid>

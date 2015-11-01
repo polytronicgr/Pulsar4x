@@ -2,11 +2,13 @@
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
@@ -39,6 +41,8 @@ namespace Pulsar4x.Networking
         public void GotMessage(object peer)
         {
             var message = NetPeerObject.ReadMessage();
+
+            
             switch (message.MessageType)
                 {
                     case NetIncomingMessageType.Data:
@@ -48,16 +52,14 @@ namespace Pulsar4x.Networking
 
                     case NetIncomingMessageType.StatusChanged:
                         // handle connection status messages
-                        switch (message.SenderConnection.Status)
-                        {
-                            /* .. */
-                        }
+                        Messages.Add("New status: " + message.SenderConnection.Status + " (Reason: " + message.ReadString() + ")");
+                        ConnectionStatusChanged(message);
                         break;
 
                     case NetIncomingMessageType.DebugMessage:
                         // handle debug messages
                         // (only received when compiled in DEBUG mode)
-                        Console.WriteLine(message.ReadString());
+                        Messages.Add(message.ReadString());
                         break;
 
                     /* .. */
@@ -104,6 +106,10 @@ namespace Pulsar4x.Networking
         //}
 
         protected virtual void HandleIncomingMessage(NetConnection sender, byte[] data)
+        {
+        }
+
+        protected virtual void ConnectionStatusChanged(NetIncomingMessage message)
         {
         }
 
@@ -194,10 +200,10 @@ namespace Pulsar4x.Networking
        
 
     }
+    [Serializable]
     public class DataMessage
     {
         public DataMessageType DataMessageType { get; set; }
-        //public Type ObjectType { get; set; } //not sure I'm going to need this.
         public object DataObject { get; set; }
 
         public Guid EntityGuid { get; set; }
@@ -210,13 +216,15 @@ namespace Pulsar4x.Networking
 
         private NetClient NetClientObject { get { return (NetClient)NetPeerObject; } }
         public string HostAddress { get; private set; }
-        
+        private bool _isConnectedToServer;
+        public bool IsConnectedToServer { get { return _isConnectedToServer; } set { _isConnectedToServer = value; OnPropertyChanged(); } }
 
         public NetworkClient(GameVM gameVM, string hostAddress, int portNum)
         {
             _gameVM_ = gameVM;
             PortNum = portNum;
             HostAddress = hostAddress;
+            IsConnectedToServer = false;
         }
 
         public void ClientConnect()
@@ -249,9 +257,21 @@ namespace Pulsar4x.Networking
 
 
             }
+        }
 
-
-
+        protected override void ConnectionStatusChanged(NetIncomingMessage message)
+        {
+            switch (message.SenderConnection.Status)
+            {
+                case  NetConnectionStatus.Connected:               
+                    IsConnectedToServer = true;               
+                    break;
+                case NetConnectionStatus.Disconnected:
+                    IsConnectedToServer = false;
+                    break;
+            }
+             
+ 
         }
 
         public void ReceveFactionList(DataMessage dataMessage)
@@ -276,7 +296,15 @@ namespace Pulsar4x.Networking
             NetClientObject.SendMessage(sendMsg, NetClientObject.ServerConnection, NetDeliveryMethod.ReliableOrdered);
         }
 
-
+        public event PropertyChangedEventHandler PropertyChanged;
+        [NotifyPropertyChangedInvocator]
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
     }
 
 }
