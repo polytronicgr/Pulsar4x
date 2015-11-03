@@ -16,17 +16,9 @@ namespace Pulsar4X.ViewModel
     public class NetworkClientConnectVM : IViewModel
     {
         private GameVM _gameVM { get; set; }
-        private string _hostAddress;
-        public string HostAddress {
-            get { return _hostAddress; }
-            set { _hostAddress = value; OnHostAddressChange(); OnPropertyChanged(); }
-        }
-        private int _hostPortNum;
 
-        public int HostPortNum{
-            get { return _hostPortNum; }
-            set { _hostPortNum = value; OnHostPortnumChange(); OnPropertyChanged(); }
-        }
+        public string HostAddress { get; set; }
+        public int HostPortNum { get; set; }
 
         private NetworkClient NetClient { get { return _gameVM.NetworkModule as NetworkClient; } }
         
@@ -35,11 +27,10 @@ namespace Pulsar4X.ViewModel
         public ObservableCollection<string> Factions { get; private set; }
 
         public NetworkClientConnectVM()
-        {  
-            Factions = new ObservableCollection<string>();            
+        {           
         }
 
-        public NetworkClientConnectVM(GameVM gameVM) : this()
+        public NetworkClientConnectVM(GameVM gameVM)
         {
             _gameVM = gameVM; 
             NetworkClient netClient = new NetworkClient(_gameVM, "localhost", 28888);            
@@ -48,16 +39,7 @@ namespace Pulsar4X.ViewModel
             HostPortNum = NetClient.PortNum;
 
             ServerMessages = NetClient.Messages;
-
-        }
-
-        private void OnHostAddressChange()
-        {
-            NetClient.HostAddress = HostAddress;
-        }
-        private void OnHostPortnumChange()
-        {
-            NetClient.PortNum = HostPortNum;
+            Factions = new ObservableCollection<string>();     
         }
 
         public void OnConnect()
