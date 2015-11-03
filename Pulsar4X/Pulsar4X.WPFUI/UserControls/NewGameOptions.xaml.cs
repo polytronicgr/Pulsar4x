@@ -44,5 +44,10 @@ namespace Pulsar4X.WPFUI.UserControls
             _newGameOptions.CreateGame();
             
         }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            _newGameOptions.Refresh();
+        }
     }
 }

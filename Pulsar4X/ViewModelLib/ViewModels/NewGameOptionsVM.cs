@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
+using Pulsar4x.Networking;
 using Pulsar4X.ECSLib;
 
 namespace Pulsar4X.ViewModel
@@ -23,6 +25,9 @@ namespace Pulsar4X.ViewModel
         public bool NetworkHost { get; set; }
         public int HostPortNum { get; set; }
 
+        public ObservableCollection<string> ServerMessages { get; private set; }
+        private NetworkHost NetClient { get { return _gameVM.NetworkModule as NetworkHost; } }
+
         public NewGameOptionsVM()
         {
             CreatePlayerFaction = true;
@@ -35,14 +40,24 @@ namespace Pulsar4X.ViewModel
             HostPortNum = 28888;
         }
 
-
-        public static NewGameOptionsVM Create(GameVM gameVM)
+        public NewGameOptionsVM(GameVM gameVM) :this()
         {
-            NewGameOptionsVM optionsVM = new NewGameOptionsVM();
-            optionsVM._gameVM = gameVM;
-
-            return optionsVM;
+            _gameVM = gameVM;
+            NetworkHost netHost = new NetworkHost(gameVM, 28888);
+            gameVM.NetworkModule = netHost;
+            ServerMessages = netHost.Messages;
+            
         }
+
+        //public static NewGameOptionsVM Create(GameVM gameVM)
+        //{
+        //    NewGameOptionsVM optionsVM = new NewGameOptionsVM();
+        //    optionsVM._gameVM = gameVM;
+        //    NetworkHost netHost = new NetworkHost(gameVM, 28888);
+        //    gameVM.NetworkModule = netHost;
+        //    optionsVM.ServerMessages = netHost.Messages;
+        //    return optionsVM;
+        //}
 
         public void CreateGame()
         {

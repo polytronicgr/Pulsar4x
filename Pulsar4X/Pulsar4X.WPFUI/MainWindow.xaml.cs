@@ -81,7 +81,7 @@ namespace Pulsar4X.WPFUI
 
         private  void NewGame_Click(object sender, RoutedEventArgs e)
         {
-            NewGameOptionsVM gameoptions = NewGameOptionsVM.Create(App.Current.GameVM);
+            NewGameOptionsVM gameoptions = new NewGameOptionsVM(App.Current.GameVM); //NewGameOptionsVM.Create(App.Current.GameVM);
             UserControl control = new NewGameOptions(gameoptions);
             
             LayoutDocument doc = new LayoutDocument();

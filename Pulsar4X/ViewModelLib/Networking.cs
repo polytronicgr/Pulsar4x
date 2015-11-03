@@ -23,7 +23,7 @@ namespace Pulsar4x.Networking
         protected Game _game_ { get { return _gameVM_.Game; }}
         protected GameVM _gameVM_ { get; set; }
 
-        public ObservableCollection<string> Messages { get; private set; }
+        public ObservableCollection<string> Messages { get; set; }
 
         public int PortNum { get; set; }
         public NetPeer NetPeerObject { get; set; }
@@ -34,8 +34,7 @@ namespace Pulsar4x.Networking
         }
 
         protected void StartListning()
-        {
-            Messages = new ObservableCollection<string>();
+        {            
             NetPeerObject.RegisterReceivedCallback(new SendOrPostCallback(GotMessage)); 
         }
 
@@ -48,6 +47,7 @@ namespace Pulsar4x.Networking
                 {
                     case NetIncomingMessageType.Data:
                         // handle custom messages
+                        Messages.Add("Data Message from: " + message.SenderConnection.RemoteUniqueIdentifier);
                         HandleIncomingMessage(message.SenderConnection, message.Data);
                         break;
 
@@ -60,7 +60,7 @@ namespace Pulsar4x.Networking
                     case NetIncomingMessageType.DebugMessage:
                         // handle debug messages
                         // (only received when compiled in DEBUG mode)
-                        Messages.Add(message.ReadString());
+                        Messages.Add("Debug Msg: " + message.ReadString());
                         break;
 
                     /* .. */
@@ -157,6 +157,19 @@ namespace Pulsar4x.Networking
             {
                 SendFactionList(fromConnection);
             }
+
+        }
+
+        protected override void ConnectionStatusChanged(NetIncomingMessage message)
+        {
+            switch (message.SenderConnection.Status)
+            {
+                case NetConnectionStatus.Connected:                    
+                    break;
+                case NetConnectionStatus.Disconnected:                    
+                    break;
+            }
+
 
         }
 

@@ -121,8 +121,7 @@ namespace Pulsar4X.ViewModel
             }
             if (options.NetworkHost)
             {
-                NetworkHost netHost = new NetworkHost(this, options.HostPortNum);
-                NetworkModule = netHost;
+                NetworkHost netHost = (NetworkHost)NetworkModule;
                 netHost.ServerStart();
             }
             ProgressValue = 0;//reset the progressbar

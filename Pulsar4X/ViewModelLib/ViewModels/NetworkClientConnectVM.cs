@@ -39,7 +39,8 @@ namespace Pulsar4X.ViewModel
             HostPortNum = NetClient.PortNum;
 
             ServerMessages = NetClient.Messages;
-            Factions = new ObservableCollection<string>();     
+            Factions = new ObservableCollection<string>();
+            GetFactions = GetFactions;
         }
 
         public void OnConnect()
