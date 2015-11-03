@@ -8,10 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
+using System.Net.Mime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
+using System.Windows.Threading;
 using Lidgren.Network;
 using Pulsar4X.ECSLib;
 using Pulsar4X.ViewModel;
@@ -23,14 +25,15 @@ namespace Pulsar4x.Networking
         protected Game _game_ { get { return _gameVM_.Game; }}
         protected GameVM _gameVM_ { get; set; }
 
-        public ObservableCollection<string> Messages { get; set; }
+        private readonly ObservableCollection<string> _messages;
+        public ObservableCollection<string> Messages { get {return _messages;} }
 
         public int PortNum { get; set; }
         public NetPeer NetPeerObject { get; set; }
 
         public NetworkBase()
         {
-            Messages = new ObservableCollection<string>();
+            _messages = new ObservableCollection<string>();
         }
 
         protected void StartListning()
@@ -49,6 +52,13 @@ namespace Pulsar4x.Networking
                         // handle custom messages
                         Messages.Add("Data Message from: " + message.SenderConnection.RemoteUniqueIdentifier);
                         HandleIncomingMessage(message.SenderConnection, message.Data);
+                        break;
+
+                    case NetIncomingMessageType.DiscoveryRequest:
+                        HandleDiscoveryRequest(message);
+                        break;
+                    case NetIncomingMessageType.DiscoveryResponse:
+                        HandleDiscoveryResponce(message);
                         break;
 
                     case NetIncomingMessageType.StatusChanged:
@@ -106,6 +116,14 @@ namespace Pulsar4x.Networking
         //    }
         //}
 
+
+        protected virtual void HandleDiscoveryRequest(NetIncomingMessage message)
+        {
+        }
+        protected virtual void HandleDiscoveryResponce(NetIncomingMessage message)
+        {
+        }
+
         protected virtual void HandleIncomingMessage(NetConnection sender, byte[] data)
         {
         }
@@ -137,6 +155,7 @@ namespace Pulsar4x.Networking
         public void ServerStart()
         {
             var config = new NetPeerConfiguration("Pulsar4X") { Port = PortNum };
+            config.EnableMessageType(NetIncomingMessageType.DiscoveryRequest);
             NetPeerObject = new NetServer(config);
             NetPeerObject.Start();
             _connectedFactions = new Dictionary<NetConnection, Guid>();
@@ -144,7 +163,17 @@ namespace Pulsar4x.Networking
             StartListning();
         }
 
- 
+
+        protected override void HandleDiscoveryRequest(NetIncomingMessage message)
+        {
+            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Messages.Add("RX DiscoveryRequest " + message.SenderEndPoint)));
+            
+            Messages.Add("RX DiscoveryRequest " + message.SenderEndPoint);
+            NetOutgoingMessage response = NetServerObject.CreateMessage();
+            response.Write("Pulsar4x Server Game: " + _game_.GameName);
+            NetServerObject.SendDiscoveryResponse(response, message.SenderEndPoint);
+        }
+
         protected override void HandleIncomingMessage(NetConnection fromConnection, byte[] data)
         {
             DataMessage dataMessage;
@@ -244,13 +273,20 @@ namespace Pulsar4x.Networking
         public void ClientConnect()
         {
             var config = new NetPeerConfiguration("Pulsar4X");
+            config.EnableMessageType(NetIncomingMessageType.DiscoveryResponse);
             NetPeerObject = new NetClient(config);
             NetPeerObject.Start();
-            NetPeerObject.Connect(host: HostAddress, port: PortNum);
-            StartListning();
+            NetClientObject.DiscoverLocalPeers(PortNum);
+            //NetPeerObject.Connect(host: HostAddress, port: PortNum);
+            //StartListning();
+            
         }
 
 
+        protected override void HandleDiscoveryResponce(NetIncomingMessage message)
+        {
+            Messages.Add("Found Server: " + message.SenderEndPoint + "Name Is: " + message.ReadString());
+        }
 
         protected override void HandleIncomingMessage(NetConnection fromConnection, byte[] data)
         {

@@ -25,8 +25,8 @@ namespace Pulsar4X.ViewModel
         public bool NetworkHost { get; set; }
         public int HostPortNum { get; set; }
 
-        public ObservableCollection<string> ServerMessages { get; private set; }
-        private NetworkHost NetClient { get { return _gameVM.NetworkModule as NetworkHost; } }
+        public ObservableCollection<string> ServerMessagesX { get; private set; }
+        private NetworkHost NetServer { get { return _gameVM.NetworkModule as NetworkHost; } }
 
         public NewGameOptionsVM()
         {
@@ -40,12 +40,22 @@ namespace Pulsar4X.ViewModel
             HostPortNum = 28888;
         }
 
-        public NewGameOptionsVM(GameVM gameVM) :this()
+        public NewGameOptionsVM(GameVM gameVM)
         {
+
+            CreatePlayerFaction = true;
+            DefaultStart = true;
+            FactionName = "United Earth Federation";
+            FactionPassword = "FPnotImplemented";
+            GmPassword = "GMPWnotImplemented";
+            NumberOfSystems = 50;
+            NetworkHost = true;
+            HostPortNum = 28888;
+
             _gameVM = gameVM;
             NetworkHost netHost = new NetworkHost(gameVM, 28888);
             gameVM.NetworkModule = netHost;
-            ServerMessages = netHost.Messages;
+            ServerMessagesX = netHost.Messages;
             
         }
 
@@ -69,6 +79,7 @@ namespace Pulsar4X.ViewModel
         public event PropertyChangedEventHandler PropertyChanged;
         public void Refresh(bool partialRefresh = false)
         {
+            ServerMessagesX.Add("testAdd");
             //throw new NotImplementedException();
         }
     }

@@ -43,7 +43,7 @@
         <xctk:IntegerUpDown HorizontalAlignment="Left" Margin="10,28,0,0" Grid.Row="5" VerticalAlignment="Top" Width="104"
                             Value="{Binding Path=HostPortNum}"/>
         <ListBox Grid.Column="1" Grid.Row="5" Margin="0,0,10,10"
-                 ItemsSource ="{Binding Path=ServerMessages}"/>
+                 ItemsSource ="{Binding Path=ServerMessagesX}"/>
         <Button Content="Button" HorizontalAlignment="Left" Margin="69,63,0,0" Grid.Row="5" VerticalAlignment="Top" Width="50" Click="Button_Click_1"/>
 
     </Grid>
