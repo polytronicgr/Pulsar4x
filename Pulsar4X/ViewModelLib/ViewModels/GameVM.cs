@@ -21,9 +21,8 @@ namespace Pulsar4X.ViewModel
 
         private Entity _playerFaction;
 
-        //private NetworkHost _networkHost { get; set; }
         public NetworkBase NetworkModule { get; set; }
-        public ObservableCollection<string> NetworkMessages { get { return NetworkModule.Messages; } }
+
         //progress bar in MainWindow should be bound to this
         public double ProgressValue
         {

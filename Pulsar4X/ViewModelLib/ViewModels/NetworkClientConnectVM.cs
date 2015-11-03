@@ -16,40 +16,53 @@ namespace Pulsar4X.ViewModel
     public class NetworkClientConnectVM : IViewModel
     {
         private GameVM _gameVM { get; set; }
-        public string HostAddress { get; set; }
-        public int HostPortNum { get; set; }
-        private NetworkClient NetClient { get { return _gameVM.NetworkModule as NetworkClient; } }
-        public string GameName { get; set; }
+        private string _hostAddress;
+        public string HostAddress {
+            get { return _hostAddress; }
+            set { _hostAddress = value; OnHostAddressChange(); OnPropertyChanged(); }
+        }
+        private int _hostPortNum;
 
-        public ObservableCollection<String> ServerMessages { get; set; }
-            public ObservableCollection<string> Factions { get; set; }
+        public int HostPortNum{
+            get { return _hostPortNum; }
+            set { _hostPortNum = value; OnHostPortnumChange(); OnPropertyChanged(); }
+        }
+
+        private NetworkClient NetClient { get { return _gameVM.NetworkModule as NetworkClient; } }
+        
+        public string GameName { get; private set; }
+        public ObservableCollection<string> ServerMessages { get; private set; }
+        public ObservableCollection<string> Factions { get; private set; }
 
         public NetworkClientConnectVM()
         {  
-         
-            HostAddress = "localhost";
-            HostPortNum = 28888;
-            GameName = "Not Connected";
-            Factions = new ObservableCollection<string>();
-            
+            Factions = new ObservableCollection<string>();            
         }
 
         public NetworkClientConnectVM(GameVM gameVM) : this()
         {
             _gameVM = gameVM; 
-            NetworkClient netClient = new NetworkClient(_gameVM, HostAddress, HostPortNum);
-            _gameVM.NetworkModule = netClient; 
-            ServerMessages = _gameVM.NetworkMessages;
+            NetworkClient netClient = new NetworkClient(_gameVM, "localhost", 28888);            
+            _gameVM.NetworkModule = netClient;
+            HostAddress = NetClient.HostAddress;
+            HostPortNum = NetClient.PortNum;
 
+            ServerMessages = NetClient.Messages;
+
+        }
+
+        private void OnHostAddressChange()
+        {
+            NetClient.HostAddress = HostAddress;
+        }
+        private void OnHostPortnumChange()
+        {
+            NetClient.PortNum = HostPortNum;
         }
 
         public void OnConnect()
         {
-
-            NetworkClient netClient = new NetworkClient(_gameVM, HostAddress, HostPortNum);
-            _gameVM.NetworkModule = netClient;
-            netClient.ClientConnect();
-            //netClient.SendFactionListRequest();
+            NetClient.ClientConnect();
         }
 
         private ICommand _connectButton;

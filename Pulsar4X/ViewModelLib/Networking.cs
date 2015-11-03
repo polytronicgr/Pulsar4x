@@ -22,9 +22,10 @@ namespace Pulsar4x.Networking
     {
         protected Game _game_ { get { return _gameVM_.Game; }}
         protected GameVM _gameVM_ { get; set; }
-        public ObservableCollection<string> Messages { get; set; } 
 
-        public int PortNum { get; protected set; }
+        public ObservableCollection<string> Messages { get; private set; }
+
+        public int PortNum { get; set; }
         public NetPeer NetPeerObject { get; set; }
 
         public NetworkBase()
@@ -215,7 +216,7 @@ namespace Pulsar4x.Networking
     {
 
         private NetClient NetClientObject { get { return (NetClient)NetPeerObject; } }
-        public string HostAddress { get; private set; }
+        public string HostAddress { get; set; }
         private bool _isConnectedToServer;
         public bool IsConnectedToServer { get { return _isConnectedToServer; } set { _isConnectedToServer = value; OnPropertyChanged(); } }
 
