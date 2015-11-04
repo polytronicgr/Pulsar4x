@@ -82,14 +82,25 @@ namespace Pulsar4X.WPFUI
         private  void NewGame_Click(object sender, RoutedEventArgs e)
         {
             NewGameOptionsVM gameoptions = new NewGameOptionsVM(App.Current.GameVM); //NewGameOptionsVM.Create(App.Current.GameVM);
-            UserControl control = new NewGameOptions(gameoptions);
-            
+            NewGameOptions control = new NewGameOptions();
+            control.SetDataContext(gameoptions);
+            control.DataContext = gameoptions;
             LayoutDocument doc = new LayoutDocument();
             string title = ((ITabControl)control).Title;
             doc.Title = title;
             doc.ToolTip = title;
             doc.Content = control;
-            LayoutPane.Children.Add(doc);           
+            LayoutPane.Children.Add(doc);
+
+            //NetworkClientConnectVM vm = new NetworkClientConnectVM(App.Current.GameVM);
+            //UserControl control = new NetworkClientConnectView();
+            //control.DataContext = vm;
+            //LayoutDocument doc = new LayoutDocument();
+            //string title = "Connect to Server";
+            //doc.Title = title;
+            //doc.ToolTip = title;
+            //doc.Content = control;
+            //LayoutPane.Children.Add(doc); 
         }
 
 

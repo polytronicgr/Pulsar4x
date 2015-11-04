@@ -31,10 +31,14 @@ namespace Pulsar4X.WPFUI.UserControls
             InitializeComponent();
         }
 
-        public NewGameOptions(NewGameOptionsVM vm)
+        //public NewGameOptions(NewGameOptionsVM vm)
+        //{
+        //    Title = "New Game";
+        //    InitializeComponent();
+        //}
+
+        public void SetDataContext(NewGameOptionsVM vm)
         {
-            Title = "New Game";
-            InitializeComponent();
             _newGameOptions = vm;
             DataContext = _newGameOptions;
         }

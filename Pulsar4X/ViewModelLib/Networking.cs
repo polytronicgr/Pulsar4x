@@ -34,6 +34,7 @@ namespace Pulsar4x.Networking
         public NetworkBase()
         {
             _messages = new ObservableCollection<string>();
+            _messages.Add("Start of Messages");
         }
 
         protected void StartListning()
@@ -41,12 +42,17 @@ namespace Pulsar4x.Networking
             NetPeerObject.RegisterReceivedCallback(new SendOrPostCallback(GotMessage)); 
         }
 
+        /// <summary>
+        /// This gets called when triggered by an event regestered in StartListning()
+        /// </summary>
+        /// <param name="peer">this is NetPeerObject so just using that</param>
         public void GotMessage(object peer)
         {
-            var message = NetPeerObject.ReadMessage();
+            NetIncomingMessage message; 
 
-            
-            switch (message.MessageType)
+            while ((message = NetPeerObject.ReadMessage()) != null)
+            {
+                switch (message.MessageType)
                 {
                     case NetIncomingMessageType.Data:
                         // handle custom messages
@@ -75,47 +81,11 @@ namespace Pulsar4x.Networking
 
                     /* .. */
                     default:
-                         Messages.Add(("unhandled message with type: "
-                            + message.MessageType));
+                        Messages.Add(("unhandled message with type: " + message.MessageType));
                         break;
                 }
-        } 
-
-        //protected void MessageListner()
-        //{
-        //    NetIncomingMessage message;
-        //    while ((message = NetPeerObject.ReadMessage()) != null)
-        //    {
-        //        switch (message.MessageType)
-        //        {
-        //            case NetIncomingMessageType.Data:
-        //                // handle custom messages
-        //                HandleIncomingMessage(message.SenderConnection, message.Data);
-        //                break;
-
-        //            case NetIncomingMessageType.StatusChanged:
-        //                // handle connection status messages
-        //                switch (message.SenderConnection.Status)
-        //                {
-        //                    /* .. */
-        //                }
-        //                break;
-
-        //            case NetIncomingMessageType.DebugMessage:
-        //                // handle debug messages
-        //                // (only received when compiled in DEBUG mode)
-        //                Console.WriteLine(message.ReadString());
-        //                break;
-
-        //            /* .. */
-        //            default:
-        //                Console.WriteLine("unhandled message with type: "
-        //                    + message.MessageType);
-        //                break;
-        //        }
-        //    }
-        //}
-
+            }
+        }
 
         protected virtual void HandleDiscoveryRequest(NetIncomingMessage message)
         {
@@ -145,6 +115,8 @@ namespace Pulsar4x.Networking
         private Dictionary<Guid, List<NetConnection>> _factionConnections { get; set; } 
                
         public NetServer NetServerObject { get { return (NetServer)NetPeerObject; }}
+
+        
 
         public NetworkHost(GameVM gameVM, int portNum)
         {
@@ -214,9 +186,18 @@ namespace Pulsar4x.Networking
             
             List<Entity> factions = _game_.GlobalManager.GetAllEntitiesWithDataBlob<FactionInfoDB>();
             //we don't want to send the whole entitys, just a dictionary of guid ID and the string name. 
-            Dictionary<Guid,string> factionGuidNames = factions.ToDictionary(faction => faction.Guid, faction => faction.GetDataBlob<NameDB>().DefaultName);
+            //Dictionary<Guid,string> factionGuidNames = factions.ToDictionary(faction => faction.Guid, faction => faction.GetDataBlob<NameDB>().DefaultName);
 
-            DataMessage dataMessage = new DataMessage {DataMessageType = DataMessageType.FactionDictionary, DataObject = factionGuidNames};
+            List<FactionItem> factionItems = new List<FactionItem>();
+            foreach (var faction in factions)
+            {
+                FactionItem factionItem = new FactionItem();
+                factionItem.Name = faction.GetDataBlob<NameDB>().DefaultName;
+                factionItem.ID = faction.Guid;
+                factionItems.Add(factionItem);
+            }
+
+            DataMessage dataMessage = new DataMessage { DataMessageType = DataMessageType.FactionDictionary, DataObject = factionItems };
 
             //turn the dictionary into a stream.
             var binFormatter = new BinaryFormatter();
@@ -230,6 +211,7 @@ namespace Pulsar4x.Networking
             sendMsg.Write(mStream.ToArray()); //send the stream as an byte array. 
             sendMsg.Write(42);
             
+            Messages.Add("TX Faction List to " + recipient.RemoteUniqueIdentifier);
             NetServerObject.SendMessage(sendMsg, recipient, NetDeliveryMethod.ReliableOrdered);
         }
 
@@ -253,6 +235,15 @@ namespace Pulsar4x.Networking
         public string PropertyName { get; set; }//actualy can I look at how wpf does this?
     }
 
+    /// <summary>
+    /// a short struct which holds string name and guid of a faction. 
+    /// </summary>
+    [Serializable]
+    public struct FactionItem
+    {
+        public string Name { get; set; }
+        public Guid ID { get; set; }
+    }
 
     public class NetworkClient : NetworkBase
     {
@@ -262,12 +253,16 @@ namespace Pulsar4x.Networking
         private bool _isConnectedToServer;
         public bool IsConnectedToServer { get { return _isConnectedToServer; } set { _isConnectedToServer = value; OnPropertyChanged(); } }
 
+        //private Dictionary<Guid, string> _factions; 
+        public ObservableCollection<FactionItem> Factions { get; set; }
+        
         public NetworkClient(GameVM gameVM, string hostAddress, int portNum)
         {
             _gameVM_ = gameVM;
             PortNum = portNum;
             HostAddress = hostAddress;
             IsConnectedToServer = false;
+            Factions = new ObservableCollection<FactionItem>();
         }
 
         public void ClientConnect()
@@ -277,8 +272,8 @@ namespace Pulsar4x.Networking
             NetPeerObject = new NetClient(config);
             NetPeerObject.Start();
             NetClientObject.DiscoverLocalPeers(PortNum);
-            //NetPeerObject.Connect(host: HostAddress, port: PortNum);
-            //StartListning();
+            NetPeerObject.Connect(host: HostAddress, port: PortNum);
+            StartListning();
             
         }
 
@@ -295,7 +290,7 @@ namespace Pulsar4x.Networking
 
             var mStream = new MemoryStream(data);
             dataMessage = (DataMessage)formatter.Deserialize(mStream);
-
+            Messages.Add("RX " + dataMessage.DataMessageType.ToString() + "From: " + fromConnection.RemoteUniqueIdentifier);
             switch (dataMessage.DataMessageType)
             {
                 case DataMessageType.StringMessage:
@@ -326,7 +321,12 @@ namespace Pulsar4x.Networking
 
         public void ReceveFactionList(DataMessage dataMessage)
         {
-            Dictionary<Guid, string> factionList =  (Dictionary<Guid,string>)dataMessage.DataObject;
+            Factions.Clear();
+            
+            foreach (var factionItem in (List<FactionItem>)dataMessage.DataObject)
+            {
+                Factions.Add(factionItem);
+            }
         }
 
         public void SendFactionListRequest()
@@ -356,5 +356,4 @@ namespace Pulsar4x.Networking
             }
         }
     }
-
 }

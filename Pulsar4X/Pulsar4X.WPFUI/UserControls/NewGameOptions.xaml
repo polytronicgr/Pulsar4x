@@ -9,6 +9,9 @@
        
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.DataContext>
+        <ViewModel:NewGameOptionsVM/>
+    </UserControl.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="42"/>
@@ -22,9 +25,6 @@
             <ColumnDefinition Width="124"/>
             <ColumnDefinition Width="44*"/>
         </Grid.ColumnDefinitions>
-        <Grid.DataContext>
-            <ViewModel:NewGameOptionsVM/>
-        </Grid.DataContext>
         <CheckBox x:Name="CreateplayerCheckBox" Content="Player Faction" Margin="10,10,0,0" VerticalAlignment="Top" Height="13" HorizontalAlignment="Left" Width="83" IsChecked="{Binding CreatePlayerFaction}"/>
         <CheckBox x:Name="DefaultstartCheckBox" Content="Default Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="13" Width="82" Grid.Column="1" IsEnabled="False" IsChecked="{Binding DefaultStart}"/>
         <Label Content="Faction Name:" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Height="23" Width="95"/>

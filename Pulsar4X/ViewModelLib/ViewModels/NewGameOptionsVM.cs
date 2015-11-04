@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,20 +25,22 @@ namespace Pulsar4X.ViewModel
 
         public bool NetworkHost { get; set; }
         public int HostPortNum { get; set; }
-
+        
+        private NetworkHost NetHost { get { return _gameVM.NetworkModule as NetworkHost; } }
+        
         public ObservableCollection<string> ServerMessagesX { get; private set; }
-        private NetworkHost NetServer { get { return _gameVM.NetworkModule as NetworkHost; } }
-
+        
+        
         public NewGameOptionsVM()
         {
-            CreatePlayerFaction = true;
-            DefaultStart = true;
-            FactionName = "United Earth Federation";
-            FactionPassword = "FPnotImplemented";
-            GmPassword = "GMPWnotImplemented";
-            NumberOfSystems = 50;
-            NetworkHost = true;
-            HostPortNum = 28888;
+            //CreatePlayerFaction = true;
+            //DefaultStart = true;
+            //FactionName = "United Earth Federation";
+            //FactionPassword = "FPnotImplemented";
+            //GmPassword = "GMPWnotImplemented";
+            //NumberOfSystems = 50;
+            //NetworkHost = true;
+            //HostPortNum = 28888;
         }
 
         public NewGameOptionsVM(GameVM gameVM)
@@ -55,7 +58,7 @@ namespace Pulsar4X.ViewModel
             _gameVM = gameVM;
             NetworkHost netHost = new NetworkHost(gameVM, 28888);
             gameVM.NetworkModule = netHost;
-            ServerMessagesX = netHost.Messages;
+            ServerMessagesX = NetHost.Messages;
             
         }
 
@@ -77,6 +80,14 @@ namespace Pulsar4X.ViewModel
 
 
         public event PropertyChangedEventHandler PropertyChanged;
+        [NotifyPropertyChangedInvocator]
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
         public void Refresh(bool partialRefresh = false)
         {
             ServerMessagesX.Add("testAdd");
