@@ -102,6 +102,22 @@ namespace Pulsar4x.Networking
         {
         }
 
+        /// <summary>
+        /// use this for sending an non basic object type.
+        /// </summary>
+        /// <param name="dataMessage"></param>
+        /// <returns></returns>
+        protected NetOutgoingMessage SerialiseDataMessage(DataMessage dataMessage)
+        {
+            //turn the dataMessage into a stream.
+            var binFormatter = new BinaryFormatter();
+            var mStream = new MemoryStream();
+            binFormatter.Serialize(mStream, dataMessage);
+            NetOutgoingMessage sendMsg = NetPeerObject.CreateMessage();
+            sendMsg.Write(mStream.ToArray()); //send the stream as an byte array. 
+            return sendMsg;
+        }
+
         protected void HandleIncomingStringMessage(NetConnection sender, DataMessage dataMessage)
         {
             Messages.Add(sender.RemoteUniqueIdentifier + " Sent: " + (string)dataMessage.DataObject);
@@ -199,20 +215,30 @@ namespace Pulsar4x.Networking
 
             DataMessage dataMessage = new DataMessage { DataMessageType = DataMessageType.FactionDictionary, DataObject = factionItems };
 
-            //turn the dictionary into a stream.
-            var binFormatter = new BinaryFormatter();
-            var mStream = new MemoryStream();
-            binFormatter.Serialize(mStream, dataMessage);
-
-            //This gives you the byte array.
-            //mStream.ToArray();
-
-            NetOutgoingMessage sendMsg = NetServerObject.CreateMessage();
-            sendMsg.Write(mStream.ToArray()); //send the stream as an byte array. 
-            sendMsg.Write(42);
+            NetOutgoingMessage sendMsg = SerialiseDataMessage(dataMessage);
             
             Messages.Add("TX Faction List to " + recipient.RemoteUniqueIdentifier);
             NetServerObject.SendMessage(sendMsg, recipient, NetDeliveryMethod.ReliableOrdered);
+        }
+
+        private void SendFactionData(NetConnection recipient, Guid factionGuid)
+        { 
+            Entity factionEntity;
+            _game_.GlobalManager.FindEntityByGuid(factionGuid, out factionEntity);
+            foreach (var datablob in factionEntity.DataBlobs)
+            {
+                DataMessage dataMessage = new DataMessage 
+                { 
+                    DataMessageType = DataMessageType.DataBlobFull, 
+                    DataObject = datablob,
+                    EntityGuid = factionGuid
+                };
+
+                NetOutgoingMessage sendMsg = SerialiseDataMessage(dataMessage);
+
+                Messages.Add("TX Faction Datablob to " + recipient.RemoteUniqueIdentifier);
+                NetServerObject.SendMessage(sendMsg, recipient, NetDeliveryMethod.ReliableOrdered);
+            }
         }
 
 
@@ -222,6 +248,8 @@ namespace Pulsar4x.Networking
         StringMessage,
         FactionDictionary,
         DataBlobPropertyUpdate,
+        DataBlobFull,
+        TickInfo
        
 
     }
