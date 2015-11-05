@@ -87,6 +87,25 @@ namespace Pulsar4x.Networking
             }
         }
 
+        /// <summary>
+        /// TODO implement proper private/public key. 
+        /// </summary>
+        /// <param name="recever"></param>
+        /// <param name="message"></param>
+        protected void SendEncrypted(NetPeer recever, NetOutgoingMessage message)
+        {
+            NetEncryption algo = new NetXtea(recever, "SharedKey");
+            message.Encrypt(algo);
+        }
+
+
+        protected NetIncomingMessage DecryptedReceve(NetIncomingMessage message)
+        {
+            NetEncryption algo = new NetXtea(NetPeerObject, "SharedKey");
+            message.Decrypt(algo);
+            return message;
+        }
+
         protected virtual void HandleDiscoveryRequest(NetIncomingMessage message)
         {
         }
@@ -222,6 +241,7 @@ namespace Pulsar4x.Networking
         StringMessage,
         FactionDictionary,
         DataBlobPropertyUpdate,
+        FactionDataRequest
        
 
     }
@@ -314,9 +334,25 @@ namespace Pulsar4x.Networking
                 case NetConnectionStatus.Disconnected:
                     IsConnectedToServer = false;
                     break;
-            }
-             
- 
+            }             
+        }
+
+
+        public void SendFactionDataRequest(Guid factionGuid, string password)
+        {
+            DataMessage dataMessage = new DataMessage();
+            dataMessage.DataMessageType = DataMessageType.FactionDataRequest;
+            dataMessage.EntityGuid = factionGuid;
+
+            var binFormatter = new BinaryFormatter();
+            var mStream = new MemoryStream();
+            binFormatter.Serialize(mStream, dataMessage);
+
+            NetOutgoingMessage sendMsg = NetClientObject.CreateMessage();
+            sendMsg.Write(mStream.ToArray());
+            sendMsg.Write(password);
+            NetClientObject.SendEncrypted(sendMsg, password);
+
         }
 
         public void ReceveFactionList(DataMessage dataMessage)

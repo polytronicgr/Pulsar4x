@@ -523,6 +523,39 @@ namespace Pulsar4X.ECSLib
         }
 
         /// <summary>
+        /// Gets the entity with the associated Guid. this version doesn't use out. //TODO I don't understand what the local dictionary is for. should I bother checking it for this method?
+        /// </summary>
+        /// <returns>The Entity if found</returns>
+        /// <exception cref="GuidNotFoundException">Guid was not found in Global list, orlocally</exception>
+        [PublicAPI]
+        public Entity GetEntityByGuid(Guid entityGuid)
+        {
+            Entity entity;
+            if (_game != null)
+            {
+                _game.GuidDictionaryLock.EnterReadLock();
+                try
+                {
+                    if (_localEntityDictionary.TryGetValue(entityGuid, out entity))
+                    {
+                        return entity;
+                    }
+                    throw new GuidNotFoundException(entityGuid);
+                }
+                finally
+                {
+                    _game.GuidDictionaryLock.ExitReadLock();
+                }
+            }
+            // This is a "fake" manager that does not link to other managers.
+            if (_localEntityDictionary.TryGetValue(entityGuid, out entity))
+            {
+                return entity;
+            }
+            throw new GuidNotFoundException(entityGuid);
+        }
+
+        /// <summary>
         /// Gets the associated entityID of the specified Guid.
         /// <para></para>
         /// Does not throw exceptions.

@@ -87,6 +87,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataBlobs\AuthDB.cs" />
     <Compile Include="DataBlobs\ColonyConstructionDB.cs" />
     <Compile Include="DataBlobs\AbilityDBs\ComponentDesignDB.cs" />
     <Compile Include="DataBlobs\AbilityDBs\ConstructionAbilityDB.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="GameVersionInfo.cs" />
     <Compile Include="Helpers\MiscHelpers.cs" />
     <Compile Include="Helpers\Pulse.cs" />
+    <Compile Include="Processors\AuthProcessor.cs" />
     <Compile Include="Processors\ConstructionProcessor.cs" />
     <Compile Include="Processors\EconProcessor.cs" />
     <Compile Include="Processors\MineProcessor.cs" />
