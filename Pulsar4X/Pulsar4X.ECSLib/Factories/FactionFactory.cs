@@ -10,6 +10,7 @@ namespace Pulsar4X.ECSLib
         {
             var blobs = new List<BaseDataBlob>();
             NameDB name = new NameDB(factionName);
+            AuthDB auth = new AuthDB(AuthProcessor.CreateHash("password")); //fortesting TODO do properly
             FactionInfoDB factionDB = new FactionInfoDB();
             FactionAbilitiesDB factionAbilitiesDB = new FactionAbilitiesDB();
             FactionTechDB techDB = new FactionTechDB(game.StaticData.Techs.Values.ToList());        

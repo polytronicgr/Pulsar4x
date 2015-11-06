@@ -25,7 +25,20 @@ namespace Pulsar4X.ViewModel
         
         public string GameName { get; private set; }
         public ObservableCollection<string> ServerMessages { get; private set; }
-        public ObservableCollection<FactionItem> Factions { get; private set;  }
+
+        private string _factionName;
+        public string FactionName {
+            get { return _factionName; }
+            set { _factionName = value; OnPropertyChanged(); }
+        }
+
+        private string _factionPassword;
+        public string FactionPassword
+        {
+            get { return _factionPassword; } 
+            set { _factionPassword = value;OnPropertyChanged(); }
+        }
+
 
         public NetworkClientConnectVM()
         {           
@@ -40,7 +53,7 @@ namespace Pulsar4X.ViewModel
             HostPortNum = NetClient.PortNum;
 
             ServerMessages = NetClient.Messages;
-            Factions = NetClient.Factions;
+            
             GetFactions = GetFactions;
             
         }
@@ -49,6 +62,7 @@ namespace Pulsar4X.ViewModel
         {
             NetClient.ClientConnect();
             GetFactions = GetFactions;
+            Login = Login;
             NetClient.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
         }
 
@@ -79,7 +93,23 @@ namespace Pulsar4X.ViewModel
             set { OnPropertyChanged();}
         }
 
+        private ICommand _login;
+        public ICommand Login
+        {
+            get
+            {
+                if (_gameVM != null)
+                    return _login ?? (_login = new CommandHandler(SendFactionReq, true));// NetClient.IsConnectedToServer));
+                return _getFactions ?? (_login = new CommandHandler(null, false));
+            }
+            set { OnPropertyChanged(); }
+        }
 
+        private void SendFactionReq()
+        {
+            NetClient.SendFactionDataRequest(FactionName, FactionPassword);
+            FactionPassword = "";
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         [NotifyPropertyChangedInvocator]
@@ -93,8 +123,8 @@ namespace Pulsar4X.ViewModel
         public void Refresh(bool partialRefresh = false)
         {
             throw new NotImplementedException();
-        }    
-        
+        }
+
 
     }
 }

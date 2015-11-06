@@ -8,7 +8,7 @@ namespace Pulsar4X.ECSLib
     /// most of this from: https://crackstation.net/hashing-security.htm#aspsourcecode
     /// Author: havoc AT defuse.ca
     /// </summary>
-    internal static class AuthProcessor
+    public static class AuthProcessor
     {
         // The following constants may be changed without breaking existing hashes.
         public const int SALT_BYTE_SIZE = 24;
@@ -28,12 +28,11 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Validates a password given a hash of the correct one.
         /// </summary>
-        /// <param name="game"> the game </param>
-        /// <param name="factionGuid">the faction guid</param>
+        /// <param name="factionEntity">the factionEntity</param>
         /// <param name="password">The password to check.</param>
-        public static bool Validate(Game game, Guid factionGuid, string password)
+        public static bool Validate(Entity factionEntity, string password)
         {
-            Entity factionEntity = game.GlobalManager.GetEntityByGuid(factionGuid);
+
             AuthDB authDB = factionEntity.GetDataBlob<AuthDB>();
 
 

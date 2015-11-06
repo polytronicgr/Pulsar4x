@@ -71,8 +71,7 @@ namespace Pulsar4x.Networking
                         // handle connection status messages
                         Messages.Add("New status: " + message.SenderConnection.Status + " (Reason: " + message.ReadString() + ")");
                         ConnectionStatusChanged(message);
-                        break;
-
+                        break;                   
                     case NetIncomingMessageType.DebugMessage:
                         // handle debug messages
                         // (only received when compiled in DEBUG mode)
@@ -88,14 +87,15 @@ namespace Pulsar4x.Networking
         }
 
         /// <summary>
-        /// TODO implement proper private/public key. 
+        /// TODO implement proper private/public key. is that even possible to do transperantly?
         /// </summary>
         /// <param name="recever"></param>
         /// <param name="message"></param>
-        protected void SendEncrypted(NetPeer recever, NetOutgoingMessage message)
+        protected NetOutgoingMessage Encrypt(NetOutgoingMessage message)
         {
-            NetEncryption algo = new NetXtea(recever, "SharedKey");
+            NetEncryption algo = new NetXtea(NetPeerObject, "SharedKey");
             message.Encrypt(algo);
+            return message;
         }
 
 
@@ -119,6 +119,22 @@ namespace Pulsar4x.Networking
 
         protected virtual void ConnectionStatusChanged(NetIncomingMessage message)
         {
+        }
+
+        /// <summary>
+        /// use this for sending an non basic object type.
+        /// </summary>
+        /// <param name="dataMessage"></param>
+        /// <returns></returns>
+        protected NetOutgoingMessage SerialiseDataMessage(DataMessage dataMessage)
+        {
+            //turn the dataMessage into a stream.
+            var binFormatter = new BinaryFormatter();
+            var mStream = new MemoryStream();
+            binFormatter.Serialize(mStream, dataMessage);
+            NetOutgoingMessage sendMsg = NetPeerObject.CreateMessage();
+            sendMsg.Write(mStream.ToArray()); //send the stream as an byte array. 
+            return sendMsg;
         }
 
         protected void HandleIncomingStringMessage(NetConnection sender, DataMessage dataMessage)
@@ -173,10 +189,45 @@ namespace Pulsar4x.Networking
             var mStream = new MemoryStream(data);            
             dataMessage = (DataMessage)formatter.Deserialize(mStream);
 
-            if (dataMessage.DataMessageType == DataMessageType.FactionDictionary) //we're server so this is a request.
+            switch (dataMessage.DataMessageType)
             {
-                SendFactionList(fromConnection);
+                case DataMessageType.FactionDictionary: 
+                    SendFactionList(fromConnection);
+                    break;
+                case DataMessageType.FactionDataRequest:
+                    HandleFactionDataRequest(fromConnection, dataMessage);
+                    break;
+                
             }
+
+
+
+        }
+
+        private void HandleFactionDataRequest(NetConnection fromConnection, DataMessage dataMessage)
+        {
+            string nameandpass = (string)dataMessage.DataObject;
+            char[] delimiter = { ':' };
+            string[] split = nameandpass.Split(delimiter);
+            string name = split[0];
+            string pass = split[1];
+            bool isAuthed = false;
+            List<Entity> factions = _game_.GlobalManager.GetAllEntitiesWithDataBlob<FactionInfoDB>();
+
+            Entity faction;
+            try
+            {
+                faction = factions.Find(item => item.GetDataBlob<NameDB>().DefaultName == name);
+
+                if (AuthProcessor.Validate(faction, pass))
+                    SendFactionData(fromConnection, faction);
+
+            }
+            catch
+            {
+            }
+
+
 
         }
 
@@ -218,20 +269,30 @@ namespace Pulsar4x.Networking
 
             DataMessage dataMessage = new DataMessage { DataMessageType = DataMessageType.FactionDictionary, DataObject = factionItems };
 
-            //turn the dictionary into a stream.
-            var binFormatter = new BinaryFormatter();
-            var mStream = new MemoryStream();
-            binFormatter.Serialize(mStream, dataMessage);
-
-            //This gives you the byte array.
-            //mStream.ToArray();
-
-            NetOutgoingMessage sendMsg = NetServerObject.CreateMessage();
-            sendMsg.Write(mStream.ToArray()); //send the stream as an byte array. 
-            sendMsg.Write(42);
+            NetOutgoingMessage sendMsg = SerialiseDataMessage(dataMessage);
             
             Messages.Add("TX Faction List to " + recipient.RemoteUniqueIdentifier);
             NetServerObject.SendMessage(sendMsg, recipient, NetDeliveryMethod.ReliableOrdered);
+        }
+
+        private void SendFactionData(NetConnection recipient, Entity factionEntity)
+        { 
+            
+            
+            foreach (var datablob in factionEntity.DataBlobs)
+            {
+                DataMessage dataMessage = new DataMessage 
+                { 
+                    DataMessageType = DataMessageType.DataBlobFull, 
+                    DataObject = datablob,
+                    EntityGuid = factionEntity.Guid
+                };
+
+                NetOutgoingMessage sendMsg = SerialiseDataMessage(dataMessage);
+            
+                Messages.Add("TX Faction Datablob to " + recipient.RemoteUniqueIdentifier);
+                NetServerObject.SendMessage(sendMsg, recipient, NetDeliveryMethod.ReliableOrdered);
+            }
         }
 
 
@@ -241,7 +302,9 @@ namespace Pulsar4x.Networking
         StringMessage,
         FactionDictionary,
         DataBlobPropertyUpdate,
-        FactionDataRequest
+        FactionDataRequest,
+        DataBlobFull,
+        TickInfo
        
 
     }
@@ -334,24 +397,23 @@ namespace Pulsar4x.Networking
                 case NetConnectionStatus.Disconnected:
                     IsConnectedToServer = false;
                     break;
-            }             
+            }
         }
+             
 
-
-        public void SendFactionDataRequest(Guid factionGuid, string password)
+        public void SendFactionDataRequest(string faction, string password)
         {
+
+
+
             DataMessage dataMessage = new DataMessage();
             dataMessage.DataMessageType = DataMessageType.FactionDataRequest;
-            dataMessage.EntityGuid = factionGuid;
+            //dataMessage.EntityGuid = faction;
+            string nameAndPass = faction + ":" + password;
+            dataMessage.DataObject = nameAndPass;
+            NetOutgoingMessage sendMsg = SerialiseDataMessage(dataMessage);
 
-            var binFormatter = new BinaryFormatter();
-            var mStream = new MemoryStream();
-            binFormatter.Serialize(mStream, dataMessage);
-
-            NetOutgoingMessage sendMsg = NetClientObject.CreateMessage();
-            sendMsg.Write(mStream.ToArray());
-            sendMsg.Write(password);
-            NetClientObject.SendEncrypted(sendMsg, password);
+            NetClientObject.SendMessage(sendMsg, NetClientObject.ServerConnection, NetDeliveryMethod.ReliableOrdered);
 
         }
 
