@@ -15,6 +15,7 @@ namespace Pulsar4X.ECSLib
             FactionAbilitiesDB factionAbilitiesDB = new FactionAbilitiesDB();
             FactionTechDB techDB = new FactionTechDB(game.StaticData.Techs.Values.ToList());        
             blobs.Add(name);
+            blobs.Add(auth);
             blobs.Add(factionDB);
             blobs.Add(factionAbilitiesDB);
             blobs.Add(techDB);

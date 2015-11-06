@@ -214,18 +214,12 @@ namespace Pulsar4x.Networking
             bool isAuthed = false;
             List<Entity> factions = _game_.GlobalManager.GetAllEntitiesWithDataBlob<FactionInfoDB>();
 
-            Entity faction;
-            try
-            {
-                faction = factions.Find(item => item.GetDataBlob<NameDB>().DefaultName == name);
+            Entity faction= factions.Find(item => item.GetDataBlob<NameDB>().DefaultName == name);
 
-                if (AuthProcessor.Validate(faction, pass))
-                    SendFactionData(fromConnection, faction);
+            if (AuthProcessor.Validate(faction, pass))
+                SendFactionData(fromConnection, faction);
 
-            }
-            catch
-            {
-            }
+  
 
 
 
