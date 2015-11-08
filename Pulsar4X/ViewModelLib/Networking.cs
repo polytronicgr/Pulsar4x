@@ -24,7 +24,7 @@ namespace Pulsar4x.Networking
     {
         protected Game _game_ { get { return _gameVM_.Game; }}
         protected GameVM _gameVM_ { get; set; }
-
+        protected const int SecureChannel = 31;
         private readonly ObservableCollection<string> _messages;
         public ObservableCollection<string> Messages { get {return _messages;} }
 
@@ -49,9 +49,13 @@ namespace Pulsar4x.Networking
         public void GotMessage(object peer)
         {
             NetIncomingMessage message; 
-
+            
             while ((message = NetPeerObject.ReadMessage()) != null)
             {
+                if (message.SequenceChannel == SecureChannel)
+                {
+                    DecryptedReceve(message);
+                }
                 switch (message.MessageType)
                 {
                     case NetIncomingMessageType.Data:
@@ -163,6 +167,7 @@ namespace Pulsar4x.Networking
         {
             var config = new NetPeerConfiguration("Pulsar4X") { Port = PortNum };
             config.EnableMessageType(NetIncomingMessageType.DiscoveryRequest);
+            
             NetPeerObject = new NetServer(config);
             NetPeerObject.Start();
             _connectedFactions = new Dictionary<NetConnection, Guid>();
@@ -271,8 +276,7 @@ namespace Pulsar4x.Networking
 
         private void SendFactionData(NetConnection recipient, Entity factionEntity)
         { 
-            
-            
+               
             foreach (var datablob in factionEntity.DataBlobs)
             {
                 DataMessage dataMessage = new DataMessage 
@@ -283,7 +287,7 @@ namespace Pulsar4x.Networking
                 };
 
                 NetOutgoingMessage sendMsg = SerialiseDataMessage(dataMessage);
-            
+                
                 Messages.Add("TX Faction Datablob to " + recipient.RemoteUniqueIdentifier);
                 NetServerObject.SendMessage(sendMsg, recipient, NetDeliveryMethod.ReliableOrdered);
             }
@@ -406,8 +410,8 @@ namespace Pulsar4x.Networking
             string nameAndPass = faction + ":" + password;
             dataMessage.DataObject = nameAndPass;
             NetOutgoingMessage sendMsg = SerialiseDataMessage(dataMessage);
-
-            NetClientObject.SendMessage(sendMsg, NetClientObject.ServerConnection, NetDeliveryMethod.ReliableOrdered);
+            //sequence channel 31 is expected to be encrypted by the recever. see NetworkBase GotMessage()
+            NetClientObject.SendMessage(sendMsg, NetClientObject.ServerConnection, NetDeliveryMethod.ReliableOrdered, SecureChannel); 
 
         }
 
@@ -433,8 +437,6 @@ namespace Pulsar4x.Networking
 
             NetOutgoingMessage sendMsg = NetClientObject.CreateMessage();
             sendMsg.Write(mStream.ToArray()); //send the stream as an byte array. 
-            sendMsg.Write(42);
-
             NetClientObject.SendMessage(sendMsg, NetClientObject.ServerConnection, NetDeliveryMethod.ReliableOrdered);
         }
 
