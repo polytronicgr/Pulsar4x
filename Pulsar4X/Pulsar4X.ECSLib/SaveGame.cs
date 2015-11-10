@@ -89,6 +89,64 @@ namespace Pulsar4X.ECSLib
         }
 
         /// <summary>
+        /// saves an entity to a given stream
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="outputStream"></param>
+        /// <param name="progress"></param>
+        /// <param name="compress"></param>
+        [PublicAPI]
+        public static void Save([NotNull] Entity entity, [NotNull] Stream outputStream, IProgress<double> progress = null, bool compress = false)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException("entity");
+            }
+
+            DefaultSerializer.Formatting = compress ? Formatting.None : Formatting.Indented;
+
+            lock (SyncRoot)
+            {
+                Progress = progress;
+                ManagersProcessed = 0;
+                //entity.NumSystems = entity.StarSystems.Count;
+
+                // Wrap the outputStream in a BufferedStream.
+                // This will improves performance if the outputStream does not have an internal buffer. (E.G. NetworkStream)
+                using (BufferedStream outputBuffer = new BufferedStream(outputStream))
+                {
+                    using (MemoryStream intermediateStream = new MemoryStream())
+                    {
+                        using (StreamWriter streamWriter = new StreamWriter(intermediateStream, Encoding.UTF8, 1024, true))
+                        {
+                            using (JsonWriter writer = new JsonTextWriter(streamWriter))
+                            {
+                                //CurrentGame = entity;
+                                DefaultSerializer.Serialize(writer, entity);
+                                CurrentGame = null;
+                            }
+                        }
+
+                        // Reset the MemoryStream's position to 0. CopyTo copies from Position to the end.
+                        intermediateStream.Position = 0;
+
+                        if (compress)
+                        {
+                            using (GZipStream compressionStream = new GZipStream(outputBuffer, CompressionLevel.Optimal))
+                            {
+                                intermediateStream.CopyTo(compressionStream);
+                            }
+                        }
+                        else
+                        {
+                            intermediateStream.CopyTo(outputBuffer);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Loads the game from the file at the provided filePath using the default serializer.
         /// </summary>
         [PublicAPI]
@@ -161,6 +219,59 @@ namespace Pulsar4X.ECSLib
             return game;
         }
 
+
+        /// <summary>
+        /// Imports from the provided stream into the provided game using the default serializer.
+        /// </summary>
+        [PublicAPI]
+        public static Entity ImportEntity(EntityManager manager, Guid guid, Stream inputStream, IProgress<double> progress = null)
+        {
+
+            Entity entity = new Entity(manager, guid);
+            lock (SyncRoot)
+            {
+                Progress = progress;
+                ManagersProcessed = 0;
+                //CurrentGame = entity;
+                // Use a BufferedStream to allow reading and seeking from any stream.
+                // Example: If inputStream is a NetworkStream, then we can only read once.
+                using (BufferedStream inputBuffer = new BufferedStream(inputStream))
+                {
+                    // Check if our stream is compressed.
+                    if (HasGZipHeader(inputBuffer))
+                    {
+                        // File is compressed. Decompress using GZip.
+                        using (GZipStream compressionStream = new GZipStream(inputStream, CompressionMode.Decompress))
+                        {
+                            // Decompress into a MemoryStream.
+                            using (MemoryStream intermediateStream = new MemoryStream())
+                            {
+                                // Decompress the file into an intermediate MemoryStream.
+                                compressionStream.CopyTo(intermediateStream);
+
+                                // Reset the position of the MemoryStream so it can be read from the beginning.
+                                intermediateStream.Position = 0;
+
+                                // Populate the game from the uncompressed MemoryStream.
+                                PopulateEntity(entity, intermediateStream);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Populate the game from the uncompressed inputStream.
+                        PopulateEntity(entity, inputBuffer);
+                    }
+                }
+
+
+
+                // get the game to do its post load stuff
+                //entity.PostGameLoad();
+            }
+            return entity;
+        }
+
         /// <summary>
         /// Check if we have a valid file.
         /// </summary>
@@ -221,6 +332,21 @@ namespace Pulsar4X.ECSLib
                 using (JsonReader reader = new JsonTextReader(sr))
                 {
                     DefaultSerializer.Populate(reader, CurrentGame);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Populates the currently loading game from the passed uncompressed inputStream.
+        /// </summary>
+        /// <param name="inputStream">Uncompressed stream containing the game data.</param>
+        private static void PopulateEntity(Entity entity, Stream inputStream)
+        {
+            using (StreamReader sr = new StreamReader(inputStream))
+            {
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    DefaultSerializer.Populate(reader, entity);
                 }
             }
         }

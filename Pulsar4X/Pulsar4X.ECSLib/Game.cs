@@ -75,6 +75,9 @@ namespace Pulsar4X.ECSLib
 
         internal readonly Dictionary<Guid, EntityManager> GlobalGuidDictionary = new JDictionary<Guid, EntityManager>();
         internal readonly ReaderWriterLockSlim GuidDictionaryLock = new ReaderWriterLockSlim();
+        
+        [JsonProperty]
+        public bool IsAuthoritative { get; private set; }
 
         #endregion
 
@@ -148,10 +151,11 @@ namespace Pulsar4X.ECSLib
         /// <param name="startDateTime"></param>
         /// <param name="numSystems"></param>
         /// <param name="progress"></param>
+        /// <param name="authoritative">false if this is a remote client</param>
         /// <exception cref="ArgumentNullException"><paramref name="gameName"/> is <see langword="null" />.</exception>
         /// <exception cref="StaticDataLoadException">Thrown in a variety of situations when StaticData could not be loaded.</exception>
         [PublicAPI]
-        public static Game NewGame([NotNull] string gameName, DateTime startDateTime, int numSystems, IProgress<double> progress = null)
+        public static Game NewGame([NotNull] string gameName, DateTime startDateTime, int numSystems, IProgress<double> progress = null, bool authoritative = true)
         {
             if (gameName == null)
             {
@@ -159,8 +163,13 @@ namespace Pulsar4X.ECSLib
             }
 
             Game newGame = new Game {GameName = gameName, CurrentDateTime = startDateTime};
+            newGame.IsAuthoritative = authoritative;
             // TODO: Provide options for loading other Static Data DataSets.
-            FactionFactory.CreateGameMaster(newGame);
+            if (authoritative)
+            {
+                FactionFactory.CreateGameMaster(newGame);  
+            }
+            
             newGame.StaticData = StaticDataManager.LoadFromDefaultDataDirectory();
 
             for (int i = 0; i < numSystems; i++)

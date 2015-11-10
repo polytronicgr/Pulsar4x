@@ -11,6 +11,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ComTypes;
+using System.Runtime.Remoting.Channels;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Windows.Threading;
@@ -61,7 +62,7 @@ namespace Pulsar4x.Networking
                     case NetIncomingMessageType.Data:
                         // handle custom messages
                         Messages.Add("Data Message from: " + message.SenderConnection.RemoteUniqueIdentifier);
-                        HandleIncomingMessage(message.SenderConnection, message.Data);
+                        HandleIncomingDataMessage(message.SenderConnection, message);
                         break;
 
                     case NetIncomingMessageType.DiscoveryRequest:
@@ -97,7 +98,7 @@ namespace Pulsar4x.Networking
         /// <param name="message"></param>
         protected NetOutgoingMessage Encrypt(NetOutgoingMessage message)
         {
-            NetEncryption algo = new NetXtea(NetPeerObject, "SharedKey");
+            NetEncryption algo = new NetXtea(NetPeerObject, "SharedKey45B635DF-649B-4C10-B110-439CE1784C59");
             message.Encrypt(algo);
             return message;
         }
@@ -105,7 +106,7 @@ namespace Pulsar4x.Networking
 
         protected NetIncomingMessage DecryptedReceve(NetIncomingMessage message)
         {
-            NetEncryption algo = new NetXtea(NetPeerObject, "SharedKey");
+            NetEncryption algo = new NetXtea(NetPeerObject, "SharedKey45B635DF-649B-4C10-B110-439CE1784C59");
             message.Decrypt(algo);
             return message;
         }
@@ -116,14 +117,68 @@ namespace Pulsar4x.Networking
         protected virtual void HandleDiscoveryResponce(NetIncomingMessage message)
         {
         }
-
-        protected virtual void HandleIncomingMessage(NetConnection sender, byte[] data)
-        {
-        }
-
         protected virtual void ConnectionStatusChanged(NetIncomingMessage message)
         {
         }
+        protected void HandleIncomingDataMessage(NetConnection sender, NetIncomingMessage message)
+        {
+            DataMessageType messageType = (DataMessageType)message.ReadByte();
+            switch (messageType)
+            {
+                    case DataMessageType.FactionDataRequest:
+                        HandleFactionDataRequest(message);
+                        break;
+                    case DataMessageType.GameData:
+                        HandleGameDataMessage(message);
+                        break;
+                    case DataMessageType.TickInfo:
+                        HandleTickInfo(message);
+                        break;
+                    case DataMessageType.EntityData:
+                        HandleEntityData(message);
+                        break;
+            }
+        }
+
+        /// <summary>
+        /// server only
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="message"></param>
+        protected virtual void HandleFactionDataRequest(NetIncomingMessage message)
+        {
+        }
+
+
+        /// <summary>
+        /// this one should be client only
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="message"></param>
+        protected virtual void HandleEntityData(NetIncomingMessage message)
+        {
+        }
+
+        /// <summary>
+        /// client only
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="message"></param>
+        protected virtual void HandleTickInfo(NetIncomingMessage message)
+        {
+        }
+
+
+
+        /// <summary>
+        /// client only
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="message"></param>
+        protected virtual void HandleGameDataMessage(NetIncomingMessage message)
+        {
+        }
+
 
         /// <summary>
         /// use this for sending an non basic object type.
@@ -182,65 +237,49 @@ namespace Pulsar4x.Networking
             
             Messages.Add("RX DiscoveryRequest " + message.SenderEndPoint);
             NetOutgoingMessage response = NetServerObject.CreateMessage();
-            response.Write("Pulsar4x Server Game: " + _game_.GameName);
+            response.Write(_game_.GameName);
+            response.Write(_game_.CurrentDateTime.ToBinary());
+            
             NetServerObject.SendDiscoveryResponse(response, message.SenderEndPoint);
         }
 
-        protected override void HandleIncomingMessage(NetConnection fromConnection, byte[] data)
+        protected override void HandleFactionDataRequest(NetIncomingMessage message)
         {
-            DataMessage dataMessage;
-            BinaryFormatter formatter = new BinaryFormatter();
-
-            var mStream = new MemoryStream(data);            
-            dataMessage = (DataMessage)formatter.Deserialize(mStream);
-
-            switch (dataMessage.DataMessageType)
-            {
-                case DataMessageType.FactionDictionary: 
-                    SendFactionList(fromConnection);
-                    break;
-                case DataMessageType.FactionDataRequest:
-                    HandleFactionDataRequest(fromConnection, dataMessage);
-                    break;
-                
-            }
-
-
-
-        }
-
-        private void HandleFactionDataRequest(NetConnection fromConnection, DataMessage dataMessage)
-        {
-            string nameandpass = (string)dataMessage.DataObject;
-            char[] delimiter = { ':' };
-            string[] split = nameandpass.Split(delimiter);
-            string name = split[0];
-            string pass = split[1];
-            bool isAuthed = false;
+            NetConnection sender = message.SenderConnection;
+            string name = message.ReadString();
+            string pass = message.ReadString();
             List<Entity> factions = _game_.GlobalManager.GetAllEntitiesWithDataBlob<FactionInfoDB>();
 
-            Entity faction= factions.Find(item => item.GetDataBlob<NameDB>().DefaultName == name);
+            Entity faction = factions.Find(item => item.GetDataBlob<NameDB>().DefaultName == name);
 
             if (AuthProcessor.Validate(faction, pass))
-                SendFactionData(fromConnection, faction);
-
-  
-
-
-
+            {
+                if (_connectedFactions.ContainsKey(sender))                
+                    _connectedFactions[sender] = faction.Guid;                
+                else 
+                    _connectedFactions.Add(sender, faction.Guid);
+                if(!_factionConnections.ContainsKey(faction.Guid))
+                    _factionConnections.Add(faction.Guid, new List<NetConnection>());
+                _factionConnections[faction.Guid].Add(sender);
+                SendFactionData(sender, faction);
+            }
         }
 
         protected override void ConnectionStatusChanged(NetIncomingMessage message)
         {
             switch (message.SenderConnection.Status)
             {
-                case NetConnectionStatus.Connected:                    
+                case NetConnectionStatus.Connected:
                     break;
-                case NetConnectionStatus.Disconnected:                    
-                    break;
+                case NetConnectionStatus.Disconnected:                
+                    if (_connectedFactions.ContainsKey(message.SenderConnection))
+                    {
+                        Guid factionGuid = _connectedFactions[message.SenderConnection];
+                        _factionConnections[factionGuid].Remove(message.SenderConnection);
+                        _connectedFactions.Remove(message.SenderConnection);
+                    }                
+                break;
             }
-
-
         }
 
         private void SetSendMessages()
@@ -274,38 +313,51 @@ namespace Pulsar4x.Networking
             NetServerObject.SendMessage(sendMsg, recipient, NetDeliveryMethod.ReliableOrdered);
         }
 
+
+
         private void SendFactionData(NetConnection recipient, Entity factionEntity)
         { 
-               
-            foreach (var datablob in factionEntity.DataBlobs)
-            {
-                DataMessage dataMessage = new DataMessage 
-                { 
-                    DataMessageType = DataMessageType.DataBlobFull, 
-                    DataObject = datablob,
-                    EntityGuid = factionEntity.Guid
-                };
 
-                NetOutgoingMessage sendMsg = SerialiseDataMessage(dataMessage);
-                
-                Messages.Add("TX Faction Datablob to " + recipient.RemoteUniqueIdentifier);
-                NetServerObject.SendMessage(sendMsg, recipient, NetDeliveryMethod.ReliableOrdered);
-            }
+            var mStream = new MemoryStream();
+            SaveGame.Save(factionEntity, mStream);
+            byte[] entityByteArray = mStream.ToArray();
+            int len = entityByteArray.Length;
+            NetOutgoingMessage sendMsg = NetPeerObject.CreateMessage();
+            sendMsg.Write((byte)DataMessageType.EntityData);
+            sendMsg.Write(factionEntity.Guid.ToByteArray());
+            sendMsg.Write(len);           
+            sendMsg.Write(entityByteArray);
+            
+            NetServerObject.SendMessage(sendMsg, recipient, NetDeliveryMethod.ReliableOrdered);
+            
+
         }
-
-
     }
-    public enum DataMessageType
+
+    public enum DataMessageType : byte
     {
         StringMessage,
         FactionDictionary,
+        GameData,
+        EntityData,        
+        DataBlobData,
         DataBlobPropertyUpdate,
         FactionDataRequest,
-        DataBlobFull,
-        TickInfo
-       
 
+        TickInfo
     }
+
+    /*
+     * 
+     * GameData, (string)gameName, (long)currentDate
+     * EntityData, (Byte[])Guid, (Byte[])memeoryStream.
+     * 
+     * 
+     * FactionDataRequest, (string)factionName, (string)password
+     * TickInfo, (long)fromDate, (long)Delta
+     * 
+     */
+
     [Serializable]
     public class DataMessage
     {
@@ -333,7 +385,8 @@ namespace Pulsar4x.Networking
         public string HostAddress { get; set; }
         private bool _isConnectedToServer;
         public bool IsConnectedToServer { get { return _isConnectedToServer; } set { _isConnectedToServer = value; OnPropertyChanged(); } }
-
+        public string ConnectedToGameName { get; private set; }
+        public DateTime ConnectedToDateTime { get; private set; }
         //private Dictionary<Guid, string> _factions; 
         public ObservableCollection<FactionItem> Factions { get; set; }
         
@@ -361,28 +414,32 @@ namespace Pulsar4x.Networking
 
         protected override void HandleDiscoveryResponce(NetIncomingMessage message)
         {
-            Messages.Add("Found Server: " + message.SenderEndPoint + "Name Is: " + message.ReadString());
+            ConnectedToGameName = message.ReadString();
+            ConnectedToDateTime = new DateTime(message.ReadInt64());
+            Messages.Add("Found Server: " + message.SenderEndPoint + "Name Is: " + ConnectedToGameName);            
         }
 
-        protected override void HandleIncomingMessage(NetConnection fromConnection, byte[] data)
+        protected override void HandleGameDataMessage(NetIncomingMessage message)
         {
-            DataMessage dataMessage;
-            BinaryFormatter formatter = new BinaryFormatter();
+            ConnectedToGameName = message.ReadString();
+            ConnectedToDateTime = new DateTime(message.ReadInt64());
+        }
 
-            var mStream = new MemoryStream(data);
-            dataMessage = (DataMessage)formatter.Deserialize(mStream);
-            Messages.Add("RX " + dataMessage.DataMessageType.ToString() + "From: " + fromConnection.RemoteUniqueIdentifier);
-            switch (dataMessage.DataMessageType)
+
+        protected override void HandleEntityData(NetIncomingMessage message)
+        {
+            
+            Guid entityID = new Guid(message.ReadBytes(16));            
+            int len = message.ReadInt32();
+            byte[] data = message.ReadBytes(len);
+
+            if (_game_ == null || _game_.GameName != ConnectedToGameName) //TODO handle if connecting to a game when in the middle of a singleplayer game. (ie prompt save)
             {
-                case DataMessageType.StringMessage:
-                     HandleIncomingStringMessage(fromConnection, dataMessage);
-                    break;
-                case DataMessageType.FactionDictionary:
-                    ReceveFactionList(dataMessage);
-                    break;
-
-
+                _gameVM_.Game = Game.NewGame(ConnectedToGameName, ConnectedToDateTime, 0, null, false);
             }
+ 
+            var mStream = new MemoryStream(data);
+            Entity entity = SaveGame.ImportEntity(_game_.GlobalManager, entityID, mStream);
         }
 
         protected override void ConnectionStatusChanged(NetIncomingMessage message)
@@ -402,17 +459,12 @@ namespace Pulsar4x.Networking
         public void SendFactionDataRequest(string faction, string password)
         {
 
-
-
-            DataMessage dataMessage = new DataMessage();
-            dataMessage.DataMessageType = DataMessageType.FactionDataRequest;
-            //dataMessage.EntityGuid = faction;
-            string nameAndPass = faction + ":" + password;
-            dataMessage.DataObject = nameAndPass;
-            NetOutgoingMessage sendMsg = SerialiseDataMessage(dataMessage);
-            //sequence channel 31 is expected to be encrypted by the recever. see NetworkBase GotMessage()
+            NetOutgoingMessage sendMsg = NetPeerObject.CreateMessage();
+            sendMsg.Write((byte)DataMessageType.FactionDataRequest);
+            sendMsg.Write(faction);
+            sendMsg.Write(password);
+            Encrypt(sendMsg);//sequence channel 31 is expected to be encrypted by the recever. see NetworkBase GotMessage()
             NetClientObject.SendMessage(sendMsg, NetClientObject.ServerConnection, NetDeliveryMethod.ReliableOrdered, SecureChannel); 
-
         }
 
         public void ReceveFactionList(DataMessage dataMessage)
