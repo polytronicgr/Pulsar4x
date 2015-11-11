@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
+    public delegate void TickEventHandler(DateTime currentDateTime, int delta);
+
     [JsonObject(MemberSerialization.OptIn)]
     public class Game
     {
@@ -64,6 +66,8 @@ namespace Pulsar4X.ECSLib
         [PublicAPI]
         public SubpulseLimit NextSubpulse { get; private set; }
 
+        public event TickEventHandler TickEvent;
+
         [JsonProperty]
         internal GalaxyFactory GalaxyGen { get; private set; }
 
@@ -112,6 +116,10 @@ namespace Pulsar4X.ECSLib
 
         internal void RunProcessors(List<StarSystem> systems, int deltaSeconds)
         {
+            if (TickEvent != null)
+            {
+                TickEvent.Invoke(CurrentDateTime, deltaSeconds);
+            }
             OrbitProcessor.Process(this, systems, deltaSeconds);
             ShipMovementProcessor.Process(this, systems,deltaSeconds);
             EconProcessor.Process(this, systems, deltaSeconds);

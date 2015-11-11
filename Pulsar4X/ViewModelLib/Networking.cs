@@ -228,8 +228,20 @@ namespace Pulsar4x.Networking
             _connectedFactions = new Dictionary<NetConnection, Guid>();
             _factionConnections = new Dictionary<Guid, List<NetConnection>>();
             StartListning();
+            _game_.TickEvent += OnTickEvent;
         }
 
+        private void OnTickEvent(DateTime currentTime, int delta)
+        {
+            IList<NetConnection> connections = _connectedFactions.Keys.ToList();
+            NetOutgoingMessage sendMsg = NetServerObject.CreateMessage();
+            sendMsg.Write((byte)DataMessageType.TickInfo);
+            sendMsg.Write(currentTime.ToBinary());
+            sendMsg.Write(delta);
+
+            NetServerObject.SendMessage(sendMsg, connections, NetDeliveryMethod.ReliableOrdered, 0);
+
+        }
 
         protected override void HandleDiscoveryRequest(NetIncomingMessage message)
         {
@@ -321,6 +333,7 @@ namespace Pulsar4x.Networking
             var mStream = new MemoryStream();
             SaveGame.Save(factionEntity, mStream);
             byte[] entityByteArray = mStream.ToArray();
+
             int len = entityByteArray.Length;
             NetOutgoingMessage sendMsg = NetPeerObject.CreateMessage();
             sendMsg.Write((byte)DataMessageType.EntityData);
@@ -328,6 +341,8 @@ namespace Pulsar4x.Networking
             sendMsg.Write(len);           
             sendMsg.Write(entityByteArray);
             
+
+
             NetServerObject.SendMessage(sendMsg, recipient, NetDeliveryMethod.ReliableOrdered);
             
 
@@ -425,6 +440,14 @@ namespace Pulsar4x.Networking
             ConnectedToDateTime = new DateTime(message.ReadInt64());
         }
 
+
+        protected override void HandleTickInfo(NetIncomingMessage message)
+        {
+            ConnectedToDateTime = new DateTime(message.ReadInt64());
+            int delta = message.ReadInt32();
+            delta += (int)(ConnectedToDateTime - _game_.CurrentDateTime).TotalSeconds;
+            _game_.AdvanceTime(delta);
+        }
 
         protected override void HandleEntityData(NetIncomingMessage message)
         {

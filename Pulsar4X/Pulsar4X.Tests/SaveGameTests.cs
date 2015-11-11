@@ -10,30 +10,31 @@ namespace Pulsar4X.Tests
     [TestFixture, Description("Tests the game Save/Load system.")]
     class SaveGameTests
     {
-        private Game game;
+        private Game _game;
         private const string file = "./testSave.json";
         private readonly DateTime testTime = DateTime.Now;
+        private Entity _humanFaction;
 
         [SetUp]
         public void Init()
         {
-            game = Game.NewGame("Unit Test Game", testTime, 1);
+            _game = Game.NewGame("Unit Test Game", testTime, 1);
 
             // add a faction:
-            Entity humanFaction = FactionFactory.CreateFaction(game, "New Terran Utopian Empire");
+            _humanFaction = FactionFactory.CreateFaction(_game, "New Terran Utopian Empire");
 
             // add a species:
-            Entity humanSpecies = SpeciesFactory.CreateSpeciesHuman(humanFaction, game.GlobalManager);
+            Entity humanSpecies = SpeciesFactory.CreateSpeciesHuman(_humanFaction, _game.GlobalManager);
 
             // add another faction:
-            Entity greyAlienFaction = FactionFactory.CreateFaction(game, "The Grey Empire");
+            Entity greyAlienFaction = FactionFactory.CreateFaction(_game, "The Grey Empire");
             // Add another species:
-            Entity greyAlienSpecies = SpeciesFactory.CreateSpeciesHuman(greyAlienFaction, game.GlobalManager);
+            Entity greyAlienSpecies = SpeciesFactory.CreateSpeciesHuman(greyAlienFaction, _game.GlobalManager);
 
             // Greys Name the Humans.
             humanSpecies.GetDataBlob<NameDB>().SetName(greyAlienFaction, "Stupid Terrans");
             // Humans name the Greys.
-            greyAlienSpecies.GetDataBlob<NameDB>().SetName(humanFaction, "Space bugs");
+            greyAlienSpecies.GetDataBlob<NameDB>().SetName(_humanFaction, "Space bugs");
         }
 
         [TearDown]
@@ -45,7 +46,7 @@ namespace Pulsar4X.Tests
                 //File.Delete(file); 
             }
 
-            game = null;
+            _game = null;
         }
 
         [Test]
@@ -60,7 +61,7 @@ namespace Pulsar4X.Tests
             });
             Assert.Catch(typeof(ArgumentNullException), () =>
             {
-                SaveGame.Save(game, (string)null);
+                SaveGame.Save(_game, (string)null);
             }); 
             Assert.Catch(typeof(ArgumentNullException), () =>
             {
@@ -71,7 +72,7 @@ namespace Pulsar4X.Tests
             const string emptyString = "";
             Assert.Catch(typeof(ArgumentNullException), () =>
             {
-                SaveGame.Save(game, emptyString);
+                SaveGame.Save(_game, emptyString);
             });
             Assert.Catch(typeof(ArgumentNullException), () =>
             {
@@ -79,25 +80,25 @@ namespace Pulsar4X.Tests
             });
 
             // lets create a good saveGame
-            SaveGame.Save(game, file);
+            SaveGame.Save(_game, file);
 
             Assert.IsTrue(File.Exists(file));
 
             // now lets give ourselves a clean game:
-            game = null;
+            _game = null;
 
             //and load the saved data:
-            game = SaveGame.Load(file);
+            _game = SaveGame.Load(file);
 
-            Assert.AreEqual(1, game.Systems.Count);
-            Assert.AreEqual(testTime, game.CurrentDateTime);
-            List<Entity> entities = game.GlobalManager.GetAllEntitiesWithDataBlob<FactionInfoDB>();
+            Assert.AreEqual(1, _game.Systems.Count);
+            Assert.AreEqual(testTime, _game.CurrentDateTime);
+            List<Entity> entities = _game.GlobalManager.GetAllEntitiesWithDataBlob<FactionInfoDB>();
             Assert.AreEqual(3, entities.Count);
-            entities = game.GlobalManager.GetAllEntitiesWithDataBlob<SpeciesDB>();
+            entities = _game.GlobalManager.GetAllEntitiesWithDataBlob<SpeciesDB>();
             Assert.AreEqual(2, entities.Count);
 
             // lets check the the refs were hocked back up:
-            Entity species = game.GlobalManager.GetFirstEntityWithDataBlob<SpeciesDB>();
+            Entity species = _game.GlobalManager.GetFirstEntityWithDataBlob<SpeciesDB>();
             NameDB speciesName = species.GetDataBlob<NameDB>();
             Assert.AreSame(speciesName.OwningEntity, species);
 
@@ -107,9 +108,23 @@ namespace Pulsar4X.Tests
         [Test]
         public void TestSingleSystemSave()
         {
-            StarSystemFactory starsysfac = new StarSystemFactory(game);
-            StarSystem sol  = starsysfac.CreateSol(game);
+            StarSystemFactory starsysfac = new StarSystemFactory(_game);
+            StarSystem sol  = starsysfac.CreateSol(_game);
             StaticDataManager.ExportStaticData(sol, "./solsave.json");
+        }
+
+        [Test]
+        public void TestEntitySerialisation()
+        {
+            var mStream = new MemoryStream();
+            SaveGame.Save(_humanFaction, mStream);
+            byte[] entityByteArray = mStream.ToArray();
+            var mStream2 = new MemoryStream(entityByteArray);
+            Entity testEntity = SaveGame.ImportEntity(_game.GlobalManager, Guid.NewGuid(), mStream2);
+            
+            Assert.IsTrue(testEntity.HasDataBlob<NameDB>()); 
+            Assert.AreEqual(_humanFaction.DataBlobs.Count, testEntity.DataBlobs.Count);
+
         }
     }
 }
