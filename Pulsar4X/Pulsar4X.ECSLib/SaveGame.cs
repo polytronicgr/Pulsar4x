@@ -96,7 +96,7 @@ namespace Pulsar4X.ECSLib
         /// <param name="progress"></param>
         /// <param name="compress"></param>
         [PublicAPI]
-        public static void Save([NotNull] Entity entity, [NotNull] Stream outputStream, IProgress<double> progress = null, bool compress = false)
+        public static void ExportEntity([NotNull] Entity entity, [NotNull] Stream outputStream, IProgress<double> progress = null, bool compress = false)
         {
             if (entity == null)
             {
@@ -123,7 +123,9 @@ namespace Pulsar4X.ECSLib
                             {
                                 //CurrentGame = entity;
                                 DefaultSerializer.Serialize(writer, entity);
-                                CurrentGame = null;
+                                //CurrentGame = null;
+                                //Entity.EntityConverter entityConverter = new Entity.EntityConverter();
+                                //entityConverter.WriteJson(writer,entity,DefaultSerializer);
                             }
                         }
 
@@ -345,7 +347,9 @@ namespace Pulsar4X.ECSLib
             using (StreamReader sr = new StreamReader(inputStream))
             {
                 using (JsonReader reader = new JsonTextReader(sr))
-                {
+                {                    
+                    //Entity.EntityConverter entityConverter = new Entity.EntityConverter();
+                    //entityConverter.ReadJson(reader, typeof(Entity), entity, DefaultSerializer);
                     DefaultSerializer.Populate(reader, entity);
                 }
             }

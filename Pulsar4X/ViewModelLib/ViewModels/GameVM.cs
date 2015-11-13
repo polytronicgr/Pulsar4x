@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Pulsar4X.ECSLib;
 using Pulsar4x.Networking;
+using Pulsar4X.Networking;
 
 namespace Pulsar4X.ViewModel
 {
@@ -122,6 +123,7 @@ namespace Pulsar4X.ViewModel
             if (options.NetworkHost)
             {
                 NetworkHost netHost = (NetworkHost)NetworkModule;
+                netHost.Game = Game;
                 netHost.ServerStart();
             }
             ProgressValue = 0;//reset the progressbar

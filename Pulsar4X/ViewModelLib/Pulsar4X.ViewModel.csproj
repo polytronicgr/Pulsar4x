@@ -71,6 +71,10 @@
       <Project>{e716fa06-ecdf-b446-96b4-b790aab5713b}</Project>
       <Name>Pulsar4X.ECSLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Pulsar4X.Networking\Pulsar4X.Networking.csproj">
+      <Project>{e23fafbc-7295-4393-9ee6-3f8af7e71602}</Project>
+      <Name>Pulsar4X.Networking</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

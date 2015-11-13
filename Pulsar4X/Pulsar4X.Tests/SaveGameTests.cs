@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Pulsar4X.ECSLib;
 using System.IO;
+using System.Text;
 
 namespace Pulsar4X.Tests
 {
@@ -117,9 +118,19 @@ namespace Pulsar4X.Tests
         public void TestEntitySerialisation()
         {
             var mStream = new MemoryStream();
-            SaveGame.Save(_humanFaction, mStream);
+            SaveGame.ExportEntity(_humanFaction, mStream);
+
+            
+
             byte[] entityByteArray = mStream.ToArray();
             var mStream2 = new MemoryStream(entityByteArray);
+            
+            mStream2.Position = 0;
+            var sr = new StreamReader(mStream2);
+            var myStr = Encoding.ASCII.GetString(mStream2.ToArray());
+            mStream2.Position = 0;
+            
+            
             Entity testEntity = SaveGame.ImportEntity(_game.GlobalManager, Guid.NewGuid(), mStream2);
             
             Assert.IsTrue(testEntity.HasDataBlob<NameDB>()); 

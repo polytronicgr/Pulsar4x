@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Pulsar4x.Networking;
 using Pulsar4X.ECSLib;
+using Pulsar4X.Networking;
 
 namespace Pulsar4X.ViewModel
 {
@@ -56,7 +57,7 @@ namespace Pulsar4X.ViewModel
             HostPortNum = 28888;
 
             _gameVM = gameVM;
-            NetworkHost netHost = new NetworkHost(gameVM, 28888);
+            NetworkHost netHost = new NetworkHost(28888);
             gameVM.NetworkModule = netHost;
             ServerMessagesX = NetHost.Messages;
             

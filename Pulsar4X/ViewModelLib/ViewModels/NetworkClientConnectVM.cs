@@ -8,8 +8,9 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Pulsar4x.Networking;
+using Microsoft.SqlServer.Server;
 using Pulsar4X.ECSLib;
+using Pulsar4X.Networking;
 
 
 namespace Pulsar4X.ViewModel
@@ -39,6 +40,9 @@ namespace Pulsar4X.ViewModel
             set { _factionPassword = value;OnPropertyChanged(); }
         }
 
+        //private bool _isConnectedToGame;
+        //public bool IsConnectedToGame { get { return _isConnectedToGame; } set { IsConnectedToGame = value; OnPropertyChanged(); } }
+        public bool IsConnectedToGame { get; set; }
 
         public NetworkClientConnectVM()
         {           
@@ -47,21 +51,28 @@ namespace Pulsar4X.ViewModel
         public NetworkClientConnectVM(GameVM gameVM)
         {
             _gameVM = gameVM; 
-            NetworkClient netClient = new NetworkClient(_gameVM, "localhost", 28888);            
+            NetworkClient netClient = new NetworkClient("localhost", 28888);            
             _gameVM.NetworkModule = netClient;
+            IsConnectedToGame = netClient.IsConnectedToGame;
+            PropertyChanged += new PropertyChangedEventHandler(OnConnectedToGameChanged);
             HostAddress = NetClient.HostAddress;
             HostPortNum = NetClient.PortNum;
 
             ServerMessages = NetClient.Messages;
             
-            GetFactions = GetFactions;
+            //GetFactions = GetFactions;
             
+        }
+
+        private void OnConnectedToGameChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            _gameVM.Game = NetClient.Game;
         }
 
         public void OnConnect()
         {
             NetClient.ClientConnect();
-            GetFactions = GetFactions;
+           // GetFactions = GetFactions;
             Login = Login;
             NetClient.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
         }
@@ -81,17 +92,18 @@ namespace Pulsar4X.ViewModel
             }
         }
 
-        private ICommand _getFactions;
-        public ICommand GetFactions
-        {
-            get
-            {
-                if (_gameVM != null)
-                    return _getFactions ?? (_getFactions = new CommandHandler(NetClient.SendFactionListRequest, true)); //NetClient.IsConnectedToServer) );
-                return _getFactions ?? (_getFactions = new CommandHandler(null, false));
-            }
-            set { OnPropertyChanged();}
-        }
+        //private ICommand _getFactions;
+        //public ICommand GetFactions
+        //{
+        //    get
+        //    {
+        //        if (_gameVM != null)
+        //            return _getFactions ?? (_getFactions = new CommandHandler(NetClient.SendFactionListRequest, true)); //NetClient.IsConnectedToServer) );
+        //        return _getFactions ?? (_getFactions = new CommandHandler(null, false));
+        //    }
+        //    set { OnPropertyChanged();}
+        //}
+
 
         private ICommand _login;
         public ICommand Login
@@ -100,7 +112,7 @@ namespace Pulsar4X.ViewModel
             {
                 if (_gameVM != null)
                     return _login ?? (_login = new CommandHandler(SendFactionReq, true));// NetClient.IsConnectedToServer));
-                return _getFactions ?? (_login = new CommandHandler(null, false));
+                return _login ?? (_login = new CommandHandler(null, false));
             }
             set { OnPropertyChanged(); }
         }

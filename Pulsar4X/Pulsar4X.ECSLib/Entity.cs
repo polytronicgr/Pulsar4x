@@ -410,7 +410,7 @@ namespace Pulsar4X.ECSLib
         /// EntityConverter responsible for deserializng Entity objects that are not part of an EntityManager.
         /// EntityManagers serialize Entities directly.
         /// </summary>
-        private class EntityConverter : JsonConverter
+        internal class EntityConverter : JsonConverter
         {
             public override bool CanConvert(Type objectType)
             {

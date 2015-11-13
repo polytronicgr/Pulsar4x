@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModdingTools.JsonDataEditor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pulsar4X.ViewModel", "ViewModelLib\Pulsar4X.ViewModel.csproj", "{37F5B88B-F1AA-410E-9FCB-4CA26A4DD887}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pulsar4X.Networking", "Pulsar4X.Networking\Pulsar4X.Networking.csproj", "{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (No Tests|Any CPU = Debug (No Tests|Any CPU
@@ -154,6 +156,21 @@ Global
 		{37F5B88B-F1AA-410E-9FCB-4CA26A4DD887}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{37F5B88B-F1AA-410E-9FCB-4CA26A4DD887}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{37F5B88B-F1AA-410E-9FCB-4CA26A4DD887}.Release|x86.ActiveCfg = Release|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Debug (No Tests|Any CPU.ActiveCfg = Debug|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Debug (No Tests|Any CPU.Build.0 = Debug|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Debug (No Tests|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Debug (No Tests|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Debug (No Tests|x86.ActiveCfg = Debug|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E23FAFBC-7295-4393-9EE6-3F8AF7E71602}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
