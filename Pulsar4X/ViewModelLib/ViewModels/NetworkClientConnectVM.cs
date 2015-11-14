@@ -66,7 +66,12 @@ namespace Pulsar4X.ViewModel
 
         private void OnConnectedToGameChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            _gameVM.Game = NetClient.Game;
+            if (NetClient.IsConnectedToGame)
+            {
+                _gameVM.Game = NetClient.Game;
+                _gameVM.PlayerFaction = NetClient.CurrentFaction;
+                _gameVM.Refresh();
+            }
         }
 
         public void OnConnect()

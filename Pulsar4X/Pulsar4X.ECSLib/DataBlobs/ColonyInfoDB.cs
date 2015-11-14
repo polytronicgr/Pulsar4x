@@ -6,7 +6,6 @@ namespace Pulsar4X.ECSLib
 {
     public class ColonyInfoDB : BaseDataBlob
     {
-        private Entity _factionEntity;
 
         public Entity FactionEntity
         {
@@ -22,6 +21,8 @@ namespace Pulsar4X.ECSLib
                     throw new Exception("Entity Not a faction or does not contain a FactionInfoDB");                
             }
         }
+        [JsonProperty]
+        private Entity _factionEntity;
 
         /// <summary>
         /// Species Entity and amount
@@ -90,7 +91,7 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         private List<Entity> _fighterStockpile;
 
-
+        [JsonProperty]
         public JDictionary<Entity, int> Installations { get;internal set; }
 
 

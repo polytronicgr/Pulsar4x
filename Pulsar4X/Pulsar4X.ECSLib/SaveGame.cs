@@ -342,12 +342,14 @@ namespace Pulsar4X.ECSLib
 
         public static Entity DeSerialiseEntity(Stream inputStream, Game game, EntityManager manager)
         {
+            CurrentGame = game;
             using (StreamReader sr = new StreamReader(inputStream))
             {
                 using (JsonReader reader = new JsonTextReader(sr))
                 {   
                     var pname = reader.Read(); // PropertyName Guid
                     var giud = reader.Read(); // Actual Guid
+                    var something = reader.Read();
                     Guid entityGuid = DefaultSerializer.Deserialize<Guid>(reader); // Deserialize the Guid
 
                     // Deserialize the dataBlobs
