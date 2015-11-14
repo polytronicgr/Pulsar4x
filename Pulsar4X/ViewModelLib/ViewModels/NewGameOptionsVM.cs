@@ -50,8 +50,8 @@ namespace Pulsar4X.ViewModel
             CreatePlayerFaction = true;
             DefaultStart = true;
             FactionName = "United Earth Federation";
-            FactionPassword = "FPnotImplemented";
-            GmPassword = "GMPWnotImplemented";
+            FactionPassword = "";
+            GmPassword = "";
             NumberOfSystems = 50;
             NetworkHost = true;
             HostPortNum = 28888;

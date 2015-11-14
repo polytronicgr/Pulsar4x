@@ -163,7 +163,7 @@ namespace Pulsar4X.ECSLib
         /// <exception cref="ArgumentNullException"><paramref name="gameName"/> is <see langword="null" />.</exception>
         /// <exception cref="StaticDataLoadException">Thrown in a variety of situations when StaticData could not be loaded.</exception>
         [PublicAPI]
-        public static Game NewGame([NotNull] string gameName, DateTime startDateTime, int numSystems, IProgress<double> progress = null, bool authoritative = true)
+        public static Game NewGame([NotNull] string gameName, DateTime startDateTime, int numSystems, IProgress<double> progress = null, bool authoritative = true, string gameMasterPass = "")
         {
             if (gameName == null)
             {
@@ -175,7 +175,7 @@ namespace Pulsar4X.ECSLib
             // TODO: Provide options for loading other Static Data DataSets.
             if (authoritative)
             {
-                FactionFactory.CreateGameMaster(newGame);  
+                FactionFactory.CreateGameMaster(newGame, gameMasterPass);  
             }
             
             newGame.StaticData = StaticDataManager.LoadFromDefaultDataDirectory();

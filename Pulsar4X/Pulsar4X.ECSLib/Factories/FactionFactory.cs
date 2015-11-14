@@ -6,11 +6,11 @@ namespace Pulsar4X.ECSLib
 {
     public static class FactionFactory
     {
-        public static Entity CreateFaction(Game game, string factionName)
+        public static Entity CreateFaction(Game game, string factionName, string password = "")
         {
             var blobs = new List<BaseDataBlob>();
             NameDB name = new NameDB(factionName);
-            AuthDB auth = new AuthDB(AuthProcessor.CreateHash("password")); //fortesting TODO do properly
+            AuthDB auth = new AuthDB(AuthProcessor.CreateHash(password)); 
             FactionInfoDB factionDB = new FactionInfoDB();
             FactionAbilitiesDB factionAbilitiesDB = new FactionAbilitiesDB();
             FactionTechDB techDB = new FactionTechDB(game.StaticData.Techs.Values.ToList());        
@@ -30,10 +30,11 @@ namespace Pulsar4X.ECSLib
             return factionEntity;
         }
 
-        public static void CreateGameMaster(Game game)
+        public static void CreateGameMaster(Game game, string password)
         {
             var blobs = new List<BaseDataBlob>();
             NameDB name = new NameDB("GameMaster");
+            AuthDB auth = new AuthDB(AuthProcessor.CreateHash(password)); 
             FactionInfoDB factionDB = new FactionInfoDB();
             FactionAbilitiesDB factionAbilitiesDB = new FactionAbilitiesDB();
             FactionTechDB techDB = new FactionTechDB(game.StaticData.Techs.Values.ToList());
@@ -48,6 +49,7 @@ namespace Pulsar4X.ECSLib
 
 
             blobs.Add(name);
+            blobs.Add(auth);
             blobs.Add(factionDB);
             blobs.Add(factionAbilitiesDB);
             blobs.Add(techDB);

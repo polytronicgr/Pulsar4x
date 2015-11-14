@@ -108,7 +108,7 @@ namespace Pulsar4X.ViewModel
         public async void CreateGame(NewGameOptionsVM options)
         {
             StatusText = "Creating Game...";
-            Game newGame = await Task.Run(() => Game.NewGame("Test Game", new DateTime(2050, 1, 1), options.NumberOfSystems, new Progress<double>(OnProgressUpdate)));
+            Game newGame = await Task.Run(() => Game.NewGame("Test Game", new DateTime(2050, 1, 1), options.NumberOfSystems, new Progress<double>(OnProgressUpdate), true, options.GmPassword));
             Game = newGame;
 
             Entity gameMaster;
@@ -118,7 +118,7 @@ namespace Pulsar4X.ViewModel
             {
 
 
-                PlayerFaction = DefaultStartFactory.DefaultHumans(newGame, options.FactionName);
+                PlayerFaction = DefaultStartFactory.DefaultHumans(newGame, options.FactionName, options.FactionPassword);
             }
             if (options.NetworkHost)
             {

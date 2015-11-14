@@ -6,12 +6,12 @@ namespace Pulsar4X.ECSLib
 {
     public static class DefaultStartFactory
     {
-        public static Entity DefaultHumans(Game game, string name)
+        public static Entity DefaultHumans(Game game, string name, string password)
         {
             StarSystemFactory starfac = new StarSystemFactory(game);
             StarSystem sol = starfac.CreateSol(game);
             Entity earth = sol.SystemManager.Entities[3]; //should be fourth entity created 
-            Entity factionEntity = FactionFactory.CreateFaction(game, name);
+            Entity factionEntity = FactionFactory.CreateFaction(game, name, password);
             Entity speciesEntity = SpeciesFactory.CreateSpeciesHuman(factionEntity, game.GlobalManager);
             Entity colonyEntity = ColonyFactory.CreateColony(factionEntity, speciesEntity, earth);
 
