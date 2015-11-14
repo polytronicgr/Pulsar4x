@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.IO;
 using System.IO.Compression;
@@ -121,11 +122,15 @@ namespace Pulsar4X.ECSLib
                         {
                             using (JsonWriter writer = new JsonTextWriter(streamWriter))
                             {
-                                //CurrentGame = entity;
-                                DefaultSerializer.Serialize(writer, entity);
-                                //CurrentGame = null;
-                                //Entity.EntityConverter entityConverter = new Entity.EntityConverter();
-                                //entityConverter.WriteJson(writer,entity,DefaultSerializer);
+                                writer.WriteStartObject(); // Start the Entity.
+                                writer.WritePropertyName("Guid"); // Write the Guid PropertyName
+                                DefaultSerializer.Serialize(writer, entity.Guid); // Write the Entity's guid.
+                                foreach (BaseDataBlob dataBlob in entity.DataBlobs)
+                                {
+                                    writer.WritePropertyName(dataBlob.GetType().Name); // Write the PropertyName of the dataBlob as the dataBlob's type.
+                                    DefaultSerializer.Serialize(writer, dataBlob); // Serialize the dataBlob in this property.
+                                }
+                                writer.WriteEndObject(); // End then Entity.
                             }
                         }
 
@@ -226,15 +231,14 @@ namespace Pulsar4X.ECSLib
         /// Imports from the provided stream into the provided game using the default serializer.
         /// </summary>
         [PublicAPI]
-        public static Entity ImportEntity(EntityManager manager, Guid guid, Stream inputStream, IProgress<double> progress = null)
+        public static Entity ImportEntity(Game game, EntityManager manager, Stream inputStream, IProgress<double> progress = null)
         {
 
-            Entity entity = new Entity(manager, guid);
+            Entity entity;// = new Entity(manager, guid);
             lock (SyncRoot)
             {
                 Progress = progress;
                 ManagersProcessed = 0;
-                //CurrentGame = entity;
                 // Use a BufferedStream to allow reading and seeking from any stream.
                 // Example: If inputStream is a NetworkStream, then we can only read once.
                 using (BufferedStream inputBuffer = new BufferedStream(inputStream))
@@ -255,21 +259,18 @@ namespace Pulsar4X.ECSLib
                                 intermediateStream.Position = 0;
 
                                 // Populate the game from the uncompressed MemoryStream.
-                                PopulateEntity(entity, intermediateStream);
+                                //PopulateEntity(entity, intermediateStream);
+                                entity = DeSerialiseEntity(intermediateStream, game, manager);
                             }
                         }
                     }
                     else
                     {
                         // Populate the game from the uncompressed inputStream.
-                        PopulateEntity(entity, inputBuffer);
+                        entity = DeSerialiseEntity(inputStream, game, manager);
                     }
                 }
 
-
-
-                // get the game to do its post load stuff
-                //entity.PostGameLoad();
             }
             return entity;
         }
@@ -338,19 +339,45 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        /// <summary>
-        /// Populates the currently loading game from the passed uncompressed inputStream.
-        /// </summary>
-        /// <param name="inputStream">Uncompressed stream containing the game data.</param>
-        private static void PopulateEntity(Entity entity, Stream inputStream)
+
+        public static Entity DeSerialiseEntity(Stream inputStream, Game game, EntityManager manager)
         {
             using (StreamReader sr = new StreamReader(inputStream))
             {
                 using (JsonReader reader = new JsonTextReader(sr))
-                {                    
-                    //Entity.EntityConverter entityConverter = new Entity.EntityConverter();
-                    //entityConverter.ReadJson(reader, typeof(Entity), entity, DefaultSerializer);
-                    DefaultSerializer.Populate(reader, entity);
+                {   
+                    var pname = reader.Read(); // PropertyName Guid
+                    var giud = reader.Read(); // Actual Guid
+                    Guid entityGuid = DefaultSerializer.Deserialize<Guid>(reader); // Deserialize the Guid
+
+                    // Deserialize the dataBlobs
+                    var dataBlobs = new List<BaseDataBlob>();
+                    reader.Read(); // PropertyName DATABLOB
+                    while (reader.TokenType == JsonToken.PropertyName)
+                    {
+                        Type dataBlobType = Type.GetType("Pulsar4X.ECSLib." + (string)reader.Value);
+                        reader.Read(); // StartObject (dataBlob)
+                        BaseDataBlob dataBlob = (BaseDataBlob)DefaultSerializer.Deserialize(reader, dataBlobType); // EndObject (dataBlob)
+                        dataBlobs.Add(dataBlob);
+                        reader.Read(); // PropertyName DATABLOB OR EndObject (Entity)
+                    }
+
+
+                    // Attempt a global Guid lookup of the Guid.
+                    Entity entity;
+                    if (game.GlobalManager.FindEntityByGuid(entityGuid, out entity))
+                    {
+                        foreach (BaseDataBlob dataBlob in dataBlobs)
+                        {
+                            entity.SetDataBlob(dataBlob);
+                        }
+                    }
+                    else
+                    {
+                        entity = new Entity(manager, entityGuid, dataBlobs);
+                    }
+
+                    return entity;
                 }
             }
         }

@@ -118,6 +118,7 @@ namespace Pulsar4X.Tests
         public void TestEntitySerialisation()
         {
             var mStream = new MemoryStream();
+ 
             SaveGame.ExportEntity(_humanFaction, mStream);
 
             
@@ -131,7 +132,7 @@ namespace Pulsar4X.Tests
             mStream2.Position = 0;
             
             
-            Entity testEntity = SaveGame.ImportEntity(_game.GlobalManager, Guid.NewGuid(), mStream2);
+            Entity testEntity = SaveGame.ImportEntity(_game, _game.GlobalManager, mStream2);
             
             Assert.IsTrue(testEntity.HasDataBlob<NameDB>()); 
             Assert.AreEqual(_humanFaction.DataBlobs.Count, testEntity.DataBlobs.Count);
