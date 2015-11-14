@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Pulsar4X.ECSLib;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Pulsar4X.Tests
@@ -21,11 +22,16 @@ namespace Pulsar4X.Tests
         {
             _game = Game.NewGame("Unit Test Game", testTime, 1);
 
-            // add a faction:
-            _humanFaction = FactionFactory.CreateFaction(_game, "New Terran Utopian Empire", "password");
+            //// add a faction:
+            //_humanFaction = FactionFactory.CreateFaction(_game, "New Terran Utopian Empire", "password");
 
-            // add a species:
-            Entity humanSpecies = SpeciesFactory.CreateSpeciesHuman(_humanFaction, _game.GlobalManager);
+            //// add a species:
+            //Entity humanSpecies = SpeciesFactory.CreateSpeciesHuman(_humanFaction, _game.GlobalManager);
+
+            //add human faction, sol, etc.:
+            _humanFaction = DefaultStartFactory.DefaultHumans(_game, "New Terran Utopian Empire");
+
+            Entity humanSpecies = _humanFaction.GetDataBlob<FactionInfoDB>().Species[0];
 
             // add another faction:
             Entity greyAlienFaction = FactionFactory.CreateFaction(_game, "The Grey Empire", "password");
@@ -91,7 +97,7 @@ namespace Pulsar4X.Tests
             //and load the saved data:
             _game = SaveGame.Load(file);
 
-            Assert.AreEqual(1, _game.Systems.Count);
+            Assert.AreEqual(2, _game.Systems.Count);
             Assert.AreEqual(testTime, _game.CurrentDateTime);
             List<Entity> entities = _game.GlobalManager.GetAllEntitiesWithDataBlob<FactionInfoDB>();
             Assert.AreEqual(3, entities.Count);
@@ -103,6 +109,14 @@ namespace Pulsar4X.Tests
             NameDB speciesName = species.GetDataBlob<NameDB>();
             Assert.AreSame(speciesName.OwningEntity, species);
 
+            //check that systemManager reference in factionInfo is getting populated:
+            Entity humanFactionEntity = _game.GlobalManager.GetEntityByGuid(_humanFaction.Guid);
+            FactionInfoDB humanInfo = humanFactionEntity.GetDataBlob<FactionInfoDB>();
+            List<Entity> systemManagerEntityes = humanInfo.KnownSystems[0].SystemManager.Entities.ToList();
+            foreach (var entity in systemManagerEntityes)
+            {
+                Assert.NotNull(entity);
+            }
             // <?TODO: Expand this out to cover many more DBs, entities, and cases.
         }
 

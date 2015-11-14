@@ -6,7 +6,7 @@ namespace Pulsar4X.ECSLib
 {
     public static class DefaultStartFactory
     {
-        public static Entity DefaultHumans(Game game, string name, string password)
+        public static Entity DefaultHumans(Game game, string name, string password = "")
         {
             StarSystemFactory starfac = new StarSystemFactory(game);
             StarSystem sol = starfac.CreateSol(game);
