@@ -159,21 +159,17 @@ namespace Pulsar4X.ViewModel
                 throw new InvalidOperationException("Cannot create a StarVM without an initialized game.");
             }
 
-            Entity entity;
-            if (!gameVM.Game.GlobalManager.FindEntityByGuid(guid, out entity))
-            {
-                throw new GuidNotFoundException(guid);
-            }
-            StarSystem starSystem = null;
-            
+            StarSystem starSystem = Misc.LookupStarSystem(gameVM.Game.Systems, guid);
+
             for (int i = 0; i < gameVM.Game.Systems.Count; i++)
             {
+                Entity entity;
                 if (gameVM.Game.Systems[i].SystemManager.FindEntityByGuid(guid, out entity))
                 {
                     starSystem = gameVM.Game.Systems[i];
                     i = gameVM.Game.Systems.Count;
                 }
-            }            
+            }
             return Create(gameVM, starSystem);
         }
 
