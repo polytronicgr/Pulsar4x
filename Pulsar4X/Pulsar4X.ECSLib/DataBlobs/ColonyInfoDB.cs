@@ -6,23 +6,12 @@ namespace Pulsar4X.ECSLib
 {
     public class ColonyInfoDB : BaseDataBlob
     {
-
-        public Entity FactionEntity
-        {
-            get
-            {
-                return _factionEntity;
-            }
-            internal set
-            {
-                if(value.HasDataBlob<FactionInfoDB>())
-                    _factionEntity = value;
-                else
-                    throw new Exception("Entity Not a faction or does not contain a FactionInfoDB");                
-            }
-        }
+        /// <summary>
+        /// The Faction that owns this Colony. 
+        /// </summary>
         [JsonProperty]
-        private Entity _factionEntity;
+        public Entity FactionEntity { get;  internal set; }
+        
 
         /// <summary>
         /// Species Entity and amount
