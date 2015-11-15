@@ -11,14 +11,29 @@ namespace Pulsar4X.ECSLib
         {
             get { return _seed; }
         }
+
         [JsonProperty]
         private readonly int _seed;
+
+        /// <summary>
+        /// An id used to prevent serilization of the star system multpule times.
+        /// This will be diffreent every time a system is generated, even it it used the same seed.
+        /// </summary>
+        [PublicAPI]
+        public Guid Id
+        {
+            get { return id; }
+        }
+
+        [JsonProperty]
+        private readonly Guid id;
 
         [PublicAPI]
         public NameDB NameDB
         {
             get { return _nameDB; }
         }
+
         [JsonProperty]
         private readonly NameDB _nameDB;
 
@@ -29,6 +44,7 @@ namespace Pulsar4X.ECSLib
             get { return _econLastTickRun; }
             set { _econLastTickRun = value; }
         }
+
         [JsonProperty]
         private int _econLastTickRun;
 
@@ -36,6 +52,7 @@ namespace Pulsar4X.ECSLib
         {
             get { return _systemManager; }
         }
+
         [JsonProperty("SystemManager")]
         private readonly EntityManager _systemManager;
 
@@ -46,6 +63,7 @@ namespace Pulsar4X.ECSLib
             _seed = seed;
             RNG = new Random(seed);
             EconLastTickRun = 0;
+            id = Guid.NewGuid();  // give the system a unique id... this should be the only thing that is different about a system generated with the same id.
         }
     }
 }

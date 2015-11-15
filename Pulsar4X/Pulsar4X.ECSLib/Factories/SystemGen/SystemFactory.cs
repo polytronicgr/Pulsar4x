@@ -47,7 +47,7 @@ namespace Pulsar4X.ECSLib
             //add this system to the GameMaster's Known Systems list.
             Entity gameMaster;
             game.GlobalManager.FindEntityByGuid(game.GameMasterFaction, out gameMaster);
-            gameMaster.GetDataBlob<FactionInfoDB>().KnownSystems.Add(newSystem);
+            gameMaster.GetDataBlob<FactionInfoDB>().KnownSystems.Add(newSystem.Id);
             return newSystem;
         }
 
@@ -224,7 +224,7 @@ namespace Pulsar4X.ECSLib
             game.StarSystems.Add(sol);
             Entity gameMaster;
             game.GlobalManager.FindEntityByGuid(game.GameMasterFaction, out gameMaster);
-            gameMaster.GetDataBlob<FactionInfoDB>().KnownSystems.Add(sol);
+            gameMaster.GetDataBlob<FactionInfoDB>().KnownSystems.Add(sol.Id);
             return sol;
         }
 
@@ -268,7 +268,7 @@ namespace Pulsar4X.ECSLib
             game.StarSystems.Add(system);
             Entity gameMaster;
             game.GlobalManager.FindEntityByGuid(game.GameMasterFaction, out gameMaster);
-            gameMaster.GetDataBlob<FactionInfoDB>().KnownSystems.Add(system);
+            gameMaster.GetDataBlob<FactionInfoDB>().KnownSystems.Add(system.Id);
             return system;
         }
 
@@ -305,7 +305,7 @@ namespace Pulsar4X.ECSLib
             game.StarSystems.Add(system);
             Entity gameMaster;
             game.GlobalManager.FindEntityByGuid(game.GameMasterFaction, out gameMaster);
-            gameMaster.GetDataBlob<FactionInfoDB>().KnownSystems.Add(system);
+            gameMaster.GetDataBlob<FactionInfoDB>().KnownSystems.Add(system.Id);
             return system;
         }
 

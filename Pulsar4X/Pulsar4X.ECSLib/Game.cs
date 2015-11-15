@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using Newtonsoft.Json;
 
@@ -147,6 +148,17 @@ namespace Pulsar4X.ECSLib
             OrbitProcessor.Initialize();
             ShipMovementProcessor.Initialize();
             //InstallationProcessor.Initialize();
+        }
+
+        /// <summary>
+        /// Small utility function to lookup a star system based on its ID.
+        /// This is needed by datablobs who only stor a systems ID when they reference it.
+        /// </summary>
+        /// <param name="Id">Guid of the star system.</param>
+        /// <returns>The star system.</returns>
+        internal StarSystem LookupStarSystem(Guid Id)
+        {
+            return StarSystems.Single(i => i.Id == Id);
         }
 
         #endregion

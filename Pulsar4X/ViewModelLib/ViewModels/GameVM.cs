@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Pulsar4X.ECSLib;
 using Pulsar4x.Networking;
-using Pulsar4X.Networking;
 
 namespace Pulsar4X.ViewModel
 {

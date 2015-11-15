@@ -69,7 +69,7 @@ namespace Pulsar4X.Tests
             Assert.Catch(typeof(ArgumentNullException), () =>
             {
                 SaveGame.Save(_game, (string)null);
-            }); 
+            });
             Assert.Catch(typeof(ArgumentNullException), () =>
             {
                 SaveGame.Load(null);
@@ -112,7 +112,8 @@ namespace Pulsar4X.Tests
             //check that systemManager reference in factionInfo is getting populated:
             Entity humanFactionEntity = _game.GlobalManager.GetEntityByGuid(_humanFaction.Guid);
             FactionInfoDB humanInfo = humanFactionEntity.GetDataBlob<FactionInfoDB>();
-            List<Entity> systemManagerEntityes = humanInfo.KnownSystems[0].SystemManager.Entities.ToList();
+
+            List<Entity> systemManagerEntityes = Misc.LookupStarSystem(_game.Systems, humanInfo.KnownSystems[0]).SystemManager.Entities.ToList();
             foreach (var entity in systemManagerEntityes)
             {
                 Assert.NotNull(entity);
