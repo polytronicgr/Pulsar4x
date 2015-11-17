@@ -158,7 +158,7 @@ namespace Pulsar4X.ECSLib
         /// <returns>The star system.</returns>
         internal StarSystem LookupStarSystem(Guid Id)
         {
-            return StarSystems.Single(i => i.Id == Id);
+            return StarSystems.Single(i => i.Guid == Id);
         }
 
         #endregion

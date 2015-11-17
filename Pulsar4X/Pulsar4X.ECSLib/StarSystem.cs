@@ -5,7 +5,15 @@ namespace Pulsar4X.ECSLib
 {
     [JsonObject(MemberSerialization.OptIn)]
     public class StarSystem
-    {
+    {   
+        /// <summary>
+        /// An id used to prevent serilization of the star system multpule times.
+        /// This will be diffreent every time a system is generated, even it it used the same seed.
+        /// </summary>
+        [PublicAPI]
+        [JsonProperty]
+        public Guid Guid { get; private set; }      
+        
         [PublicAPI]
         public int Seed
         {
@@ -15,18 +23,8 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         private readonly int _seed;
 
-        /// <summary>
-        /// An id used to prevent serilization of the star system multpule times.
-        /// This will be diffreent every time a system is generated, even it it used the same seed.
-        /// </summary>
-        [PublicAPI]
-        public Guid Id
-        {
-            get { return id; }
-        }
 
-        [JsonProperty]
-        private readonly Guid id;
+
 
         [PublicAPI]
         public NameDB NameDB
@@ -56,6 +54,15 @@ namespace Pulsar4X.ECSLib
         [JsonProperty("SystemManager")]
         private readonly EntityManager _systemManager;
 
+        public StarSystem()
+        {
+        }
+
+        public StarSystem(Guid guid)
+        {
+            Guid = guid;
+        }
+
         public StarSystem(Game game, string name, int seed)
         {
             _systemManager = new EntityManager(game);
@@ -63,7 +70,7 @@ namespace Pulsar4X.ECSLib
             _seed = seed;
             RNG = new Random(seed);
             EconLastTickRun = 0;
-            id = Guid.NewGuid();  // give the system a unique id... this should be the only thing that is different about a system generated with the same id.
+            Guid = Guid.NewGuid();  // give the system a unique id... this should be the only thing that is different about a system generated with the same id.
         }
     }
 }

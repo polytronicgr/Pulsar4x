@@ -17,6 +17,7 @@ namespace Pulsar4X.Networking
         StringMessage,
         FactionDictionary,
         GameData,
+        SystemData,
         EntityData,
         DataBlobData,
         DataBlobPropertyUpdate,
@@ -28,7 +29,8 @@ namespace Pulsar4X.Networking
     /*Messages look like:
      * 
      * GameData, (string)gameName, (long)currentDate
-     * EntityData, (Byte[])Guid, (Byte[])memeoryStream
+     * SystemData, (Byte[])Guid, (Byte[])memoryStream
+     * EntityData, (Byte[])Guid, (Byte[])memoryStream
      * 
      * 
      * FactionDataRequest, (string)factionName, (string)password
@@ -169,6 +171,9 @@ namespace Pulsar4X.Networking
                 case DataMessageType.TickInfo:
                     HandleTickInfo(message);
                     break;
+                case DataMessageType.SystemData:
+                    HandleSystemData(message);
+                    break;
                 case DataMessageType.EntityData:
                     HandleEntityData(message);
                     break;
@@ -176,9 +181,8 @@ namespace Pulsar4X.Networking
         }
 
         /// <summary>
-        /// server only
+        /// server only, server sends data back EntityData and SystemData meessages
         /// </summary>
-        /// <param name="sender"></param>
         /// <param name="message"></param>
         protected virtual void HandleFactionDataRequest(NetIncomingMessage message)
         {
@@ -186,18 +190,24 @@ namespace Pulsar4X.Networking
 
 
         /// <summary>
-        /// this one should be client only
+        /// server reads this as a request. client reads this as data
         /// </summary>
-        /// <param name="sender"></param>
+        /// <param name="message"></param>
+        protected virtual void HandleSystemData(NetIncomingMessage message)
+        {
+        }
+
+        /// <summary>
+        /// server reads this as a request. client reads this as data
+        /// </summary>
         /// <param name="message"></param>
         protected virtual void HandleEntityData(NetIncomingMessage message)
         {
         }
 
         /// <summary>
-        /// client only
+        /// client read only: this happens when a server advances time
         /// </summary>
-        /// <param name="sender"></param>
         /// <param name="message"></param>
         protected virtual void HandleTickInfo(NetIncomingMessage message)
         {
@@ -206,9 +216,8 @@ namespace Pulsar4X.Networking
 
 
         /// <summary>
-        /// client only
+        /// client read only
         /// </summary>
-        /// <param name="sender"></param>
         /// <param name="message"></param>
         protected virtual void HandleGameDataMessage(NetIncomingMessage message)
         {

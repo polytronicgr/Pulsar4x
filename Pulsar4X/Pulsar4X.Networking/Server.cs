@@ -146,6 +146,19 @@ namespace Pulsar4X.Networking
             sendMsg.Write(len);
             sendMsg.Write(entityByteArray);
             NetServerObject.SendMessage(sendMsg, recipient, NetDeliveryMethod.ReliableOrdered);
+            foreach (var systemID in factionEntity.GetDataBlob<FactionInfoDB>().KnownSystems)
+            {
+                mStream = new MemoryStream();
+                SaveGame.ExportStarSystem(Misc.LookupStarSystem(Game.Systems, systemID), mStream);
+                byte[] byteArray = mStream.ToArray();
+                len = byteArray.Length;
+                NetOutgoingMessage sendMsgSystem = NetPeerObject.CreateMessage();
+                sendMsgSystem.Write((byte)DataMessageType.SystemData);
+                sendMsgSystem.Write(systemID.ToByteArray());
+                sendMsgSystem.Write(len);
+                sendMsgSystem.Write(byteArray);
+                NetServerObject.SendMessage(sendMsgSystem, recipient, NetDeliveryMethod.ReliableOrdered);
+            }
         }
 
 

@@ -10,10 +10,10 @@ namespace Pulsar4X.ECSLib
     public class ProtoEntity
     {
         [PublicAPI]
-        public List<BaseDataBlob> DataBlobs { get; set; }
+        public Guid Guid { get; protected set; }
 
         [PublicAPI]
-        public Guid Guid { get; protected set; }
+        public List<BaseDataBlob> DataBlobs { get; set; }
 
         [NotNull]
         [PublicAPI]

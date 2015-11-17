@@ -130,8 +130,9 @@ namespace Pulsar4X.Tests
         }
 
         [Test]
-        public void TestEntitySerialisation()
+        public void TestFactionEntitySerialisation()
         {
+            Game _game2 = Game.NewGame("Unit Test Game2", testTime, 1);
             var mStream = new MemoryStream();
  
             SaveGame.ExportEntity(_humanFaction, mStream);
@@ -145,12 +146,36 @@ namespace Pulsar4X.Tests
             var sr = new StreamReader(mStream2);
             var myStr = Encoding.ASCII.GetString(mStream2.ToArray());
             mStream2.Position = 0;
-            
-            
-            Entity testEntity = SaveGame.ImportEntity(_game, _game.GlobalManager, mStream2);
+
+
+            Entity testEntity = SaveGame.ImportEntity(_game2, _game2.GlobalManager, mStream2);
             
             Assert.IsTrue(testEntity.HasDataBlob<NameDB>()); 
             Assert.AreEqual(_humanFaction.DataBlobs.Count, testEntity.DataBlobs.Count);
+
+        }
+
+        [Test]
+        public void TestSystemSerialisation()
+        {
+            Game _game2 = Game.NewGame("Unit Test Game2", testTime, 1);
+            var mStream = new MemoryStream();
+
+            SaveGame.ExportStarSystem(_game.Systems[0], mStream);
+
+            byte[] entityByteArray = mStream.ToArray();
+            var mStream2 = new MemoryStream(entityByteArray);
+
+            mStream2.Position = 0;
+            var sr = new StreamReader(mStream2);
+            var myStr = Encoding.ASCII.GetString(mStream2.ToArray());
+            mStream2.Position = 0;
+
+
+            StarSystem testSystem = SaveGame.ImportStarSystem(_game2, mStream2);
+
+            Assert.IsTrue(testSystem.NameDB.DefaultName == _game.Systems[0].NameDB.DefaultName);
+            Assert.AreEqual(testSystem.SystemManager.Entities.Count, _game.Systems[0].SystemManager.Entities.Count);
 
         }
     }

@@ -73,6 +73,17 @@ namespace Pulsar4X.Networking
             Game.AdvanceTime(delta);
         }
 
+        protected override void HandleSystemData(NetIncomingMessage message)
+        {
+            Guid systemID = new Guid(message.ReadBytes(16));
+            int len = message.ReadInt32();
+            byte[] data = message.ReadBytes(len);
+
+            var mStream = new MemoryStream(data);
+            StarSystem starSys = SaveGame.ImportStarSystem(Game, mStream);
+
+        }
+
         protected override void HandleEntityData(NetIncomingMessage message)
         {
 
@@ -88,7 +99,8 @@ namespace Pulsar4X.Networking
 
             var mStream = new MemoryStream(data);
             CurrentFaction = SaveGame.ImportEntity(Game, Game.GlobalManager, mStream);
-            IsConnectedToGame = true;
+
+       
         }
 
         protected override void ConnectionStatusChanged(NetIncomingMessage message)
@@ -108,13 +120,19 @@ namespace Pulsar4X.Networking
 
         public void SendFactionDataRequest(string faction, string password)
         {
-
             NetOutgoingMessage sendMsg = NetPeerObject.CreateMessage();
             sendMsg.Write((byte)DataMessageType.FactionDataRequest);
             sendMsg.Write(faction);
             sendMsg.Write(password);
             Encrypt(sendMsg);//sequence channel 31 is expected to be encrypted by the recever. see NetworkBase GotMessage()
             NetClientObject.SendMessage(sendMsg, NetClientObject.ServerConnection, NetDeliveryMethod.ReliableOrdered, SecureChannel);
+        }
+
+        public void SendEntityDataRequest(Guid guid)
+        {
+            NetOutgoingMessage sendMsg = NetPeerObject.CreateMessage();
+            sendMsg.Write((byte)DataMessageType.EntityData);
+            NetClientObject.SendMessage(sendMsg, NetClientObject.ServerConnection, NetDeliveryMethod.ReliableOrdered);
         }
 
         //public void ReceveFactionList(DataMessage dataMessage)

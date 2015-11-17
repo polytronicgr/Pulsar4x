@@ -153,6 +153,69 @@ namespace Pulsar4X.ECSLib
             }
         }
 
+
+        /// <summary>
+        /// saves an entity to a given stream
+        /// </summary>
+        /// <param name="starSystem"></param>
+        /// <param name="outputStream"></param>
+        /// <param name="progress"></param>
+        /// <param name="compress"></param>
+        [PublicAPI]
+        public static void ExportStarSystem([NotNull] StarSystem starSystem, [NotNull] Stream outputStream, IProgress<double> progress = null, bool compress = false)
+        {
+            if (starSystem == null)
+            {
+                throw new ArgumentNullException("starSystem");
+            }
+
+            DefaultSerializer.Formatting = compress ? Formatting.None : Formatting.Indented;
+
+            lock (SyncRoot)
+            {
+                Progress = progress;
+                ManagersProcessed = 0;
+                //entity.NumSystems = entity.StarSystems.Count;
+
+                // Wrap the outputStream in a BufferedStream.
+                // This will improves performance if the outputStream does not have an internal buffer. (E.G. NetworkStream)
+                using (BufferedStream outputBuffer = new BufferedStream(outputStream))
+                {
+                    using (MemoryStream intermediateStream = new MemoryStream())
+                    {
+                        using (StreamWriter streamWriter = new StreamWriter(intermediateStream, Encoding.UTF8, 1024, true))
+                        {
+                            using (JsonWriter writer = new JsonTextWriter(streamWriter))
+                            {
+                                writer.WriteStartObject(); // Start the Entity.
+                                writer.WritePropertyName("Guid"); // Write the Guid PropertyName
+                                DefaultSerializer.Serialize(writer, starSystem.Guid);
+                                writer.WritePropertyName("StarSystem");
+                                DefaultSerializer.Serialize(writer, starSystem);
+                                writer.WriteEndObject(); // End then Entity.
+                            }
+                        }
+
+                        // Reset the MemoryStream's position to 0. CopyTo copies from Position to the end.
+                        intermediateStream.Position = 0;
+
+                        if (compress)
+                        {
+                            using (GZipStream compressionStream = new GZipStream(outputBuffer, CompressionLevel.Optimal))
+                            {
+                                intermediateStream.CopyTo(compressionStream);
+                            }
+                        }
+                        else
+                        {
+                            intermediateStream.CopyTo(outputBuffer);
+                        }
+                    }
+                }
+            }
+        }
+
+
         /// <summary>
         /// Loads the game from the file at the provided filePath using the default serializer.
         /// </summary>
@@ -260,20 +323,69 @@ namespace Pulsar4X.ECSLib
 
                                 // Populate the game from the uncompressed MemoryStream.
                                 //PopulateEntity(entity, intermediateStream);
-                                entity = DeSerialiseEntity(intermediateStream, game, manager);
+                                entity = PopulateEntity(intermediateStream, game, manager);
                             }
                         }
                     }
                     else
                     {
                         // Populate the game from the uncompressed inputStream.
-                        entity = DeSerialiseEntity(inputStream, game, manager);
+                        entity = PopulateEntity(inputStream, game, manager);
                     }
                 }
 
             }
             return entity;
         }
+
+        /// <summary>
+        /// Imports from the provided stream into the provided game using the default serializer.
+        /// </summary>
+        [PublicAPI]
+        public static StarSystem ImportStarSystem(Game game, Stream inputStream, IProgress<double> progress = null)
+        {
+
+            StarSystem system;// = new Entity(manager, guid);
+            lock (SyncRoot)
+            {
+                Progress = progress;
+                ManagersProcessed = 0;
+                // Use a BufferedStream to allow reading and seeking from any stream.
+                // Example: If inputStream is a NetworkStream, then we can only read once.
+                using (BufferedStream inputBuffer = new BufferedStream(inputStream))
+                {
+                    // Check if our stream is compressed.
+                    if (HasGZipHeader(inputBuffer))
+                    {
+                        // File is compressed. Decompress using GZip.
+                        using (GZipStream compressionStream = new GZipStream(inputStream, CompressionMode.Decompress))
+                        {
+                            // Decompress into a MemoryStream.
+                            using (MemoryStream intermediateStream = new MemoryStream())
+                            {
+                                // Decompress the file into an intermediate MemoryStream.
+                                compressionStream.CopyTo(intermediateStream);
+
+                                // Reset the position of the MemoryStream so it can be read from the beginning.
+                                intermediateStream.Position = 0;
+
+                                // Populate the game from the uncompressed MemoryStream.
+                                //PopulateEntity(entity, intermediateStream);
+                                system = PopulateStarSystem(intermediateStream, game);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Populate the game from the uncompressed inputStream.
+                        system = PopulateStarSystem(inputStream, game);
+                    }
+                }
+
+            }
+            return system;
+        }
+
 
         /// <summary>
         /// Check if we have a valid file.
@@ -339,8 +451,14 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-
-        public static Entity DeSerialiseEntity(Stream inputStream, Game game, EntityManager manager)
+        /// <summary>
+        /// DeSerialises a single entity and imports it into the given game.
+        /// </summary>
+        /// <param name="inputStream"></param>
+        /// <param name="game"></param>
+        /// <param name="manager"></param>
+        /// <returns></returns>
+        private static Entity PopulateEntity(Stream inputStream, Game game, EntityManager manager)
         {
             CurrentGame = game;
             using (StreamReader sr = new StreamReader(inputStream))
@@ -383,5 +501,39 @@ namespace Pulsar4X.ECSLib
                 }
             }
         }
+
+        private static StarSystem PopulateStarSystem(Stream inputStream, Game game)
+        {
+            CurrentGame = game;
+            using (StreamReader sr = new StreamReader(inputStream))
+            {
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    reader.Read(); // PropertyName Guid
+                    reader.Read();
+                    reader.Read();
+                    Guid guid = DefaultSerializer.Deserialize<Guid>(reader); // Deserialize the Guid
+  
+                    // Attempt a global Guid lookup of the Guid.
+                    StarSystem system;
+                    if (!Misc.FindStarSystem(game.Systems, guid, out system))
+                    {
+                        system = new StarSystem(guid);                       
+                    }
+                    else
+                    {
+                        system = game.LookupStarSystem(guid);
+                    }
+                    reader.Read();
+                    reader.Read();
+                    DefaultSerializer.Populate(reader, system);                   
+                    return system;
+                }
+            }
+        }
     }
+
+
+
+
 }
