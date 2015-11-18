@@ -81,6 +81,13 @@ namespace Pulsar4X.Networking
             Game.AdvanceTime(delta);
         }
 
+        protected override void HandleFactionDataRequest(NetIncomingMessage message)
+        {
+            Guid entityID = new Guid(message.PeekBytes(16));
+            HandleEntityData(message);
+            CurrentFaction = Game.GlobalManager.GetEntityByGuid(entityID);
+        }
+
         protected override void HandleSystemData(NetIncomingMessage message)
         {
             Guid systemID = new Guid(message.ReadBytes(16));
@@ -100,12 +107,11 @@ namespace Pulsar4X.Networking
 
             if (Game == null || Game.GameName != ConnectedToGameName) //TODO handle if connecting to a game when in the middle of a singleplayer game. (ie prompt save)
             {
-                Game = Game.NewGame(ConnectedToGameName, ConnectedToDateTime, 0, null, false);
-                
+                Game = Game.NewGame(ConnectedToGameName, ConnectedToDateTime, 0, null, false);                
             }
 
             var mStream = new MemoryStream(data);
-            CurrentFaction = SaveGame.ImportEntity(Game, Game.GlobalManager, mStream);
+            SaveGame.ImportEntity(Game, Game.GlobalManager, mStream);
          }
 
         protected override void ConnectionStatusChanged(NetIncomingMessage message)
@@ -126,7 +132,7 @@ namespace Pulsar4X.Networking
         public void SendFactionDataRequest(string faction, string password)
         {
             NetOutgoingMessage sendMsg = NetPeerObject.CreateMessage();
-            sendMsg.Write((byte)DataMessageType.FactionDataRequest);
+            sendMsg.Write((byte)DataMessageType.FactionData);
             sendMsg.Write(faction);
             sendMsg.Write(password);
             Encrypt(sendMsg);//sequence channel 31 is expected to be encrypted by the recever. see NetworkBase GotMessage()

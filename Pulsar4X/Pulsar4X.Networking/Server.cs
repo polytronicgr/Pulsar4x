@@ -161,7 +161,7 @@ namespace Pulsar4X.Networking
 
             int len = entityByteArray.Length;
             NetOutgoingMessage sendMsg = NetPeerObject.CreateMessage();
-            sendMsg.Write((byte)DataMessageType.EntityData);
+            sendMsg.Write((byte)DataMessageType.FactionData);
             sendMsg.Write(factionEntity.Guid.ToByteArray());
             sendMsg.Write(len);
             sendMsg.Write(entityByteArray);

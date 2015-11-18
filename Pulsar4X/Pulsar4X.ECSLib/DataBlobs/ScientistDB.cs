@@ -27,6 +27,7 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         public byte AssignedLabs { get; internal set; }
 
+        [JsonProperty]
         public List<Guid> ProjectQueue { get; internal set; } 
 
 

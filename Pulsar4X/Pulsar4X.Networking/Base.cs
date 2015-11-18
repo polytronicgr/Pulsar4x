@@ -17,11 +17,12 @@ namespace Pulsar4X.Networking
         StringMessage,
         FactionDictionary,
         GameData,
+        FactionData,
         SystemData,
         EntityData,
         DataBlobData,
-        DataBlobPropertyUpdate,
-        FactionDataRequest,
+        DataBlobPropertyData,
+        
 
         TickInfo
     }
@@ -167,7 +168,7 @@ namespace Pulsar4X.Networking
             DataMessageType messageType = (DataMessageType)message.ReadByte();
             switch (messageType)
             {
-                case DataMessageType.FactionDataRequest:
+                case DataMessageType.FactionData:
                     HandleFactionDataRequest(message);
                     break;
                 case DataMessageType.GameData:
