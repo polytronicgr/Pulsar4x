@@ -226,7 +226,7 @@ namespace Pulsar4X.ViewModel
 
         public GameVM()
         {
-            //Game = game;
+            Game = Game;
             _systems = new BindingList<SystemVM>();
             _systemDictionary = new Dictionary<Guid, SystemVM>();
             //PlayerFaction = game.GameMasterFaction; //on creation the player faction can be set to GM I guess... for now anyway.

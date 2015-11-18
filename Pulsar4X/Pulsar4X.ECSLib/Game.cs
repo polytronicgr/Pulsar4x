@@ -39,7 +39,7 @@ namespace Pulsar4X.ECSLib
         private DateTime _currentDateTime;
 
         [JsonProperty]
-        internal int NumSystems;
+        internal int NumSystems { get { return StarSystems.Count; } }
 
         [PublicAPI]
         public ReadOnlyCollection<StarSystem> Systems { get { return new ReadOnlyCollection<StarSystem>(StarSystems); } }

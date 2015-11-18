@@ -12,7 +12,6 @@ namespace Pulsar4X.Networking
     {
         private Dictionary<NetConnection, Guid> _connectedFactions { get; set; }
         private Dictionary<Guid, List<NetConnection>> _factionConnections { get; set; }
-
         public NetServer NetServerObject { get { return (NetServer)NetPeerObject; } }
 
 
@@ -60,6 +59,27 @@ namespace Pulsar4X.Networking
 
             NetServerObject.SendDiscoveryResponse(response, message.SenderEndPoint);
         }
+
+        protected override void HandleEntityData(NetIncomingMessage message)
+        {
+            //EntityData, (Byte[])Guid, (Byte[])memoryStream
+            NetConnection recipient = message.SenderConnection;
+            Guid entityID = new Guid(message.ReadBytes(16));
+            Entity reqestedEntity = Game.GlobalManager.GetEntityByGuid(entityID);
+            //TODO check that this faction is allowed to access this entity's Data.
+            var mStream = new MemoryStream();
+            SaveGame.ExportEntity(reqestedEntity, mStream);
+            byte[] entityByteArray = mStream.ToArray();
+
+            int len = entityByteArray.Length;
+            NetOutgoingMessage sendMsg = NetPeerObject.CreateMessage();
+            sendMsg.Write((byte)DataMessageType.EntityData);
+            sendMsg.Write(reqestedEntity.Guid.ToByteArray());
+            sendMsg.Write(len);
+            sendMsg.Write(entityByteArray);
+            NetServerObject.SendMessage(sendMsg, recipient, NetDeliveryMethod.ReliableOrdered);
+        }
+
 
         protected override void HandleFactionDataRequest(NetIncomingMessage message)
         {

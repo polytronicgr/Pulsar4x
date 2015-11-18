@@ -126,8 +126,9 @@ namespace Pulsar4X.Networking
                         break;
                 }
             }
+            PostQueueHandling();
         }
-
+        
         /// <summary>
         /// TODO implement proper private/public key. is that even possible to do transperantly?
         /// </summary>
@@ -146,6 +147,10 @@ namespace Pulsar4X.Networking
             NetEncryption algo = new NetXtea(NetPeerObject, "SharedKey45B635DF-649B-4C10-B110-439CE1784C59");
             message.Decrypt(algo);
             return message;
+        }
+
+        protected virtual void PostQueueHandling()
+        {
         }
 
         protected virtual void HandleDiscoveryRequest(NetIncomingMessage message)

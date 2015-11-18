@@ -52,7 +52,6 @@ namespace Pulsar4X.ECSLib
             {
                 Progress = progress;
                 ManagersProcessed = 0;
-                game.NumSystems = game.StarSystems.Count;
 
                 // Wrap the outputStream in a BufferedStream.
                 // This will improves performance if the outputStream does not have an internal buffer. (E.G. NetworkStream)
@@ -526,7 +525,8 @@ namespace Pulsar4X.ECSLib
                     }
                     reader.Read();
                     reader.Read();
-                    DefaultSerializer.Populate(reader, system);                   
+                    DefaultSerializer.Populate(reader, system);      
+                    game.StarSystems.Add(system);
                     return system;
                 }
             }

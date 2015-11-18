@@ -158,7 +158,7 @@ namespace Pulsar4X.Tests
         [Test]
         public void TestSystemSerialisation()
         {
-            Game _game2 = Game.NewGame("Unit Test Game2", testTime, 1);
+            Game _game2 = Game.NewGame("Unit Test Game2", testTime, 0);
             var mStream = new MemoryStream();
 
             SaveGame.ExportStarSystem(_game.Systems[0], mStream);
@@ -171,11 +171,13 @@ namespace Pulsar4X.Tests
             var myStr = Encoding.ASCII.GetString(mStream2.ToArray());
             mStream2.Position = 0;
 
+            int syscount = _game2.Systems.Count;
 
             StarSystem testSystem = SaveGame.ImportStarSystem(_game2, mStream2);
 
             Assert.IsTrue(testSystem.NameDB.DefaultName == _game.Systems[0].NameDB.DefaultName);
             Assert.AreEqual(testSystem.SystemManager.Entities.Count, _game.Systems[0].SystemManager.Entities.Count);
+            Assert.IsTrue(_game2.Systems.Count >= syscount);
 
         }
     }

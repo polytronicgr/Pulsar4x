@@ -51,6 +51,14 @@ namespace Pulsar4X.Networking
         }
 
 
+        protected override void PostQueueHandling()
+        {
+            if (CurrentFaction != null)
+            {
+                CheckEntityData();
+            }
+        }
+
         protected override void HandleDiscoveryResponce(NetIncomingMessage message)
         {
             ConnectedToGameName = message.ReadString();
@@ -80,8 +88,7 @@ namespace Pulsar4X.Networking
             byte[] data = message.ReadBytes(len);
 
             var mStream = new MemoryStream(data);
-            StarSystem starSys = SaveGame.ImportStarSystem(Game, mStream);
-
+            StarSystem starSys = SaveGame.ImportStarSystem(Game, mStream);            
         }
 
         protected override void HandleEntityData(NetIncomingMessage message)
@@ -99,9 +106,7 @@ namespace Pulsar4X.Networking
 
             var mStream = new MemoryStream(data);
             CurrentFaction = SaveGame.ImportEntity(Game, Game.GlobalManager, mStream);
-
-       
-        }
+         }
 
         protected override void ConnectionStatusChanged(NetIncomingMessage message)
         {
@@ -132,7 +137,26 @@ namespace Pulsar4X.Networking
         {
             NetOutgoingMessage sendMsg = NetPeerObject.CreateMessage();
             sendMsg.Write((byte)DataMessageType.EntityData);
+            sendMsg.Write(guid.ToByteArray());
             NetClientObject.SendMessage(sendMsg, NetClientObject.ServerConnection, NetDeliveryMethod.ReliableOrdered);
+        }
+
+        /// <summary>
+        /// checks for entitys which have a guid but contain no info, and requests that data.
+        /// </summary>
+        private void CheckEntityData()
+        {
+            int emptyEntities = 0;
+            foreach (var entity in Game.GlobalManager.Entities)
+            {
+                if (entity != null && entity.DataBlobs.Count == 0)
+                {
+                    emptyEntities ++;
+                    SendEntityDataRequest(entity.Guid);
+                }
+            }
+            if (emptyEntities == 0)
+                IsConnectedToGame = true;
         }
 
         //public void ReceveFactionList(DataMessage dataMessage)
