@@ -76,8 +76,9 @@ namespace Pulsar4X.Networking
         protected override void HandleTickInfo(NetIncomingMessage message)
         {
             ConnectedToDateTime = new DateTime(message.ReadInt64());
-            int delta = message.ReadInt32();
-            delta += (int)(ConnectedToDateTime - Game.CurrentDateTime).TotalSeconds;
+            int delta = message.ReadInt32();            
+            int datedifference = (int)(Game.CurrentDateTime - ConnectedToDateTime).TotalSeconds;
+            delta += datedifference - delta; 
             Game.AdvanceTime(delta);
         }
 
