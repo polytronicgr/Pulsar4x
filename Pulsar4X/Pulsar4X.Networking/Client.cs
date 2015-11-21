@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using Lidgren.Network;
 using Pulsar4X.ECSLib;
 
@@ -23,7 +24,7 @@ namespace Pulsar4X.Networking
         private bool _istConnectedToGame;
         public bool IsConnectedToGame { get { return _istConnectedToGame; } private set { _istConnectedToGame = value; OnPropertyChanged(); } }
         public Entity CurrentFaction { get; set; }
-
+        public event TickEventHandler NetTickEvent;
         public string ConnectedToGameName { get; private set; }
         public DateTime ConnectedToDateTime { get; private set; }
         //private Dictionary<Guid, string> _factions; 
@@ -62,24 +63,32 @@ namespace Pulsar4X.Networking
         protected override void HandleDiscoveryResponce(NetIncomingMessage message)
         {
             ConnectedToGameName = message.ReadString();
-            ConnectedToDateTime = new DateTime(message.ReadInt64());
+            long ticks = message.ReadInt64();
+            ConnectedToDateTime = DateTime.FromBinary(ticks); //= new DateTime(ticks);
             Messages.Add("Found Server: " + message.SenderEndPoint + "Name Is: " + ConnectedToGameName);
         }
 
         protected override void HandleGameDataMessage(NetIncomingMessage message)
         {
             ConnectedToGameName = message.ReadString();
-            ConnectedToDateTime = new DateTime(message.ReadInt64());
+            ConnectedToDateTime = DateTime.FromBinary(message.ReadInt64());
         }
 
 
         protected override void HandleTickInfo(NetIncomingMessage message)
         {
-            ConnectedToDateTime = new DateTime(message.ReadInt64());
-            int delta = message.ReadInt32();            
-            int datedifference = (int)(Game.CurrentDateTime - ConnectedToDateTime).TotalSeconds;
-            delta += datedifference - delta; 
-            Game.AdvanceTime(delta);
+            ConnectedToDateTime = DateTime.FromBinary(message.ReadInt64());
+            int delta = message.ReadInt32();
+            string messageStr = "TickEvent: DateTime: " + ConnectedToDateTime + "Delta : " + delta;
+
+            int datedifference = (int)(ConnectedToDateTime - Game.CurrentDateTime).TotalSeconds;
+            delta += datedifference - delta;
+            messageStr += " DateDifference: " + datedifference + " Total Delta: " + delta;
+            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Messages.Add((messageStr))));
+            if (NetTickEvent != null)
+            {
+                NetTickEvent.Invoke(ConnectedToDateTime, delta);
+            }
         }
 
         protected override void HandleFactionDataRequest(NetIncomingMessage message)

@@ -27,7 +27,7 @@ namespace Pulsar4X.WPFUI
         private double _customAdvSimValue = 5;
         delegate void ProgressUpdate(double progress);
 
-        private readonly CancellationToken _pulseCancellationToken;
+        //private readonly CancellationToken _pulseCancellationToken;
 
         [UsedImplicitly]
         public string CustomAdvSimValue
@@ -52,7 +52,7 @@ namespace Pulsar4X.WPFUI
             MenuItem_Fullscreen.IsChecked = WindowState == WindowState.Maximized;
             MenuItem_Boarderless.IsChecked = WindowStyle == WindowStyle.None;
 
-            _pulseCancellationToken = new CancellationToken();
+            //_pulseCancellationToken = new CancellationToken();
             DataContext = App.Current.GameVM; //set data context
             App.Current.PropertyChanged += AppOnPropertyChanged;
             // Get the initial state of the game from the app. (This fires the PropertyChanged event we just hooked into.
@@ -305,7 +305,7 @@ namespace Pulsar4X.WPFUI
             {
                 return;
             }
-            App.Current.GameVM.AdvanceTime(pulseLength, _pulseCancellationToken);
+            App.Current.GameVM.AdvanceTime(pulseLength);//, _pulseCancellationToken);
             var pulseProgress = new Progress<double>(UpdatePulseProgress);
 
             //int secondsPulsed;

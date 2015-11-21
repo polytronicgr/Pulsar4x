@@ -23,6 +23,8 @@ namespace Pulsar4X.ViewModel
 
         public NetworkBase NetworkModule { get; set; }
 
+        private readonly CancellationToken _pulseCancellationToken;
+
         //progress bar in MainWindow should be bound to this
         public double ProgressValue
         {
@@ -152,7 +154,7 @@ namespace Pulsar4X.ViewModel
             StatusText = "Game Saved";
         }
 
-        public async void AdvanceTime(TimeSpan pulseLength, CancellationToken _pulseCancellationToken)
+        public async void AdvanceTime(TimeSpan pulseLength)
         {
             var pulseProgress = new Progress<double>(UpdatePulseProgress);
 
@@ -171,6 +173,10 @@ namespace Pulsar4X.ViewModel
             ProgressValue = 0;
         }
 
+        public void OnClientTickEvent(DateTime currentTime, int delta)
+        {
+            AdvanceTime(new TimeSpan(delta * 1000000));
+        }
 
         private void UpdatePulseProgress(double progress)
         {
@@ -229,7 +235,8 @@ namespace Pulsar4X.ViewModel
             Game = Game;
             _systems = new BindingList<SystemVM>();
             _systemDictionary = new Dictionary<Guid, SystemVM>();
-            //PlayerFaction = game.GameMasterFaction; //on creation the player faction can be set to GM I guess... for now anyway.
+            _pulseCancellationToken = new CancellationToken();
+
         }
 
         #region IViewModel

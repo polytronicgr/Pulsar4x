@@ -81,6 +81,11 @@ namespace Pulsar4X.Networking
             NetPeerObject.RegisterReceivedCallback(new SendOrPostCallback(GotMessage));
         }
 
+        public void Shutdown(string bye)
+        {
+            NetPeerObject.Shutdown(bye);
+        }
+
         /// <summary>
         /// This gets called when triggered by an event regestered in StartListning()
         /// </summary>

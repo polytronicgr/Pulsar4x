@@ -38,19 +38,22 @@ namespace Pulsar4X.Networking
         {
             if (_connectedFactions.Count > 0)
             {
+                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Messages.Add("TickEvent: CurrentTime: " + currentTime + " Delta: " + delta)));
+                //Messages.Add("TickEvent: CurrentTime: " + currentTime + " Delta: " + delta);
                 IList<NetConnection> connections = _connectedFactions.Keys.ToList();
                 NetOutgoingMessage sendMsg = NetServerObject.CreateMessage();
                 sendMsg.Write((byte)DataMessageType.TickInfo);
                 sendMsg.Write(currentTime.ToBinary());
                 sendMsg.Write(delta);
                 NetServerObject.SendMessage(sendMsg, connections, NetDeliveryMethod.ReliableOrdered, 0);
+                
             }
 
         }
 
         protected override void HandleDiscoveryRequest(NetIncomingMessage message)
         {
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Messages.Add("RX DiscoveryRequest " + message.SenderEndPoint)));
+            //Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Messages.Add("RX DiscoveryRequest " + message.SenderEndPoint)));
 
             Messages.Add("RX DiscoveryRequest " + message.SenderEndPoint);
             NetOutgoingMessage response = NetServerObject.CreateMessage();

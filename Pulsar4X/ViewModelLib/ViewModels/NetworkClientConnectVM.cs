@@ -71,6 +71,7 @@ namespace Pulsar4X.ViewModel
                 _gameVM.Game = NetClient.Game;
                 _gameVM.PlayerFaction = NetClient.CurrentFaction;
                 _gameVM.Refresh();
+                NetClient.NetTickEvent += _gameVM.OnClientTickEvent;
             }
         }
 
