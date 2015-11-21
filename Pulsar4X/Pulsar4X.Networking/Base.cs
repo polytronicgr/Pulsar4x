@@ -112,7 +112,7 @@ namespace Pulsar4X.Networking
                         HandleDiscoveryRequest(message);
                         break;
                     case NetIncomingMessageType.DiscoveryResponse:
-                        HandleDiscoveryResponce(message);
+                        HandleDiscoveryResponse(message);
                         break;
 
                     case NetIncomingMessageType.StatusChanged:
@@ -162,7 +162,7 @@ namespace Pulsar4X.Networking
         protected virtual void HandleDiscoveryRequest(NetIncomingMessage message)
         {
         }
-        protected virtual void HandleDiscoveryResponce(NetIncomingMessage message)
+        protected virtual void HandleDiscoveryResponse(NetIncomingMessage message)
         {
         }
         protected virtual void ConnectionStatusChanged(NetIncomingMessage message)
@@ -174,7 +174,7 @@ namespace Pulsar4X.Networking
             switch (messageType)
             {
                 case DataMessageType.FactionData:
-                    HandleFactionDataRequest(message);
+                    HandleFactionData(message);
                     break;
                 case DataMessageType.GameData:
                     HandleGameDataMessage(message);
@@ -195,7 +195,7 @@ namespace Pulsar4X.Networking
         /// server only, server sends data back EntityData and SystemData meessages
         /// </summary>
         /// <param name="message"></param>
-        protected virtual void HandleFactionDataRequest(NetIncomingMessage message)
+        protected virtual void HandleFactionData(NetIncomingMessage message)
         {
         }
 

@@ -84,7 +84,7 @@ namespace Pulsar4X.Networking
         }
 
 
-        protected override void HandleFactionDataRequest(NetIncomingMessage message)
+        protected override void HandleFactionData(NetIncomingMessage message)
         {
             NetConnection sender = message.SenderConnection;
             string name = message.ReadString();
@@ -125,7 +125,7 @@ namespace Pulsar4X.Networking
 
         private void SetSendMessages()
         {
-            Game.TickEvent += OnTickEvent;
+            Game.TickStartEvent += OnTickEvent;
         }
 
         //private void SendFactionList(NetConnection recipient)

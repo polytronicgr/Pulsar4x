@@ -163,7 +163,7 @@ namespace Pulsar4X.ViewModel
             try
             {
                 secondsPulsed = await Task.Run(() => Game.AdvanceTime((int)pulseLength.TotalSeconds, _pulseCancellationToken, pulseProgress));
-                Refresh();
+                //Refresh();
             }
             catch (Exception exception)
             {
@@ -211,10 +211,12 @@ namespace Pulsar4X.ViewModel
             set
             {
                 _game = value;
+                
                 OnPropertyChanged();
                 
                 if (PropertyChanged != null)
                 {
+                    _game.TickEndEvent += OnTickEnd;
                     //forces anything listing for a change in the HasGame property to update. 
                     PropertyChanged(this, new PropertyChangedEventArgs("HasGame")); 
                 }
@@ -250,6 +252,11 @@ namespace Pulsar4X.ViewModel
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        private void OnTickEnd()
+        {
+            Refresh();           
         }
 
         public void Refresh(bool partialRefresh = false)

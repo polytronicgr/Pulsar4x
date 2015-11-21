@@ -7,7 +7,9 @@ using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
-    public delegate void TickEventHandler(DateTime currentDateTime, int delta);
+    public delegate void TickStartEventHandler(DateTime currentDateTime, int delta);
+
+    public delegate void TickEndEventHandler();
 
     [JsonObject(MemberSerialization.OptIn)]
     public class Game
@@ -67,7 +69,16 @@ namespace Pulsar4X.ECSLib
         [PublicAPI]
         public SubpulseLimit NextSubpulse { get; private set; }
 
-        public event TickEventHandler TickEvent;
+        /// <summary>
+        /// Is Triggered when the game tick starts;
+        /// </summary>
+        [PublicAPI]
+        public event TickStartEventHandler TickStartEvent;
+        /// <summary>
+        /// Is Triggered when the game tick and processing are done.
+        /// </summary>
+        [PublicAPI]
+        public event TickEndEventHandler TickEndEvent;
 
         [JsonProperty]
         internal GalaxyFactory GalaxyGen { get; private set; }
@@ -117,13 +128,17 @@ namespace Pulsar4X.ECSLib
 
         internal void RunProcessors(List<StarSystem> systems, int deltaSeconds)
         {
-            if (TickEvent != null)
+            if (TickStartEvent != null)
             {
-                TickEvent.Invoke(CurrentDateTime, deltaSeconds);
+                TickStartEvent.Invoke(CurrentDateTime, deltaSeconds);
             }
             OrbitProcessor.Process(this, systems, deltaSeconds);
             ShipMovementProcessor.Process(this, systems,deltaSeconds);
             EconProcessor.Process(this, systems, deltaSeconds);
+            if (TickEndEvent != null)
+            {
+                TickEndEvent.Invoke();
+            }
         }
 
         internal void PostGameLoad()

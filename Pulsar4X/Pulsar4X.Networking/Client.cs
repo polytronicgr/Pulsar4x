@@ -24,7 +24,7 @@ namespace Pulsar4X.Networking
         private bool _istConnectedToGame;
         public bool IsConnectedToGame { get { return _istConnectedToGame; } private set { _istConnectedToGame = value; OnPropertyChanged(); } }
         public Entity CurrentFaction { get; set; }
-        public event TickEventHandler NetTickEvent;
+        public event TickStartEventHandler NetTickEvent;
         public string ConnectedToGameName { get; private set; }
         public DateTime ConnectedToDateTime { get; private set; }
         //private Dictionary<Guid, string> _factions; 
@@ -60,7 +60,7 @@ namespace Pulsar4X.Networking
             }
         }
 
-        protected override void HandleDiscoveryResponce(NetIncomingMessage message)
+        protected override void HandleDiscoveryResponse(NetIncomingMessage message)
         {
             ConnectedToGameName = message.ReadString();
             long ticks = message.ReadInt64();
@@ -85,13 +85,14 @@ namespace Pulsar4X.Networking
             delta += datedifference - delta;
             messageStr += " DateDifference: " + datedifference + " Total Delta: " + delta;
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Messages.Add((messageStr))));
-            if (NetTickEvent != null)
-            {
-                NetTickEvent.Invoke(ConnectedToDateTime, delta);
-            }
+            Game.AdvanceTime(delta);
+            //if (NetTickEvent != null)
+            //{
+            //    NetTickEvent.Invoke(ConnectedToDateTime, delta);
+            //}
         }
 
-        protected override void HandleFactionDataRequest(NetIncomingMessage message)
+        protected override void HandleFactionData(NetIncomingMessage message)
         {
             Guid entityID = new Guid(message.PeekBytes(16));
             HandleEntityData(message);

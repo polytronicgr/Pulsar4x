@@ -52,12 +52,16 @@ namespace Pulsar4X.WPFUI
             PlanetVM planet = (PlanetVM)sender;
             if (_canvasItemIndexes.ContainsKey(planet.ID) && e.PropertyName == "Position")        
             {
-                var planetItem = MapCanvas.Children[_canvasItemIndexes[planet.ID]];
-                int size = 10;
-                Point newPos = GetPosition(planet);
-                Canvas.SetLeft(planetItem, newPos.X - size / 2);
-                Canvas.SetTop(planetItem, newPos.Y - size / 2);
-                MapCanvas.UpdateLayout();
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    var planetItem = MapCanvas.Children[_canvasItemIndexes[planet.ID]];
+                    int size = 10;
+                    Point newPos = GetPosition(planet);
+                    Canvas.SetLeft(planetItem, newPos.X - size / 2);
+                    Canvas.SetTop(planetItem, newPos.Y - size / 2);
+                    MapCanvas.UpdateLayout();        
+                }));
+
             }
         }
 
