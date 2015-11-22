@@ -120,17 +120,26 @@ namespace Pulsar4X.Tests
             Assert.AreEqual(_nethost.Game.CurrentDateTime, _netClient.ConnectedToDateTime);
             Assert.AreEqual(_nethost.Game.CurrentDateTime, _netClient.Game.CurrentDateTime, "Pre Tick DateTime is not the same.");
 
-
+            Guid solGuid = _humanFaction.GetDataBlob<FactionInfoDB>().KnownSystems[0];
+            Guid planetGuid = Misc.LookupStarSystem(_gameHost.Systems, solGuid).SystemManager.GetFirstEntityWithDataBlob<AtmosphereDB>().Guid;
+            Entity hostPlanet = _gameHost.GlobalManager.GetEntityByGuid(planetGuid);
+            Entity clientPlanet = _gameClient.GlobalManager.GetEntityByGuid(planetGuid);
+            foreach (var kvp in hostPlanet.GetDataBlob<SystemBodyDB>().Minerals)
+            {
+                Assert.AreEqual(kvp.Value.Amount, clientPlanet.GetDataBlob<SystemBodyDB>().Minerals[kvp.Key].Amount);
+                Assert.AreEqual(kvp.Value.Accessibility, clientPlanet.GetDataBlob<SystemBodyDB>().Minerals[kvp.Key].Accessibility);
+            } 
             _nethost.Game.AdvanceTime(432000);
             
             System.Threading.Thread.Sleep(5000);
 
             Assert.AreEqual(_nethost.Game.CurrentDateTime, _netClient.Game.CurrentDateTime, "Post Tick DateTime is not the same.");
-            Guid solGuid = _humanFaction.GetDataBlob<FactionInfoDB>().KnownSystems[0];
-            Guid planetGuid = Misc.LookupStarSystem(_gameHost.Systems,solGuid).SystemManager.GetFirstEntityWithDataBlob<AtmosphereDB>().Guid;
-            Assert.AreEqual(_gameHost.GlobalManager.GetEntityByGuid(planetGuid).GetDataBlob<PositionDB>().Position, _gameClient.GlobalManager.GetEntityByGuid(planetGuid).GetDataBlob<PositionDB>().Position);
-            Assert.AreEqual(_gameHost.GlobalManager.GetEntityByGuid(planetGuid).DataBlobs.Count, _gameClient.GlobalManager.GetEntityByGuid(planetGuid).DataBlobs.Count);
 
+            Assert.AreEqual(hostPlanet.DataBlobs.Count, clientPlanet.DataBlobs.Count);
+            Assert.AreEqual(hostPlanet.GetDataBlob<PositionDB>().Position, clientPlanet.GetDataBlob<PositionDB>().Position);
+
+            Assert.AreEqual(hostPlanet.GetDataBlob<SystemBodyDB>().Minerals.Count, clientPlanet.GetDataBlob<SystemBodyDB>().Minerals.Count);
+          
         }
 
     }

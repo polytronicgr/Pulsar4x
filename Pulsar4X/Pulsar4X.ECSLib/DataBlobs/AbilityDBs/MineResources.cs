@@ -7,11 +7,14 @@ namespace Pulsar4X.ECSLib
     public class MineResourcesDB : BaseDataBlob
     {
 
-        private JDictionary<Guid, int> _resourcesPerEconTick;
-        public JDictionary<Guid, int> ResourcesPerEconTick { get { return _resourcesPerEconTick; } internal set { _resourcesPerEconTick = value; } }
+        /// <summary>
+        /// re-calced on game load.
+        /// </summary>
+        public JDictionary<Guid, int> ResourcesPerEconTick { get; internal set; }
 
         public MineResourcesDB()
         {
+            ResourcesPerEconTick = new JDictionary<Guid, int>();
         }
 
         /// <summary>
@@ -20,16 +23,16 @@ namespace Pulsar4X.ECSLib
         /// <param name="resources">values will be cast to ints!</param>
         public MineResourcesDB(Dictionary<Guid,double> resources)
         {
-            _resourcesPerEconTick = new JDictionary<Guid, int>();
+            ResourcesPerEconTick = new JDictionary<Guid, int>();
             foreach (var kvp in resources)
             {
-                _resourcesPerEconTick.Add(kvp.Key,(int)kvp.Value);
+                ResourcesPerEconTick.Add(kvp.Key, (int)kvp.Value);
             }
         }
 
         public MineResourcesDB(MineResourcesDB db)
         {
-            _resourcesPerEconTick = db.ResourcesPerEconTick;
+            ResourcesPerEconTick = db.ResourcesPerEconTick;
         }
 
         public override object Clone()
