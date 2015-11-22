@@ -100,6 +100,14 @@ namespace Pulsar4X.Tests
             Assert.IsTrue(testSystem.NameDB.DefaultName == _gameHost.Systems[0].NameDB.DefaultName);
             Assert.AreEqual(testSystem.SystemManager.Entities.Count, _gameHost.Systems[0].SystemManager.Entities.Count);
             Assert.IsTrue(_gameClient.Systems.Count >= syscount);
+            
+            Guid solGuid = _humanFaction.GetDataBlob<FactionInfoDB>().KnownSystems[0];
+            Guid planetGuid = Misc.LookupStarSystem(_gameHost.Systems, solGuid).SystemManager.GetFirstEntityWithDataBlob<AtmosphereDB>().Guid;
+
+            
+
+            //Assert.AreEqual(_gameHost.GlobalManager.GetEntityByGuid(planetGuid).DataBlobs.Count, _gameClient.GlobalManager.GetEntityByGuid(planetGuid).DataBlobs.Count);
+
         }
 
         [Test]
@@ -115,12 +123,13 @@ namespace Pulsar4X.Tests
 
             _nethost.Game.AdvanceTime(432000);
             
-            System.Threading.Thread.Sleep(6000);
+            System.Threading.Thread.Sleep(5000);
 
             Assert.AreEqual(_nethost.Game.CurrentDateTime, _netClient.Game.CurrentDateTime, "Post Tick DateTime is not the same.");
             Guid solGuid = _humanFaction.GetDataBlob<FactionInfoDB>().KnownSystems[0];
             Guid planetGuid = Misc.LookupStarSystem(_gameHost.Systems,solGuid).SystemManager.GetFirstEntityWithDataBlob<AtmosphereDB>().Guid;
             Assert.AreEqual(_gameHost.GlobalManager.GetEntityByGuid(planetGuid).GetDataBlob<PositionDB>().Position, _gameClient.GlobalManager.GetEntityByGuid(planetGuid).GetDataBlob<PositionDB>().Position);
+            Assert.AreEqual(_gameHost.GlobalManager.GetEntityByGuid(planetGuid).DataBlobs.Count, _gameClient.GlobalManager.GetEntityByGuid(planetGuid).DataBlobs.Count);
 
         }
 

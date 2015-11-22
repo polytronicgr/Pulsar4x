@@ -495,7 +495,7 @@ namespace Pulsar4X.ECSLib
                     {
                         entity = new Entity(manager, entityGuid, dataBlobs);
                     }
-
+                    ReCalcProcessor.ReCalcAbilities(entity);
                     return entity;
                 }
             }

@@ -123,6 +123,7 @@ namespace Pulsar4X.Networking
 
             var mStream = new MemoryStream(data);
             SaveGame.ImportEntity(Game, Game.GlobalManager, mStream);
+            
          }
 
         protected override void ConnectionStatusChanged(NetIncomingMessage message)
