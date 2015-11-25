@@ -53,7 +53,7 @@ namespace Pulsar4X.ViewModel
             _gameVM = gameVM; 
             NetworkClient netClient = new NetworkClient("localhost", 28888);            
             _gameVM.NetworkModule = netClient;
-            IsConnectedToGame = netClient.IsConnectedToGame;
+            IsConnectedToGame = netClient.HasFullDataset;
             PropertyChanged += new PropertyChangedEventHandler(OnConnectedToGameChanged);
             HostAddress = NetClient.HostAddress;
             HostPortNum = NetClient.PortNum;
@@ -66,7 +66,7 @@ namespace Pulsar4X.ViewModel
 
         private void OnConnectedToGameChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            if (NetClient.IsConnectedToGame)
+            if (propertyChangedEventArgs.PropertyName == "HasFullDataset" && NetClient.HasFullDataset)
             {
                 _gameVM.Game = NetClient.Game;
                 _gameVM.PlayerFaction = NetClient.CurrentFaction;

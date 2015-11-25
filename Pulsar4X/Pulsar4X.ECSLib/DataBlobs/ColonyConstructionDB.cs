@@ -18,12 +18,18 @@ namespace Pulsar4X.ECSLib
 
     public class JobBase
     {
+        [JsonProperty]
         public Guid ItemGuid { get; private set; }
         //yes this can be public set just fine. no reason not to here...
+        [JsonProperty]
         public ushort NumberOrdered { get; set; }
+        [JsonProperty]
         public ushort NumberCompleted { get; internal set; }
+        [JsonProperty]
         public int PointsLeft { get; internal set; }
+
         //again no reason this can't be public set
+        [JsonProperty]
         public bool Auto { get; set; }
 
         public JobBase(Guid guid, ushort numberOrderd, int jobPoints, bool auto)
@@ -39,11 +45,13 @@ namespace Pulsar4X.ECSLib
 
     public class ConstructionJob : JobBase
     {
-        
+        [JsonProperty]
         public ConstructionType ConstructionType { get; internal set; }
-
+        [JsonProperty]
         public JDictionary<Guid, int> MineralsRequired { get; internal set; }
+        [JsonProperty]
         public JDictionary<Guid, int> MaterialsRequired { get; internal set; }
+        [JsonProperty]
         public JDictionary<Guid, int> ComponentsRequired { get; internal set; }
 
         public ConstructionJob(Guid designGuid, ushort numberOrderd, int jobPoints, bool auto, 

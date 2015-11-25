@@ -21,8 +21,8 @@ namespace Pulsar4X.Networking
         public string HostAddress { get; set; }
         private bool _isConnectedToServer;
         public bool IsConnectedToServer { get { return _isConnectedToServer; } set { _isConnectedToServer = value; OnPropertyChanged(); } }
-        private bool _istConnectedToGame;
-        public bool IsConnectedToGame { get { return _istConnectedToGame; } private set { _istConnectedToGame = value; OnPropertyChanged(); } }
+        private bool _hasFullDataset;
+        public bool HasFullDataset { get { return _hasFullDataset; } private set { _hasFullDataset = value; OnPropertyChanged(); } }
         public Entity CurrentFaction { get; set; }
         public event TickStartEventHandler NetTickEvent;
         public string ConnectedToGameName { get; private set; }
@@ -135,7 +135,7 @@ namespace Pulsar4X.Networking
                     break;
                 case NetConnectionStatus.Disconnected:
                     IsConnectedToServer = false;
-                    IsConnectedToGame = false;
+                    HasFullDataset = false;
                     break;
             }
         }
@@ -173,8 +173,21 @@ namespace Pulsar4X.Networking
                     SendEntityDataRequest(entity.Guid);
                 }
             }
-            if (emptyEntities == 0)
-                IsConnectedToGame = true;
+            foreach (var system in Game.Systems)
+            {
+                foreach (var entity in system.SystemManager.Entities)
+                {
+                    if (entity != null && entity.DataBlobs.Count == 0)
+                    {
+                        emptyEntities++;
+                        SendEntityDataRequest(entity.Guid);
+                    }
+                }
+            }
+            if (emptyEntities == 0 && !HasFullDataset)
+            {
+                HasFullDataset = true;
+            }
         }
 
         //public void ReceveFactionList(DataMessage dataMessage)
