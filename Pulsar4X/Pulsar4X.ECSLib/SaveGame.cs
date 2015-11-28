@@ -96,7 +96,7 @@ namespace Pulsar4X.ECSLib
         /// <param name="progress"></param>
         /// <param name="compress"></param>
         [PublicAPI]
-        public static void ExportEntity([NotNull] Entity entity, [NotNull] Stream outputStream, IProgress<double> progress = null, bool compress = false)
+        public static void ExportEntity([NotNull] ProtoEntity entity, [NotNull] Stream outputStream, IProgress<double> progress = null, bool compress = false)
         {
             if (entity == null)
             {

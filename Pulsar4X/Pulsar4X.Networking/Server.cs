@@ -30,6 +30,7 @@ namespace Pulsar4X.Networking
             NetPeerObject.Start();
             _connectedFactions = new Dictionary<NetConnection, Guid>();
             _factionConnections = new Dictionary<Guid, List<NetConnection>>();
+            EntityDataSanitiser.Initialise(Game);
             StartListning();
             SetSendMessages();
         }
@@ -69,9 +70,10 @@ namespace Pulsar4X.Networking
             NetConnection recipient = message.SenderConnection;
             Guid entityID = new Guid(message.ReadBytes(16));
             Entity reqestedEntity = Game.GlobalManager.GetEntityByGuid(entityID);
+            ProtoEntity sanitisedEntity = EntityDataSanitiser.SanitisedEntity(reqestedEntity, _connectedFactions[recipient]);
             //TODO check that this faction is allowed to access this entity's Data.
             var mStream = new MemoryStream();
-            SaveGame.ExportEntity(reqestedEntity, mStream);
+            SaveGame.ExportEntity(sanitisedEntity, mStream);
             byte[] entityByteArray = mStream.ToArray();
 
             int len = entityByteArray.Length;

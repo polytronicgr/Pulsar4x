@@ -58,8 +58,8 @@ namespace Pulsar4X.Tests
         public void TestFactionEntitySerialisation()
         {
             var mStream = new MemoryStream();
-
-            SaveGame.ExportEntity(_humanFaction, mStream);
+            ProtoEntity protoEntity = EntityDataSanitiser.SanitisedEntity(_humanFaction, _humanFaction);
+            SaveGame.ExportEntity(protoEntity, mStream);
 
             byte[] entityByteArray = mStream.ToArray();
             var mStream2 = new MemoryStream(entityByteArray);

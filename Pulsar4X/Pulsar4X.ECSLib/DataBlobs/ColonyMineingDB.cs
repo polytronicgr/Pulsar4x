@@ -10,7 +10,8 @@ namespace Pulsar4X.ECSLib
         [JsonIgnore] //recalc on game load instead of saving.
         public JDictionary<Guid, int> MineingRate { get; set; }
 
-        //Is this legal?
+
+        [JsonIgnore]
         public JDictionary<Guid, MineralDepositInfo> MineralDeposit
         {
             get { return OwningEntity.GetDataBlob<ColonyInfoDB>().PlanetEntity.GetDataBlob<SystemBodyDB>().Minerals; }

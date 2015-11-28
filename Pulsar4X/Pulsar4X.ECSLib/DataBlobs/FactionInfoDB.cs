@@ -19,7 +19,7 @@ namespace Pulsar4X.ECSLib
         /// Other factions that this faction has had contact with. possibly this should be an contact type of entity/blob?
         /// </summary>
         [PublicAPI, JsonProperty]
-        public List<Guid> KnownFactions { get; internal set; }
+        public List<Entity> KnownFactions { get; internal set; }
 
 
         [PublicAPI, JsonProperty]
@@ -49,7 +49,7 @@ namespace Pulsar4X.ECSLib
             KnownSystems = knownSystems;
             Colonies = colonies;
             ShipClasses = shipClasses;
-            KnownFactions = new List<Guid>();
+            KnownFactions = new List<Entity>();
             ComponentDesigns = new JDictionary<Guid, Entity>();
         }
         
@@ -58,7 +58,7 @@ namespace Pulsar4X.ECSLib
         {
             Species = new List<Entity>(factionDB.Species);
             KnownSystems = new List<Guid>(factionDB.KnownSystems);
-            KnownFactions = new List<Guid>(factionDB.KnownFactions);
+            KnownFactions = new List<Entity>(factionDB.KnownFactions);
             Colonies = new List<Entity>(factionDB.Colonies);
             ShipClasses = new List<Entity>(factionDB.ShipClasses);
             ComponentDesigns = new JDictionary<Guid, Entity>(factionDB.ComponentDesigns);
