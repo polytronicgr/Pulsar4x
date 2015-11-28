@@ -49,7 +49,7 @@ namespace Pulsar4X.ViewModel
                 _visibleFactions = new List<Guid>();
                 foreach (var knownFaction in _playerFaction.GetDataBlob<FactionInfoDB>().KnownFactions)
                 {
-                    _visibleFactions.Add(knownFaction.Guid);
+                    _visibleFactions.Add(knownFaction);
                 }
                 _systems = new BindingList<SystemVM>();
                 _systemDictionary = new Dictionary<Guid, SystemVM>();

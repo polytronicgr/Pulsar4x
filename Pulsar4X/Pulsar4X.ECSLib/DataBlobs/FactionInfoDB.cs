@@ -6,55 +6,30 @@ namespace Pulsar4X.ECSLib
 {
     public class FactionInfoDB : BaseDataBlob
     {
-        [PublicAPI]
-        public List<Entity> Species
-        {
-            get { return _species; }
-            internal set { _species = value; }
-        }
-        [JsonProperty]
-        private List<Entity> _species;
+        /// <summary>
+        /// The different species that this faction has in its control.
+        /// </summary>
+        [PublicAPI, JsonProperty]
+        public List<Entity> Species { get; internal set; }
 
-        [PublicAPI]
-        public List<Guid> KnownSystems
-        {
-            get { return _knownSystems; }
-            internal set { _knownSystems = value; }
-        }
-        [JsonProperty]
-        private List<Guid> _knownSystems;
+        [PublicAPI, JsonProperty]
+        public List<Guid> KnownSystems { get; internal set; }
 
-        [PublicAPI]
-        public List<Entity> KnownFactions 
-        {
-            get {return _knownFactions;} 
-            internal set { _knownFactions = value; }
-        }
-        [JsonProperty]
-        private List<Entity> _knownFactions;
+        /// <summary>
+        /// Other factions that this faction has had contact with. possibly this should be an contact type of entity/blob?
+        /// </summary>
+        [PublicAPI, JsonProperty]
+        public List<Guid> KnownFactions { get; internal set; }
 
 
-        [PublicAPI]
-        public List<Entity> Colonies
-        {
-            get { return _colonies; }
-            internal set { _colonies = value; }
-        }
-        [JsonProperty]
-        private List<Entity> _colonies;
+        [PublicAPI, JsonProperty]
+        public List<Entity> Colonies { get; internal set; }
 
-        [PublicAPI]
-        public List<Entity> ShipClasses
-        {
-            get { return _shipClasses; }
-            internal set { _shipClasses = value; }
-        }
-        [JsonProperty]
-        private List<Entity> _shipClasses;
+        [PublicAPI, JsonProperty]
+        public List<Entity> ShipClasses { get; internal set; }
 
-        [PublicAPI]
-        [JsonProperty]
-        public Dictionary<Guid, Entity> ComponentDesigns { get; internal set; }
+        [PublicAPI, JsonProperty]
+        public JDictionary<Guid, Entity> ComponentDesigns { get; internal set; }
         
 
 
@@ -74,7 +49,7 @@ namespace Pulsar4X.ECSLib
             KnownSystems = knownSystems;
             Colonies = colonies;
             ShipClasses = shipClasses;
-            KnownFactions = new List<Entity>();
+            KnownFactions = new List<Guid>();
             ComponentDesigns = new JDictionary<Guid, Entity>();
         }
         
@@ -83,10 +58,10 @@ namespace Pulsar4X.ECSLib
         {
             Species = new List<Entity>(factionDB.Species);
             KnownSystems = new List<Guid>(factionDB.KnownSystems);
-            KnownFactions = new List<Entity>(factionDB.KnownFactions);
+            KnownFactions = new List<Guid>(factionDB.KnownFactions);
             Colonies = new List<Entity>(factionDB.Colonies);
             ShipClasses = new List<Entity>(factionDB.ShipClasses);
-
+            ComponentDesigns = new JDictionary<Guid, Entity>(factionDB.ComponentDesigns);
         }
 
         public override object Clone()

@@ -24,7 +24,7 @@ namespace Pulsar4X.ECSLib
             //add this faction to the GM's known faction list.  
             Entity gameMaster;
             game.GlobalManager.FindEntityByGuid(game.GameMasterFaction, out gameMaster);
-            gameMaster.GetDataBlob<FactionInfoDB>().KnownFactions.Add(factionEntity);
+            gameMaster.GetDataBlob<FactionInfoDB>().KnownFactions.Add(factionEntity.Guid);
 
 
             return factionEntity;

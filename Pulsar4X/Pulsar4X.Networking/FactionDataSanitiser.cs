@@ -15,14 +15,14 @@ namespace Pulsar4X.Networking
         private static BaseDataBlob CurrentDataBlob { get; set; }
 
         /// <summary>
-        /// Add Datablobs to this dictionary that need to be sanitised
+        /// Add Datablobs to this dictionary that need to be sanitised (and write the datablob specific sanitiser)
         /// </summary>
         public static void Initialise()
         {
             TypeProcessorMap = new Dictionary<Type, BaseDataBlob>
             {
-                { typeof(NameDB), NameDBSanitiser(CurrentDataBlob) }, 
-                { typeof(AuthDB), AuthDBSanitiser(CurrentDataBlob) }, 
+                { typeof(NameDB), NameDBSanitiser() }, 
+                { typeof(AuthDB), AuthDBSanitiser() }, 
         
             };
         }
@@ -34,6 +34,7 @@ namespace Pulsar4X.Networking
 
             foreach (var datablob in entity.DataBlobs)
             {
+                CurrentDataBlob = datablob;
                 var t = datablob.GetType();
                 if (TypeProcessorMap.ContainsKey(t))
                     dataBlobs.Add(TypeProcessorMap[t]);              
@@ -47,19 +48,18 @@ namespace Pulsar4X.Networking
         }
 
 
-
-        private static NameDB NameDBSanitiser(BaseDataBlob nameDB)
+        private static NameDB NameDBSanitiser()
         {
-            NameDB actualNameDB = (NameDB)nameDB;
+            NameDB actualNameDB = (NameDB)CurrentDataBlob;
             NameDB newNameDB = new NameDB(actualNameDB.GetName(FactionEntity));
             newNameDB.SetName(FactionEntity, actualNameDB.GetName(FactionEntity));
 
             return newNameDB;
         }
 
-        private static AuthDB AuthDBSanitiser(BaseDataBlob authDB)
+        private static AuthDB AuthDBSanitiser()
         {
-            AuthDB actualNameDB = (AuthDB)authDB;
+            AuthDB actualNameDB = (AuthDB)CurrentDataBlob;
             AuthDB newAuthDB = new AuthDB();
           
             return newAuthDB;
