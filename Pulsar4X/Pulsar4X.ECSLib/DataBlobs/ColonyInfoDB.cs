@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Pulsar4X.ECSLib
 {
@@ -10,48 +11,44 @@ namespace Pulsar4X.ECSLib
         /// Species Entity and amount
         /// </summary>
         [JsonProperty]
-        public Dictionary<Entity, long> Population { get; internal set; } = new Dictionary<Entity, long>();
+        internal Dictionary<Entity, long> population { get; set; } = new Dictionary<Entity, long>();
+        public ReadOnlyDictionary<Entity, long> Population => new ReadOnlyDictionary<Entity, long>(population);
 
         /// <summary>
         /// Raw Mined minerals. Mines push here, Refinary pulls from here, Construction pulls from here.
         /// </summary>
         [JsonProperty]
-        public Dictionary<Guid, int> MineralStockpile { get; internal set; } = new Dictionary<Guid, int>();
+        internal Dictionary<Guid, int> mineralStockpile { get; set; } = new Dictionary<Guid, int>();
+        public ReadOnlyDictionary<Guid, int> MineralStockpile => new ReadOnlyDictionary<Guid, int>(mineralStockpile);
 
         /// <summary>
-        ///refined Fuel, or refined minerals if the modder so desires.
+        /// Refined Fuel, or refined minerals if the modder so desires.
         /// Refinary pushes here, Construction pulls from here.
         /// </summary>
         [JsonProperty]
-        public Dictionary<Guid, int> RefinedStockpile { get; internal set; } = new Dictionary<Guid, int>();
+        internal Dictionary<Guid, int> refinedStockpile { get; set; } = new Dictionary<Guid, int>();
+        public ReadOnlyDictionary<Guid, int> RefinedStockpile => new ReadOnlyDictionary<Guid, int>(refinedStockpile);
 
         /// <summary>
         /// constructed parts stockpile.
         /// Construction pulls and pushes from here.
         /// </summary>
         [JsonProperty]
-        public Dictionary<Guid, int> ComponentStockpile { get; internal set; } = new Dictionary<Guid, int>();
+        internal Dictionary<Guid, int> componentStockpile { get; set; } = new Dictionary<Guid, int>();
+        public ReadOnlyDictionary<Guid, int> ComponentStockpile => new ReadOnlyDictionary<Guid, int>(componentStockpile);
 
         /// <summary>
         /// Construction pushes here.
         /// </summary>
         [JsonProperty]
-        public Dictionary<Guid, float> OrdinanceStockpile { get; internal set; } = new Dictionary<Guid, float>();
-
-        /// <summary>
-        /// Construction *adds* to this list. damaged and partialy constructed fighters will go here too, but shouldnt launch.
-        /// </summary>
-        [JsonProperty]
-        public List<Entity> FighterStockpile { get; internal set; } = new List<Entity>();
+        internal Dictionary<Guid, float> ordnanceStockpile { get; set; } = new Dictionary<Guid, float>();
+        public ReadOnlyDictionary<Guid, float> OrdnanceStockpile => new ReadOnlyDictionary<Guid, float>(ordnanceStockpile);
 
         [JsonProperty]
-        public Dictionary<Entity, int> Installations { get; internal set; } = new Dictionary<Entity, int>();
+        public Dictionary<Entity, int> Installations { get; set; } = new Dictionary<Entity, int>();
 
         [JsonProperty]
-        public Entity PlanetEntity { get; internal set; } = Entity.InvalidEntity;
-
-        [JsonProperty]
-        public List<Entity> Scientists { get; internal set; } = new List<Entity>();
+        public List<Entity> Scientists { get; set; } = new List<Entity>();
 
         public ColonyInfoDB() { }
     
@@ -60,16 +57,14 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <param name="popCount">Species and population number</param>
         /// <param name="planet"> the planet entity this colony is on</param>
-        public ColonyInfoDB(Dictionary<Entity, long> popCount, Entity planet)
+        public ColonyInfoDB(IDictionary<Entity, long> popCount, Entity planet)
         {
-            Population = popCount;
-            PlanetEntity = planet;
+            population = new Dictionary<Entity, long>(popCount);
             
-            MineralStockpile =  new Dictionary<Guid, int>();
-            RefinedStockpile = new Dictionary<Guid, int>();
-            ComponentStockpile = new Dictionary<Guid, int>();
-            OrdinanceStockpile = new Dictionary<Guid, float>();
-            FighterStockpile = new List<Entity>();
+            mineralStockpile =  new Dictionary<Guid, int>();
+            refinedStockpile = new Dictionary<Guid, int>();
+            componentStockpile = new Dictionary<Guid, int>();
+            ordnanceStockpile = new Dictionary<Guid, float>();
             Installations = new Dictionary<Entity, int>();
             Scientists = new List<Entity>();
         }
@@ -82,13 +77,11 @@ namespace Pulsar4X.ECSLib
 
         public ColonyInfoDB(ColonyInfoDB colonyInfoDB)
         {
-            Population = new Dictionary<Entity, long>(colonyInfoDB.Population);
-            PlanetEntity = colonyInfoDB.PlanetEntity;
-            MineralStockpile = new Dictionary<Guid, int>(colonyInfoDB.MineralStockpile);
-            RefinedStockpile = new Dictionary<Guid, int>(colonyInfoDB.RefinedStockpile);
-            ComponentStockpile = new Dictionary<Guid, int>(colonyInfoDB.ComponentStockpile);
-            OrdinanceStockpile = new Dictionary<Guid, float>(colonyInfoDB.OrdinanceStockpile);
-            FighterStockpile = new List<Entity>(colonyInfoDB.FighterStockpile);
+            population = new Dictionary<Entity, long>(colonyInfoDB.Population);
+            mineralStockpile = new Dictionary<Guid, int>(colonyInfoDB.mineralStockpile);
+            refinedStockpile = new Dictionary<Guid, int>(colonyInfoDB.refinedStockpile);
+            componentStockpile = new Dictionary<Guid, int>(colonyInfoDB.componentStockpile);
+            ordnanceStockpile = new Dictionary<Guid, float>(colonyInfoDB.ordnanceStockpile);
             Installations = new Dictionary<Entity, int>(colonyInfoDB.Installations);
             Scientists = new List<Entity>(colonyInfoDB.Scientists);
         }

@@ -10,10 +10,7 @@ namespace Pulsar4X.ECSLib
         private static Entity CurrentEntity { get; set; }
         internal static Dictionary<Type, Delegate> TypeProcessorMap = new Dictionary<Type, Delegate>
             {
-                { typeof(ColonyMinesDB), new Action<ColonyMinesDB>(processor => { MineProcessor.CalcMaxRate(CurrentEntity);}) },
-                { typeof(PropulsionDB), new Action<PropulsionDB>(processor => { ShipMovementProcessor.CalcMaxSpeed(CurrentEntity); }) },
-                { typeof(ColonyRefiningDB), new Action<ColonyRefiningDB>(processor => { RefiningProcessor.ReCalcRefiningRate(CurrentEntity); }) },
-                { typeof(ColonyConstructionDB), new Action<ColonyConstructionDB>(processor => { ConstructionProcessor.ReCalcConstructionRate(CurrentEntity); }) },
+                { typeof(PropulsionDB), new Action<PropulsionDB>(processor => { MovementProcessor.CalcMaxSpeed(CurrentEntity); }) },
             };
 
         internal static void ReCalcAbilities(Entity entity)

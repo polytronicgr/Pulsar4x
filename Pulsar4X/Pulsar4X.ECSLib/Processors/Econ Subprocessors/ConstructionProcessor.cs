@@ -9,22 +9,22 @@ namespace Pulsar4X.ECSLib
     {
         internal static void ConstructStuff(Entity colony, Game game)
         {
-            Dictionary<Guid, int> mineralStockpile = colony.GetDataBlob<ColonyInfoDB>().MineralStockpile;
-            Dictionary<Guid, int> materialStockpile = colony.GetDataBlob<ColonyInfoDB>().RefinedStockpile;
-            Dictionary<Guid, int> componentStockpile = colony.GetDataBlob<ColonyInfoDB>().ComponentStockpile;
+            Dictionary<Guid, int> mineralStockpile = colony.GetDataBlob<ColonyInfoDB>().mineralStockpile;
+            Dictionary<Guid, int> materialStockpile = colony.GetDataBlob<ColonyInfoDB>().refinedStockpile;
+            Dictionary<Guid, int> componentStockpile = colony.GetDataBlob<ColonyInfoDB>().componentStockpile;
 
             var colonyConstruction = colony.GetDataBlob<ColonyConstructionDB>();
             var factionInfo = colony.GetDataBlob<OwnedDB>().ObjectOwner.GetDataBlob<FactionInfoDB>();
 
 
-            var pointRates = new Dictionary<ConstructionType, int>(colonyConstruction.ConstructionRates);
+            var pointRates = new Dictionary<IndustryType, int>(colonyConstruction.ConstructionRates);
             int maxPoints = colonyConstruction.PointsPerTick;
 
             List<ConstructionJob> constructionJobs = colonyConstruction.JobBatchList;
             foreach (ConstructionJob batchJob in constructionJobs.ToArray())
             {
                 var designInfo = factionInfo.ComponentDesigns[batchJob.ItemGuid].GetDataBlob<ComponentInfoDB>();
-                ConstructionType conType = batchJob.ConstructionType;
+                IndustryType conType = batchJob.IndustryType;
                 //total number of resources requred for a single job in this batch
                 int resourcePoints = designInfo.MinerialCosts.Sum(item => item.Value);
                 resourcePoints += designInfo.MaterialCosts.Sum(item => item.Value);
@@ -70,7 +70,7 @@ namespace Pulsar4X.ECSLib
             batchJob.MineralsRequired = designInfo.MinerialCosts;
             batchJob.MineralsRequired = designInfo.MaterialCosts;
             batchJob.MineralsRequired = designInfo.ComponentCosts;
-            if (batchJob.ConstructionType == ConstructionType.Installations)
+            if (batchJob.IndustryType == IndustryType.Installations)
             {
                 var factionInfo = colonyEntity.GetDataBlob<OwnedDB>().ObjectOwner.GetDataBlob<FactionInfoDB>();
                 Entity facilityDesignEntity = factionInfo.ComponentDesigns[batchJob.ItemGuid];
@@ -114,26 +114,26 @@ namespace Pulsar4X.ECSLib
             var factories = new List<Entity>();
             foreach (Entity inst in installations)
             {
-                if (inst.HasDataBlob<ConstructionAbilityDB>())
+                if (inst.HasDataBlob<IndustryAbilityDB>())
                     factories.Add(inst);
             }
 
-            var typeRate = new Dictionary<ConstructionType, int>{
-                {ConstructionType.Ordnance, 0}, 
-                {ConstructionType.Installations, 0}, 
-                {ConstructionType.Fighters, 0},
-                {ConstructionType.ShipComponents, 0},
-                {ConstructionType.Ships, 0},
+            var typeRate = new Dictionary<IndustryType, int>{
+                {IndustryType.Ordnance, 0}, 
+                {IndustryType.Installations, 0}, 
+                {IndustryType.Fighters, 0},
+                {IndustryType.ComponentConstruction, 0},
+                {IndustryType.Ships, 0},
             };
 
             foreach (Entity factory in factories)
             {
-                if (factory.HasDataBlob<ConstructionAbilityDB>())
+                if (factory.HasDataBlob<IndustryAbilityDB>())
                 {
-                    var constructionAbilityDB = factory.GetDataBlob<ConstructionAbilityDB>();
-                    foreach (KeyValuePair<ConstructionType, int> keyValuePair in typeRate)
+                    var constructionAbilityDB = factory.GetDataBlob<IndustryAbilityDB>();
+                    foreach (KeyValuePair<IndustryType, int> keyValuePair in typeRate)
                     {
-                        ConstructionType currentType = keyValuePair.Key;
+                        IndustryType currentType = keyValuePair.Key;
                         typeRate[currentType] += constructionAbilityDB.GetConstructionPoints(currentType);
                     }
                 }

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 
 namespace Pulsar4X.ECSLib
 {
-
-    [StaticDataAttribute(true, IDPropertyName = "ID")]
+    [StaticData(true, IDPropertyName = "ID")]
     public struct InstallationSD
     {
         public string Name;
@@ -15,7 +14,7 @@ namespace Pulsar4X.ECSLib
         /// the amount of pop required for this installation to operate.
         /// </summary>
         public int PopulationRequired;
-        public int CargoSize;
+        public CargoDefinition Cargo;
         public Dictionary<AbilityType, int> BaseAbilityAmounts;
         
         /// <summary>

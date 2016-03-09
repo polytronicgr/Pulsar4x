@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -21,33 +22,35 @@ namespace Pulsar4X.ECSLib
 
             if (game.Settings.EnableMultiThreading ?? false)
             {
-                Parallel.ForEach(systems, system => ProcessSystem(system, game));
+                Parallel.ForEach(systems, system => ProcessSystem(game, system));
             }
             else
             {
-                foreach (var system in systems) //TODO thread this
+                foreach (var system in systems)
                 {
-                    ProcessSystem(system, game);
+                    ProcessSystem(game, system);
                 }
             }
         }
 
-        private void ProcessSystem(StarSystem system, Game game)
+        private void ProcessSystem(Game game, StarSystem system)
         {
-            TechProcessor.ProcessSystem(system, game);
+            IndustrySubprocessor.Process(game, system);
 
-            foreach (Entity colonyEntity in system.SystemManager.GetAllEntitiesWithDataBlob<ColonyMinesDB>())
+
+            List<Entity> allPlanets = system.SystemManager.GetAllEntitiesWithDataBlob<SystemBodyDB>().Where(body =>
             {
-                MineProcessor.MineResources(colonyEntity);
-            }
-            foreach (Entity colonyEntity in system.SystemManager.GetAllEntitiesWithDataBlob<ColonyRefiningDB>())
+                var bodyDBType = body.GetDataBlob<SystemBodyDB>().Type;
+                return bodyDBType != BodyType.Moon && bodyDBType != BodyType.Asteroid && bodyDBType != BodyType.Comet;
+            }).ToList();
+            foreach (Entity colonyEntity in system.SystemManager.GetAllEntitiesWithDataBlob<RuinsDB>())
             {
-                RefiningProcessor.RefineMaterials(colonyEntity, game);
+                // Process Ruins
             }
-            foreach (Entity colonyEntity in system.SystemManager.GetAllEntitiesWithDataBlob<ColonyConstructionDB>())
-            {
-                ConstructionProcessor.ConstructStuff(colonyEntity, game);
-            }
+            
+            // Process Trade Goods
+            //
+            TechProcessor.ProcessSystem(system, game);
         }
     }
 }

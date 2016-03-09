@@ -18,15 +18,10 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         private DateTime _lastRun = DateTime.MinValue;
 
-        internal OrbitProcessor()
-        {
-            
-        }
-
         /// <summary>
         /// Function called by Game.RunProcessors to run this processor.
         /// </summary>
-        internal int Process(Game game, List<StarSystem> systems, int deltaSeconds)
+        internal int Process(Game game, List<StarSystem> systems)
         {
             DateTime currentTime = game.CurrentDateTime;
 
@@ -101,10 +96,14 @@ namespace Pulsar4X.ECSLib
             // Get our Parent-Relative coordinates.
             try
             {
+                // Parent-Relative coordinates
                 Vector4 newPosition = GetPosition(entityOrbitDB, game.CurrentDateTime);
+                // Absolute coordinates
+                newPosition += entityPosition.Position;
 
-                // Get our Absolute coordinates.
-                entityPosition.Position = parentPositionDB.Position + newPosition;
+                var newPositionDB = new PositionDB(newPosition, entityPosition.SystemGuid);
+
+                MovementProcessor.UpdateEntityPosition(entity, newPositionDB);
 
                 Interlocked.Increment(ref orbitsProcessed);
             }

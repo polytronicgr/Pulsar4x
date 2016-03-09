@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Pulsar4X.ECSLib
 {
-    [StaticDataAttribute(true, IDPropertyName = "ID")]
+    [StaticData(true, IDPropertyName = "ID")]
     public struct ComponentTemplateSD
     {
         public string Name;
@@ -18,12 +18,13 @@ namespace Pulsar4X.ECSLib
         public string CreditCostFormula;
         public string BuildPointCostFormula;
         //if it can be fitted to a ship as a ship component, on a planet as an installation, can be cargo etc.
-        public ComponentMountType MountType; 
+        public ComponentMountType MountType;
+        public CargoType CargoType;
 
         public List<ComponentTemplateAbilitySD> ComponentAbilitySDs;
     }
 
-    [StaticDataAttribute(false)]
+    [StaticData(false)]
     public struct ComponentTemplateAbilitySD
     {
         public string Name;

@@ -10,12 +10,16 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         public int StorageCapacity { get; internal set; }
 
-        public CargoStorageAbilityDB(double storageCapacity) : this((int)storageCapacity) { }
+        [JsonProperty]
+        public float LoadingSpeedMultiplier { get; internal set; }
+
+        public CargoStorageAbilityDB(double storageCapacity, double loadingSpeedMultiplier) : this((int)storageCapacity, (float)loadingSpeedMultiplier) { }
 
         [JsonConstructor]
-        public CargoStorageAbilityDB(int storageCapacity = 0)
+        public CargoStorageAbilityDB(int storageCapacity = 0, float loadingSpeedMultiplier = 0)
         {
             StorageCapacity = storageCapacity;
+            LoadingSpeedMultiplier = loadingSpeedMultiplier;
         }
 
         public override object Clone()

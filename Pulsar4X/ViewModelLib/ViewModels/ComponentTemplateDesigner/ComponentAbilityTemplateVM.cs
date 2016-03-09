@@ -267,7 +267,7 @@ namespace Pulsar4X.ViewModel
                 typeof(CargoStorageAbilityDB).ToString(),
                 typeof(CloakAbilityDB).ToString(),
                 typeof(CommandAbilityDB).ToString(),
-                typeof(ConstructionAbilityDB).ToString(),
+                typeof(IndustryAbilityDB).ToString(),
                 typeof(DamageControlAbilityDB).ToString(),
                 typeof(ElectronicDACAbilityDB).ToString(),
                 typeof(EnginePowerAbilityDB).ToString(),
@@ -300,7 +300,7 @@ namespace Pulsar4X.ViewModel
             var typelist = new List<Type>
             {
                 typeof(None),
-                typeof(ConstructionType)
+                typeof(IndustryType)
             };
 
             return typelist;

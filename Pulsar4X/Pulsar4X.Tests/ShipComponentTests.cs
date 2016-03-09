@@ -419,7 +419,7 @@ namespace Pulsar4X.Tests
             instalationConstructionAbility.Name = "Construction Points";
             instalationConstructionAbility.Description = "";
             instalationConstructionAbility.GuiHint = GuiHint.None;
-            instalationConstructionAbility.AbilityDataBlobType = typeof(ConstructionAbilityDB).ToString();
+            instalationConstructionAbility.AbilityDataBlobType = typeof(IndustryAbilityDB).ToString();
             instalationConstructionAbility.AbilityFormula = "DataBlobArgs(Ability(0))";
             component.ComponentAbilitySDs.Add(instalationConstructionAbility);
 
@@ -427,7 +427,7 @@ namespace Pulsar4X.Tests
             shipComponentsConstructionAbility.Name = "Construction Points";
             shipComponentsConstructionAbility.Description = "";
             shipComponentsConstructionAbility.GuiHint = GuiHint.None;
-            shipComponentsConstructionAbility.AbilityDataBlobType = typeof(ConstructionAbilityDB).ToString();
+            shipComponentsConstructionAbility.AbilityDataBlobType = typeof(IndustryAbilityDB).ToString();
             shipComponentsConstructionAbility.AbilityFormula = "DataBlobArgs(Ability(0))";
             component.ComponentAbilitySDs.Add(shipComponentsConstructionAbility);
 
@@ -435,7 +435,7 @@ namespace Pulsar4X.Tests
             shipComponentsConstructionAbility.Name = "Construction Points";
             shipComponentsConstructionAbility.Description = "";
             shipComponentsConstructionAbility.GuiHint = GuiHint.None;
-            shipComponentsConstructionAbility.AbilityDataBlobType = typeof(ConstructionAbilityDB).ToString();
+            shipComponentsConstructionAbility.AbilityDataBlobType = typeof(IndustryAbilityDB).ToString();
             shipComponentsConstructionAbility.AbilityFormula = "DataBlobArgs(Ability(0))";
             component.ComponentAbilitySDs.Add(fighterConstructionAbility);
 
@@ -443,7 +443,7 @@ namespace Pulsar4X.Tests
             shipComponentsConstructionAbility.Name = "Construction Points";
             shipComponentsConstructionAbility.Description = "";
             shipComponentsConstructionAbility.GuiHint = GuiHint.None;
-            shipComponentsConstructionAbility.AbilityDataBlobType = typeof(ConstructionAbilityDB).ToString();
+            shipComponentsConstructionAbility.AbilityDataBlobType = typeof(IndustryAbilityDB).ToString();
             shipComponentsConstructionAbility.AbilityFormula = "DataBlobArgs(Ability(0))";
             component.ComponentAbilitySDs.Add(ammoConstructionAbility);
 
