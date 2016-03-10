@@ -5,7 +5,7 @@
     /// </summary>
     public class DamageDB : BaseDataBlob
     {
-         public int DamageControlRating { get; set; }
+        public int DamageControlRating { get; set; }
 
         public DamageDB()
         {

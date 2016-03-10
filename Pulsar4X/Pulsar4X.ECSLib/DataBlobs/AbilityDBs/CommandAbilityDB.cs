@@ -15,7 +15,8 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         public CommandType CommandType { get; internal set; }
 
-        public CommandAbilityDB(CommandType commandType)
+        [JsonConstructor]
+        public CommandAbilityDB(CommandType commandType = CommandType.Invalid)
         {
             CommandType = commandType;
         }

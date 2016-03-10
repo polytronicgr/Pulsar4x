@@ -87,7 +87,6 @@ namespace Pulsar4X.ECSLib
             AbilityBonuses.Add(AbilityType.Research, researchBonus);
             AbilityBonuses.Add(AbilityType.ShipAssembly, shipAsseblyBonus);
             AbilityBonuses.Add(AbilityType.Terraforming, terraformingBonus);
-
         }
 
         public FactionAbilitiesDB(FactionAbilitiesDB db)
