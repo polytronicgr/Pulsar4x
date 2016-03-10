@@ -6,32 +6,16 @@ namespace Pulsar4X.ECSLib
     {
         [JsonProperty]
         public double FuelUsePerHour { get; internal set; }
-
-        [JsonProperty]
-        public float CurrentFlowPercent { get; internal set; }
-
-        public void SetData(double data)
-        {
-            FuelUsePerHour = data;
-        }
-
-        public FuelConsumptionAbilityDB()
-        {
-        }
-
-        public FuelConsumptionAbilityDB(double fuelUsagePerHour)
+        
+        [JsonConstructor]
+        public FuelConsumptionAbilityDB(double fuelUsagePerHour = 0)
         {
             FuelUsePerHour = fuelUsagePerHour;
         }
 
-        public FuelConsumptionAbilityDB(FuelConsumptionAbilityDB db)
-        {
-            FuelUsePerHour = db.FuelUsePerHour;
-        }
-
         public override object Clone()
         {
-            return new FuelConsumptionAbilityDB(this);
+            return new FuelConsumptionAbilityDB(FuelUsePerHour);
         }
     }
 }

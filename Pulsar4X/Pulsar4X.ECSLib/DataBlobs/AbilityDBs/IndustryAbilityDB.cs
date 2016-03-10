@@ -15,11 +15,11 @@ namespace Pulsar4X.ECSLib
     {
         [JsonProperty]
         internal Dictionary<IndustryType, int> industryRates { get; set; } = new Dictionary<IndustryType, int>();
-        public ReadOnlyDictionary<IndustryType, int> IndustryRates => new ReadOnlyDictionary<IndustryType, int>(industryRates);
+        public IReadOnlyDictionary<IndustryType, int> IndustryRates => industryRates;
 
         [JsonProperty]
         internal Dictionary<Guid, float> industryMultipliers { get; set; } = new Dictionary<Guid, float>();
-        public ReadOnlyDictionary<Guid, float> IndustryMultipliers => new ReadOnlyDictionary<Guid, float>(industryMultipliers);
+        public IReadOnlyDictionary<Guid, float> IndustryMultipliers => industryMultipliers;
 
         [JsonProperty]
         public bool CanPullFromHost { get; internal set; }
@@ -46,7 +46,7 @@ namespace Pulsar4X.ECSLib
 
         public override object Clone()
         {
-            return new IndustryAbilityDB(IndustryRates, IndustryMultipliers);
+            return new IndustryAbilityDB(industryRates, industryMultipliers, CanPullFromHost);
         }
 
         /// <summary>

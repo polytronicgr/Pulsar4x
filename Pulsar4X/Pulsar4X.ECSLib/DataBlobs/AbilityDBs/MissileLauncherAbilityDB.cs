@@ -10,23 +10,16 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         public double ReloadRate { get; internal set; }
 
-        public MissileLauncherAbilityDB()
-        {
-        }
-
-        public MissileLauncherAbilityDB(double missileSize)
+        [JsonConstructor]
+        public MissileLauncherAbilityDB(double missileSize = 0, double reloadRate = 0)
         {
             MissileSize = missileSize;
-        }
-
-        public MissileLauncherAbilityDB(MissileLauncherAbilityDB db)
-        {
-            MissileSize = db.MissileSize;
+            ReloadRate = reloadRate;
         }
 
         public override object Clone()
         {
-            return new MissileLauncherAbilityDB(this);
+            return new MissileLauncherAbilityDB(MissileSize, ReloadRate);
         }
     }
 }

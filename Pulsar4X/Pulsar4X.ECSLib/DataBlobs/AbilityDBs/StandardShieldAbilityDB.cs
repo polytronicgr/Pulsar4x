@@ -9,12 +9,11 @@ namespace Pulsar4X.ECSLib
 
         [JsonProperty]
         public int ShieldRechargeRate { get; internal set; }
-
-        public StandardShieldAbilityDB() { }
-
+        
         public StandardShieldAbilityDB(double shieldHP, double shieldRechargeRate) : this((int)shieldHP, (int)shieldRechargeRate) { }
 
-        public StandardShieldAbilityDB(int shieldHP, int shieldRechargeRate)
+        [JsonConstructor]
+        public StandardShieldAbilityDB(int shieldHP = 0, int shieldRechargeRate = 0)
         {
             ShieldHP = shieldHP;
             ShieldRechargeRate = shieldRechargeRate;

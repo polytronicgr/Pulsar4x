@@ -9,11 +9,10 @@ namespace Pulsar4X.ECSLib
 
         [JsonProperty]
         public int ElectroMagneticSig { get; internal set; }
-
-        public SensorSignatureDB() { }
-
+        
         public SensorSignatureDB(double thermalSig, double electroMagneticSig) : this((int)thermalSig, (int)electroMagneticSig) { }
 
+        [JsonConstructor]
         public SensorSignatureDB(int thermalSig, int electroMagneticSig)
         {
             ThermalSig = thermalSig;
