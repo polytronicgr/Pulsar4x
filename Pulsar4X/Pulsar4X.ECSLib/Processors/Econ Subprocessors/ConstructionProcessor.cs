@@ -134,7 +134,7 @@ namespace Pulsar4X.ECSLib
                     foreach (KeyValuePair<IndustryType, int> keyValuePair in typeRate)
                     {
                         IndustryType currentType = keyValuePair.Key;
-                        typeRate[currentType] += constructionAbilityDB.GetConstructionPoints(currentType);
+                        typeRate[currentType] += constructionAbilityDB.GetIndustryRate(currentType);
                     }
                 }
             }

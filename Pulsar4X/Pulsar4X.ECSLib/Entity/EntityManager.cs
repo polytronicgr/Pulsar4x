@@ -192,6 +192,7 @@ namespace Pulsar4X.ECSLib
             return dataBlobs;
         }
 
+        [CanBeNull]
         internal T GetDataBlob<T>(int entityID) where T : BaseDataBlob
         {
             return (T)_dataBlobMap[GetTypeIndex<T>()][entityID];

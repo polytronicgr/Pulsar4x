@@ -73,7 +73,7 @@ namespace Pulsar4X.ECSLib
         private readonly OrbitProcessor _orbitProcessor = new OrbitProcessor();
 
         [JsonProperty]
-        private readonly EconProcessor _econProcessor = new EconProcessor();
+        private readonly EconProcessor _econProcessor;
 
         #endregion
 
@@ -89,6 +89,7 @@ namespace Pulsar4X.ECSLib
 
         internal Game()
         {
+            _econProcessor = new EconProcessor(this);
             GlobalManager = new EntityManager(this);
         }
 

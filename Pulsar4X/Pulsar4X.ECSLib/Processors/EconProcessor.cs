@@ -10,6 +10,13 @@ namespace Pulsar4X.ECSLib
     {
         [JsonProperty]
         private DateTime _lastRun = DateTime.MinValue;
+        private IndustrySubprocessor _industrySubprocessor;
+
+        internal EconProcessor(Game game)
+        {
+            _industrySubprocessor = new IndustrySubprocessor(game);
+        }
+
 
         internal void Process(Game game, List<StarSystem> systems, int deltaSeconds)
         {

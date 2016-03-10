@@ -5,6 +5,8 @@ namespace Pulsar4X.ECSLib
     {
         NoEventType,
 
+        CargoFull,
+
         #region Shipyard Events
 
         ShipConstructionBegan,
@@ -59,7 +61,10 @@ namespace Pulsar4X.ECSLib
         ProductionStarted,
         ProductionCompleted,
         ProductionQueueEmpty,
-        MineralShortage,
+        RefiningStarted,
+        RefiningCompleted,
+        RefiningQueueEmpty,
+        MaterialShortage,
         ComponentsScrapped,
         FightersScrapped,
         MissilesScrapped,

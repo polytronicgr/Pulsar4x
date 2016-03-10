@@ -117,6 +117,7 @@ namespace Pulsar4X.ECSLib
         /// Slower than GetDataBlob(int typeIndex)
         /// </summary>
         /// <typeparam name="T">Non-abstract derivative of BaseDataBlob</typeparam>
+        [CanBeNull]
         [PublicAPI]
         public override T GetDataBlob<T>()
         {
@@ -133,6 +134,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <typeparam name="T">Non-abstract derivative of BaseDataBlob</typeparam>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when an invalid typeIndex or entityID is passed.</exception>
+        [CanBeNull]
         [PublicAPI]
         public override T GetDataBlob<T>(int typeIndex)
         {

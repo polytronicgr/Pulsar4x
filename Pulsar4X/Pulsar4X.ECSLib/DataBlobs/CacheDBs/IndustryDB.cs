@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
@@ -10,13 +12,22 @@ namespace Pulsar4X.ECSLib
     public class IndustryDB : BaseDataBlob
     {
         [JsonProperty]
-        internal Dictionary<IndustryType, float> industryRates { get; set; }
-        public ReadOnlyDictionary<IndustryType, float> IndustryRates { get; set; }
+        internal Dictionary<IndustryType, float> industryRates { get; set; } = new Dictionary<IndustryType, float>();
+        public IReadOnlyDictionary<IndustryType, float> IndustryRates => industryRates;
 
         [JsonProperty]
-        internal List<IndustryJob> industryJobs { get; set; } = new List<IndustryJob>();
-        public ReadOnlyCollection<IndustryJob> IndustryJobs => new ReadOnlyCollection<IndustryJob>(industryJobs);  
+        internal Dictionary<Guid, float> industryMultipliers { get; set; } = new Dictionary<Guid, float>();
+        public IReadOnlyDictionary<Guid, float> IndustryMultipliers => industryMultipliers;
 
+        [JsonProperty]
+        internal Dictionary<IndustryType, LinkedList<IndustryJob>> industryJobs { get; set; } = new Dictionary<IndustryType, LinkedList<IndustryJob>>();
+
+        [JsonProperty]
+        public bool CanPullFromHost { get; internal set; }
+
+        // ReSharper disable once SuspiciousTypeConversion.Global
+        public IReadOnlyDictionary<IndustryType, IReadOnlyCollection<IndustryJob>> IndustryJobs => (IReadOnlyDictionary<IndustryType, IReadOnlyCollection<IndustryJob>>)industryJobs;
+        
         public override object Clone()
         {
             return new IndustryDB();

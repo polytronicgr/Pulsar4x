@@ -36,16 +36,17 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        public Event(DateTime time, string message, Entity faction= null, Entity entity = null, List<Guid> concernedPlayers = null) : this(time, message, Guid.Empty, faction, entity, concernedPlayers)
+        public Event(DateTime time, string message, EventType eventType, Entity faction= null, Entity entity = null, List<Guid> concernedPlayers = null) : this(time, message, Guid.Empty, eventType, faction, entity, concernedPlayers)
         { }
 
-        public Event(DateTime time, string message, Guid systemGuid, Entity faction= null, Entity entity = null, List<Guid> concernedPlayers = null)
+        public Event(DateTime time, string message, Guid systemGuid, EventType eventType, Entity faction= null, Entity entity = null, List<Guid> concernedPlayers = null)
         {
             Time = time;
             Message = message;
             Faction = faction;
             SystemGuid = systemGuid;
             Entity = entity;
+            EventType = eventType;
             if (concernedPlayers == null)
             {
                 concernedPlayers = new List<Guid>();

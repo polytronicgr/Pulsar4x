@@ -18,6 +18,8 @@ namespace Pulsar4X.ECSLib
         SalvageRate                 = 1 << 6,
         JPStabilizationRate         = 1 << 7,
         ResearchRate                = 1 << 8,
+        MiningRate                  = 1 << 9,
+        RefiningRate                = 1 << 10,
     }
 
     public class IndustryJob
@@ -25,15 +27,18 @@ namespace Pulsar4X.ECSLib
         public IndustryType IndustryType { get; internal set; }
 
         public Guid ItemGuid { get; internal set; }
-        public uint NumberOrdered { get; set; }
-        public uint NumberCompleted { get; internal set; }
+        public int NumberOrdered { get; set; }
+        public int NumberCompleted { get; internal set; }
 
         public float BPToNextCompletion { get; internal set; }
         public float BPPerItem { get; internal set; }
 
+        public float PercentToUtilize { get; set; }
+
         [JsonProperty]
         internal Dictionary<Guid, float> materialsRequiredPerItem { get; set; } = new Dictionary<Guid, float>();
+
         [JsonIgnore]
-        public ReadOnlyDictionary<Guid, float> MaterialsRequiredPerItem => new ReadOnlyDictionary<Guid, float>(materialsRequiredPerItem);
+        public IReadOnlyDictionary<Guid, float> MaterialsRequiredPerItem => materialsRequiredPerItem;
     }
 }

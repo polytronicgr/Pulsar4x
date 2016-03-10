@@ -14,37 +14,48 @@ namespace Pulsar4X.ECSLib
     public class IndustryAbilityDB : BaseDataBlob
     {
         [JsonProperty]
-        internal Dictionary<IndustryType, int> constructionPoints { get; set; } = new Dictionary<IndustryType, int>();
-        public ReadOnlyDictionary<IndustryType, int> ConstructionPoints => new ReadOnlyDictionary<IndustryType, int>(constructionPoints);
+        internal Dictionary<IndustryType, int> industryRates { get; set; } = new Dictionary<IndustryType, int>();
+        public ReadOnlyDictionary<IndustryType, int> IndustryRates => new ReadOnlyDictionary<IndustryType, int>(industryRates);
+
+        [JsonProperty]
+        internal Dictionary<Guid, float> industryMultipliers { get; set; } = new Dictionary<Guid, float>();
+        public ReadOnlyDictionary<Guid, float> IndustryMultipliers => new ReadOnlyDictionary<Guid, float>(industryMultipliers);
+
+        [JsonProperty]
+        public bool CanPullFromHost { get; internal set; }
 
         /// <summary>
         /// Casting constructor. Casts from double to int.
         /// </summary>
-        /// <param name="constructionPoints"></param>
-        public IndustryAbilityDB(IDictionary<IndustryType, double> constructionPoints) 
-            : this(constructionPoints.ToDictionary(constructionPoint => constructionPoint.Key, constructionPoint => (int)constructionPoint.Value)) { }
+        public IndustryAbilityDB(IDictionary<IndustryType, double> industryRates, IDictionary<Guid, float> industryMultipliers = null, bool canPullFromHost = false) 
+            : this(industryRates.ToDictionary(industryRate => industryRate.Key, industryRate => (int)industryRate.Value), industryMultipliers, canPullFromHost) { }
         
         [JsonConstructor]
-        public IndustryAbilityDB(IDictionary<IndustryType, int> constructionPoints = null)
+        public IndustryAbilityDB(IDictionary<IndustryType, int> industryRates = null, IDictionary<Guid, float> industryMultipliers = null, bool canPullFromHost = false)
         {
-            if (constructionPoints != null)
+            if (industryRates != null)
             {
-                this.constructionPoints = new Dictionary<IndustryType, int>(constructionPoints);
+                this.industryRates = new Dictionary<IndustryType, int>(industryRates);
             }
+            if (industryMultipliers != null)
+            {
+                this.industryMultipliers = new Dictionary<Guid, float>(industryMultipliers);
+            }
+            CanPullFromHost = canPullFromHost;
         }
 
         public override object Clone()
         {
-            return new IndustryAbilityDB(ConstructionPoints);
+            return new IndustryAbilityDB(IndustryRates, IndustryMultipliers);
         }
 
         /// <summary>
         /// Adds up all construstion points this ability provides for a given type.
         /// </summary>
-        public int GetConstructionPoints(IndustryType type)
+        public int GetIndustryRate(IndustryType type)
         {
             int totalConstructionPoints = 0;
-            foreach (KeyValuePair<IndustryType, int> keyValuePair in constructionPoints)
+            foreach (KeyValuePair<IndustryType, int> keyValuePair in industryRates)
             {
                 IndustryType entryType = keyValuePair.Key;
                 int cp = keyValuePair.Value;
