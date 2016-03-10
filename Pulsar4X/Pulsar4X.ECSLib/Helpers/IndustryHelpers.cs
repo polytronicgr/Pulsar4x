@@ -14,12 +14,12 @@ namespace Pulsar4X.ECSLib
         ShipConstruction            = 1 << 2,
         FighterConstruction         = 1 << 3,
         OrdnanceConstruction        = 1 << 4,
-        TerraformingRate            = 1 << 5,
-        SalvageRate                 = 1 << 6,
-        JPStabilizationRate         = 1 << 7,
-        ResearchRate                = 1 << 8,
-        MiningRate                  = 1 << 9,
-        RefiningRate                = 1 << 10,
+        Terraforming                = 1 << 5,
+        Salvage                     = 1 << 6,
+        JPStabilization             = 1 << 7,
+        Research                    = 1 << 8,
+        Mining                      = 1 << 9,
+        Refining                    = 1 << 10,
     }
 
     public class IndustryJob

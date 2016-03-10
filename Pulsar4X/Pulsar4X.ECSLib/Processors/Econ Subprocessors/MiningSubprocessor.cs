@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Pulsar4X.ECSLib
+namespace Pulsar4X.ECSLib.IndustryProcessors
 {
     class MiningSubprocessor
     {
@@ -12,9 +12,9 @@ namespace Pulsar4X.ECSLib
             _game = game;
         }
 
-        internal void ProcessMining(Entity entity, IndustryDB industryDB)
+        internal void ProcessMining(IndustrialEntity industrialEntity)
         {
-            Entity mineableEntity = entity.GetDataBlob<MatedToDB>()?.Parent;
+            Entity mineableEntity = industrialEntity.MatedToDB?.Parent;
             var parentSystemBodyDB = mineableEntity?.GetDataBlob<SystemBodyDB>();
 
             if (parentSystemBodyDB == null)
@@ -22,16 +22,15 @@ namespace Pulsar4X.ECSLib
                 // Entity not mated to an entity that can be mined.
                 return;
             }
-
-            var entityCargoDB = entity.GetDataBlob<CargoDB>();
-            double remainingCapacity = CargoHelper.GetFreeCargoSpace(entityCargoDB, CargoType.General);
+            
+            double remainingCapacity = CargoHelper.GetFreeCargoSpace(industrialEntity.CargoDB, CargoType.General);
 
             foreach (KeyValuePair<Guid, MineralDepositInfo> mineralDepositInfo in parentSystemBodyDB.Minerals)
             {
                 MineralDepositInfo depositInfo = mineralDepositInfo.Value;
 
-                float annualProduction = depositInfo.Accessibility * industryDB.industryRates[IndustryType.MiningRate];
-                float itemMultiplier = IndustrySubprocessor.GetIndustrialMultiplier(_game, mineralDepositInfo.Key, industryDB);
+                float annualProduction = depositInfo.Accessibility * industrialEntity.IndustryDB.industryRates[IndustryType.MiningRate];
+                float itemMultiplier = IndustrySubprocessor.GetIndustrialMultiplier(_game, mineralDepositInfo.Key, industrialEntity.IndustryDB);
 
                 double tickProduction = annualProduction * (_game.Settings.EconomyCycleTime.TotalDays / 365) * itemMultiplier;
 
@@ -43,13 +42,13 @@ namespace Pulsar4X.ECSLib
                 if (tickProduction > remainingCapacity)
                 {
                     // Fill up cargo, flag event, break to avoid adding more.
-                    MineResource(mineralDepositInfo.Key, depositInfo, entityCargoDB, remainingCapacity);
-                    var cargoFullEvent = new Event(_game.CurrentDateTime, "Mining failed. Cargo full", EventType.CargoFull, null, entity);
+                    MineResource(mineralDepositInfo.Key, depositInfo, industrialEntity.CargoDB, remainingCapacity);
+                    var cargoFullEvent = new Event(_game.CurrentDateTime, "Mining failed. Cargo full", EventType.CargoFull, null, industrialEntity.Entity);
                     _game.EventLog.AddEvent(cargoFullEvent);
                     break;
                 }
 
-                MineResource(mineralDepositInfo.Key, depositInfo, entityCargoDB, tickProduction);
+                MineResource(mineralDepositInfo.Key, depositInfo, industrialEntity.CargoDB, tickProduction);
             }
         }
 

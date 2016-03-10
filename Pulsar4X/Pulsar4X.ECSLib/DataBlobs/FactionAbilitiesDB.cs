@@ -5,14 +5,7 @@ namespace Pulsar4X.ECSLib
     public enum AbilityType
     {
         ShipMaintenance,
-        GenericConstruction, //ship parts, installations. 
-        OrdnanceConstruction,
-        FighterConstruction,
-        ShipAssembly,
-        Refinery,
-        Mine,
-        AtmosphericModification,
-        Research,
+        
         Commercial, //ie aurora "Finance Center" 
         Industrial, //intend to use this later on for civ economy and creating random tradegoods.
         Agricultural, //as above.
@@ -26,7 +19,6 @@ namespace Pulsar4X.ECSLib
         GeneratesCivilianLeaders,
         DetectionThermal, //radar
         DetectionEM,    //radar
-        Terraforming,
         BasicLiving, //ie Auroras infrastructure will have this ability. 
         //shipcomponent
         ReducedSize,

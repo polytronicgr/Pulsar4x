@@ -2,29 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Pulsar4X.ECSLib
+namespace Pulsar4X.ECSLib.IndustryProcessors
 {
+    /// <summary>
+    /// Helper class that pulls the DB's from the EntityManager ONCE for multiple uses.
+    /// </summary>
+    internal class IndustrialEntity
+    {
+        internal readonly Entity Entity;
+        internal readonly CargoDB CargoDB;
+        internal readonly IndustryDB IndustryDB;
+        internal readonly MatedToDB MatedToDB;
+        internal readonly OwnedDB OwnedDB;
+
+        public IndustrialEntity(Entity entity)
+        {
+            Entity = entity;
+            CargoDB = entity.GetDataBlob<CargoDB>();
+            IndustryDB = entity.GetDataBlob<IndustryDB>();
+            MatedToDB = entity.GetDataBlob<MatedToDB>();
+            OwnedDB = entity.GetDataBlob<OwnedDB>();
+        }
+    }
+
     public class IndustrySubprocessor
     {
-        /// <summary>
-        /// Helper class that pulls the DB's from the EntityManager for multiple uses.
-        /// </summary>
-        private class IndustryEntity
-        {
-            internal readonly Entity Entity;
-            internal readonly IndustryDB IndustryDB;
-            internal readonly MatedToDB MatedToDB;
-            internal readonly CargoDB CargoDB;
-
-            public IndustryEntity(Entity entity)
-            {
-                Entity = entity;
-                IndustryDB = entity.GetDataBlob<IndustryDB>();
-                MatedToDB = entity.GetDataBlob<MatedToDB>();
-                CargoDB = entity.GetDataBlob<CargoDB>();
-            }
-        }
-
         private readonly Game _game;
         private readonly MiningSubprocessor _miningSubprocessor;
 
@@ -40,33 +42,31 @@ namespace Pulsar4X.ECSLib
 
             foreach (Entity entity in industialEntities)
             {
-                IndustryDB industryDB = UpdateIndustryDB(entity);
+                IndustrialEntity industrialEntity = new IndustrialEntity(entity);
+                UpdateIndustryDB(industrialEntity);
 
                 // ProcessTerraforming(entity, industryDB);
                 // JP stabilization
                 // Research
                 // Salvage
-                _miningSubprocessor.ProcessMining(entity, industryDB);
-                ProcessJobs(entity, industryDB, IndustryType.RefiningRate);
-                ProcessJobs(entity, industryDB, IndustryType.ComponentConstruction);
-                ProcessJobs(entity, industryDB, IndustryType.OrdnanceConstruction);
-                ProcessJobs(entity, industryDB, IndustryType.FighterConstruction);
-                ProcessJobs(entity, industryDB, IndustryType.ShipConstruction);
-                ProcessJobs(entity, industryDB, IndustryType.InstallationConstruction);
+                _miningSubprocessor.ProcessMining(industrialEntity);
+                ProcessJobs(industrialEntity, IndustryType.Refining);
+                ProcessJobs(industrialEntity, IndustryType.ComponentConstruction);
+                ProcessJobs(industrialEntity, IndustryType.OrdnanceConstruction);
+                ProcessJobs(industrialEntity, IndustryType.FighterConstruction);
+                ProcessJobs(industrialEntity, IndustryType.ShipConstruction);
+                ProcessJobs(industrialEntity, IndustryType.InstallationConstruction);
             }
         }
 
-        public static IndustryDB UpdateIndustryDB(Entity entity)
+        private static void UpdateIndustryDB(IndustrialEntity industrialEntity)
         {
-            var industryDB = entity.GetDataBlob<IndustryDB>();
-            industryDB.industryRates = GetIndustrialRates(entity);
-
-            return industryDB;
+            industrialEntity.IndustryDB.industryRates = GetIndustrialRates(industrialEntity);
         }
 
-        public static Dictionary<IndustryType, float> GetIndustrialRates(Entity entity)
+        private static Dictionary<IndustryType, float> GetIndustrialRates(IndustrialEntity industrialEntity)
         {
-            var components = entity.GetDataBlob<ComponentInstancesDB>();
+            var components = industrialEntity.Entity.GetDataBlob<ComponentInstancesDB>();
 
             // Get the combined-type capacities.
             var industryCapacity = new Dictionary<IndustryType, float>();
@@ -101,9 +101,66 @@ namespace Pulsar4X.ECSLib
                     }
                 }
             }
+            
+            Entity ownerFaction = industrialEntity.OwnedDB.EntityOwner;
+            var factionBonusesDB = ownerFaction.GetDataBlob<EntityBonusesDB>();
+            
+            Entity parentEntity = industrialEntity.MatedToDB?.Parent;
+            var parentBonusesDB = parentEntity?.GetDataBlob<EntityBonusesDB>();
 
-            // TODO: Apply tech/faction/planet/leader bonuses
-             
+            var childBonuses = new List<EntityBonusesDB>();
+            if (industrialEntity.MatedToDB != null)
+            {
+                // Check for children that are actually present at this location.
+                foreach (Entity childEntity in industrialEntity.MatedToDB.Children)
+                {
+                    // Check if the child is valid for applying bonuses
+                    // Currently only leaders are valid.
+                    var childLeaderDB = childEntity.GetDataBlob<LeaderDB>();
+                    if (childLeaderDB == null || childLeaderDB.AssignedTo != industrialEntity.Entity)
+                    {
+                        continue;
+                    }
+
+                    // Child is valid, add their bonuses to the childBonuses list.
+                    var childBonusDB = childEntity.GetDataBlob<EntityBonusesDB>();
+                    if (childBonusDB != null)
+                    {
+                        childBonuses.Add(childBonusDB);
+                    }
+                }
+            }
+
+            foreach (KeyValuePair<IndustryType, float> industialRate in industialRates)
+            {
+                var industryType = industialRate.Key;
+
+                float factionBonus;
+                if (factionBonusesDB == null || !factionBonusesDB.industrialBonuses.TryGetValue(industryType, out factionBonus))
+                {
+                    factionBonus = 1;
+                }
+
+                float parentBonus;
+                if (parentBonusesDB == null || !parentBonusesDB.industrialBonuses.TryGetValue(industryType, out parentBonus))
+                {
+                    parentBonus = 1;
+                }
+
+                float childrenBonuses = 1;
+                foreach (EntityBonusesDB entityBonusesDB in childBonuses)
+                {
+                    float childBonus;
+                    if (!entityBonusesDB.industrialBonuses.TryGetValue(industryType, out childBonus))
+                    {
+                        childBonus = 1;
+                    }
+                    childrenBonuses = childrenBonuses * childBonus;
+                }
+
+                industialRates[industryType] = industialRate.Value * factionBonus * parentBonus * childrenBonuses;
+            }
+
             return industialRates;
         }
 
@@ -121,10 +178,10 @@ namespace Pulsar4X.ECSLib
             return 1;
         }
 
-        private float ProcessJob(IndustryEntity indEntity, Dictionary<CargoDefinition, float> materialRequirements, IndustryJob industryJob)
+        private float ProcessJob(IndustrialEntity industrialEntity, Dictionary<CargoDefinition, float> materialRequirements, IndustryJob industryJob)
         {
-            float annualProduction = indEntity.IndustryDB.industryRates[industryJob.IndustryType];
-            float industrialMultiplier = GetIndustrialMultiplier(_game, industryJob.ItemGuid, indEntity.IndustryDB);
+            float annualProduction = industrialEntity.IndustryDB.industryRates[industryJob.IndustryType];
+            float industrialMultiplier = GetIndustrialMultiplier(_game, industryJob.ItemGuid, industrialEntity.IndustryDB);
             float maxProduction = annualProduction * (float)(_game.Settings.EconomyCycleTime.TotalDays / 365) * industrialMultiplier;
             double tickProduction = maxProduction * industryJob.PercentToUtilize;
 
@@ -141,7 +198,7 @@ namespace Pulsar4X.ECSLib
             foreach (KeyValuePair<CargoDefinition, float> materialRequirement in materialRequirements)
             {
                 double materialCarried;
-                if (!indEntity.CargoDB.cargoCarried.TryGetValue(materialRequirement.Key, out materialCarried))
+                if (!industrialEntity.CargoDB.cargoCarried.TryGetValue(materialRequirement.Key, out materialCarried))
                 {
                     materialCarried = 0;
                 }
@@ -150,9 +207,9 @@ namespace Pulsar4X.ECSLib
                 if (haveMaterialsFor < numberToRefine)
                 {
                     // Not enough materials. Check if we can pull from our host.
-                    if (indEntity.IndustryDB.CanPullFromHost)
+                    if (industrialEntity.IndustryDB.CanPullFromHost)
                     {
-                        Entity parent = indEntity.MatedToDB?.Parent;
+                        Entity parent = industrialEntity.MatedToDB?.Parent;
                         var parentCargo = parent?.GetDataBlob<CargoDB>();
                         double parentMaterialCarried;
                         if (parentCargo == null || !parentCargo.cargoCarried.TryGetValue(materialRequirement.Key, out parentMaterialCarried))
@@ -174,18 +231,18 @@ namespace Pulsar4X.ECSLib
 
             if (refiningIsRestricted)
             {
-                var notEnoughVespeneGas = new Event(_game.CurrentDateTime, "Material shortage in production.", EventType.MaterialShortage, null, indEntity.Entity);
+                var notEnoughVespeneGas = new Event(_game.CurrentDateTime, "Material shortage in production.", EventType.MaterialShortage, null, industrialEntity.Entity);
                 _game.EventLog.AddEvent(notEnoughVespeneGas);
             }
 
             // Check if we have free cargospace to store the output.
             CargoDefinition outputCargoDef = CargoHelper.GetCargoDefinition(_game, industryJob.ItemGuid);
-            float freeSpace = CargoHelper.GetFreeCargoSpace(indEntity.CargoDB, outputCargoDef.Type);
+            double freeSpace = CargoHelper.GetFreeCargoSpace(industrialEntity.CargoDB, outputCargoDef.Type);
             double haveSpaceFor = Math.Floor(freeSpace / outputCargoDef.Weight);
 
             if (haveSpaceFor < Math.Ceiling(numberToRefine))
             {
-                var notEnoughVespeneGas = new Event(_game.CurrentDateTime, "Production halted due to lack of cargo space.", EventType.CargoFull, null, indEntity.Entity);
+                var notEnoughVespeneGas = new Event(_game.CurrentDateTime, "Production halted due to lack of cargo space.", EventType.CargoFull, null, industrialEntity.Entity);
                 _game.EventLog.AddEvent(notEnoughVespeneGas);
             }
 
@@ -198,12 +255,12 @@ namespace Pulsar4X.ECSLib
             foreach (KeyValuePair<CargoDefinition, float> materialRequirement in materialRequirements)
             {
 
-                indEntity.CargoDB.cargoCarried[materialRequirement.Key] -= materialRequirement.Value * numberToRefine;
+                industrialEntity.CargoDB.cargoCarried[materialRequirement.Key] -= materialRequirement.Value * numberToRefine;
 
-                if (indEntity.CargoDB.cargoCarried[materialRequirement.Key] < 0)
+                if (industrialEntity.CargoDB.cargoCarried[materialRequirement.Key] < 0)
                 {
-                    indEntity.MatedToDB.Parent.GetDataBlob<CargoDB>().cargoCarried[materialRequirement.Key] += indEntity.CargoDB.cargoCarried[materialRequirement.Key];
-                    indEntity.CargoDB.cargoCarried[materialRequirement.Key] = 0;
+                    industrialEntity.MatedToDB.Parent.GetDataBlob<CargoDB>().cargoCarried[materialRequirement.Key] += industrialEntity.CargoDB.cargoCarried[materialRequirement.Key];
+                    industrialEntity.CargoDB.cargoCarried[materialRequirement.Key] = 0;
                 }
 
             }
@@ -225,24 +282,22 @@ namespace Pulsar4X.ECSLib
 
             if (industryJob.NumberCompleted == industryJob.NumberOrdered)
             {
-                var completedEvent = new Event(_game.CurrentDateTime, "Production job completed.", EventType.ProductionCompleted, null, indEntity.Entity);
+                var completedEvent = new Event(_game.CurrentDateTime, "Production job completed.", EventType.ProductionCompleted, null, industrialEntity.Entity);
                 _game.EventLog.AddEvent(completedEvent);
             }
 
             // Add completed products
-            indEntity.CargoDB.cargoCarried.SafeValueAdd(outputCargoDef, numberCompleted);
+            industrialEntity.CargoDB.cargoCarried.SafeValueAdd(outputCargoDef, numberCompleted);
             
             // Return the percentage of produciton used for this job.
             return maxProduction / (float)(numberToRefine * industryJob.BPPerItem);
         }
 
-        private void ProcessJobs(Entity entity, IndustryDB industryDB, IndustryType industryType)
+        private void ProcessJobs(IndustrialEntity industrialEntity, IndustryType industryType)
         {
-            var indEntity = new IndustryEntity(entity);
-
             float percentUtilized = 0;
 
-            LinkedList<IndustryJob> industryJobs = industryDB.industryJobs[industryType];
+            LinkedList<IndustryJob> industryJobs = industrialEntity.IndustryDB.industryJobs[industryType];
             LinkedListNode<IndustryJob> currentNode = industryJobs.First;
 
             while (percentUtilized < 1 && currentNode != null)
@@ -262,9 +317,78 @@ namespace Pulsar4X.ECSLib
                     materialRequirements.Add(CargoHelper.GetCargoDefinition(_game, rawMineralCost.Key), rawMineralCost.Value);
                 }
 
-                percentUtilized += ProcessJob(indEntity, materialRequirements, industryJob);
+                percentUtilized += ProcessJob(industrialEntity, materialRequirements, industryJob);
                 industryJob.PercentToUtilize = jobIndustryToUtilize;
 
+                currentNode = currentNode.Next;
+            }
+        }
+        
+        [PublicAPI]
+        public static void AddPendingJob(Entity entity, IndustryJob job)
+        {
+            var industryDB = entity?.GetDataBlob<IndustryDB>();
+
+            if (industryDB == null)
+            {
+                throw new ArgumentException("Provided entity is not capable of performing industry.", nameof(entity));
+            }
+
+            industryDB.industryJobs[job.IndustryType].AddLast(job);
+        }
+
+        [PublicAPI]
+        public static void RemoveJob(Entity entity, IndustryJob job)
+        {
+            var industryDB = entity?.GetDataBlob<IndustryDB>();
+
+            if (industryDB == null)
+            {
+                throw new ArgumentException("Provided entity is not capable of performing industry.", nameof(entity));
+            }
+
+            if (!industryDB.industryJobs[job.IndustryType].Remove(job))
+            {
+                throw new ArgumentException("Provided job not found on entity");
+            }
+        }
+
+        [PublicAPI]
+        public static void ReorderJob(Entity entity, IndustryJob job, int newIndex)
+        {
+            var industryDB = entity?.GetDataBlob<IndustryDB>();
+
+            if (industryDB == null)
+            {
+                throw new ArgumentException("Provided entity is not capable of performing industry.", nameof(entity));
+            }
+
+            LinkedList<IndustryJob> industryJobs = industryDB.industryJobs[job.IndustryType];
+
+            if (newIndex < 0 || newIndex > industryJobs.Count)
+            {
+                throw new IndexOutOfRangeException($"{nameof(newIndex)} is out of the range of the LinkedList.");
+            }
+
+            if (!industryJobs.Remove(job))
+            {
+                throw new ArgumentException("Provided job not found on entity");
+            }
+
+            LinkedListNode<IndustryJob> currentNode = industryJobs.First;
+            for (int i = 0; i < industryJobs.Count; i++)
+            {
+                if (currentNode == null)
+                {
+                    industryJobs.AddLast(job);
+                    break;
+                }
+
+                if (i == newIndex)
+                {
+                    industryJobs.AddBefore(currentNode, job);
+                    break;
+                }
                 currentNode = currentNode.Next;
             }
         }

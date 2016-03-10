@@ -146,6 +146,7 @@
     <Compile Include="DataBlobs\AbilityDBs\PassiveThermalSensorAbilityDB.cs" />
     <Compile Include="DataBlobs\AbilityDBs\PowerGeneratorAbilityDB.cs" />
     <Compile Include="DataBlobs\AbilityDBs\StandardShieldAbilityDB.cs" />
+    <Compile Include="DataBlobs\CacheDBs\CargoDB.cs" />
     <Compile Include="Helpers\CargoHelpers.cs" />
     <Compile Include="Helpers\IndustryHelpers.cs" />
     <Compile Include="DataBlobs\MatedToDB.cs" />
@@ -158,7 +159,7 @@
     <Compile Include="DataBlobs\AbilityDBs\SensorSignatureDB.cs" />
     <Compile Include="DataBlobs\AbilityDBs\ActiveSensorAbilityDB.cs" />
     <Compile Include="DataBlobs\AbilityDBs\ComponentInfoDB.cs" />
-    <Compile Include="DataBlobs\ColonyBonusesDB.cs" />
+    <Compile Include="DataBlobs\EntityBonusesDB.cs" />
     <Compile Include="DataBlobs\ExampleDB.cs" />
     <Compile Include="DataBlobs\FactionAbilitiesDB.cs" />
     <Compile Include="DataBlobs\InstallationsDB.cs" />
@@ -200,7 +201,6 @@
     <Compile Include="Factories\TechFactory.cs" />
     <Compile Include="GameVersionInfo.cs" />
     <Compile Include="Player.cs" />
-    <Compile Include="Processors\Econ Subprocessors\ConstructionProcessor.cs" />
     <Compile Include="Processors\Econ Subprocessors\IndustrySubprocessor.cs" />
     <Compile Include="Processors\Econ Subprocessors\MiningSubprocessor.cs" />
     <Compile Include="Processors\EconProcessor.cs" />
@@ -228,7 +228,6 @@
     <Compile Include="DataBlobs\PositionDB.cs" />
     <Compile Include="DataBlobs\RuinsDB.cs" />
     <Compile Include="DataBlobs\CacheDBs\BeamWeaponsDB.cs" />
-    <Compile Include="DataBlobs\CargoDB.cs" />
     <Compile Include="DataBlobs\CacheDBs\CrewDB.cs" />
     <Compile Include="DataBlobs\CacheDBs\DamageDB.cs" />
     <Compile Include="DataBlobs\CacheDBs\HangerDB.cs" />

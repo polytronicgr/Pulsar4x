@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
@@ -21,12 +19,19 @@ namespace Pulsar4X.ECSLib
 
         [JsonProperty]
         internal Dictionary<IndustryType, LinkedList<IndustryJob>> industryJobs { get; set; } = new Dictionary<IndustryType, LinkedList<IndustryJob>>();
+        // ReSharper disable once SuspiciousTypeConversion.Global
+        public IReadOnlyDictionary<IndustryType, IReadOnlyCollection<IndustryJob>> IndustryJobs => (IReadOnlyDictionary<IndustryType, IReadOnlyCollection<IndustryJob>>)industryJobs;
 
         [JsonProperty]
         public bool CanPullFromHost { get; internal set; }
 
-        // ReSharper disable once SuspiciousTypeConversion.Global
-        public IReadOnlyDictionary<IndustryType, IReadOnlyCollection<IndustryJob>> IndustryJobs => (IReadOnlyDictionary<IndustryType, IReadOnlyCollection<IndustryJob>>)industryJobs;
+        public IndustryDB()
+        {
+            foreach (IndustryType industryType in Enum.GetValues(typeof(IndustryType)))
+            {
+                industryJobs.Add(industryType, new LinkedList<IndustryJob>());
+            }
+        }
         
         public override object Clone()
         {
