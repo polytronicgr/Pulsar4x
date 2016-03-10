@@ -42,21 +42,21 @@ namespace Pulsar4X.ECSLib
 
         private void ProcessSystem(Game game, StarSystem system)
         {
-            IndustrySubprocessor.Process(game, system);
-
+            _industrySubprocessor.Process(system);
 
             List<Entity> allPlanets = system.SystemManager.GetAllEntitiesWithDataBlob<SystemBodyDB>().Where(body =>
             {
+                // ReSharper disable once PossibleNullReferenceException
                 var bodyDBType = body.GetDataBlob<SystemBodyDB>().Type;
                 return bodyDBType != BodyType.Moon && bodyDBType != BodyType.Asteroid && bodyDBType != BodyType.Comet;
             }).ToList();
+
             foreach (Entity colonyEntity in system.SystemManager.GetAllEntitiesWithDataBlob<RuinsDB>())
             {
                 // Process Ruins
             }
             
             // Process Trade Goods
-            //
             TechProcessor.ProcessSystem(system, game);
         }
     }

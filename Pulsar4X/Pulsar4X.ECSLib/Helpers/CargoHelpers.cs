@@ -22,16 +22,16 @@ namespace Pulsar4X.ECSLib
 
     public static class CargoHelper
     {
-        public static float GetFreeCargoSpace(CargoDB cargoDB, CargoType cargoType)
+        public static double GetFreeCargoSpace(CargoDB cargoDB, CargoType cargoType)
         {
             if (cargoDB.HasUnlimitedCapacity)
             {
                 return float.MaxValue;
             }
 
-            float freeSpace = cargoDB.cargoCapacity[cargoType];
+            double freeSpace = cargoDB.cargoCapacity[cargoType];
 
-            foreach (KeyValuePair<CargoDefinition, float> carriedCargo in cargoDB.cargoCarried)
+            foreach (KeyValuePair<CargoDefinition, double> carriedCargo in cargoDB.cargoCarried)
             {
                 var cargoDef = carriedCargo.Key;
 

@@ -14,7 +14,7 @@ namespace Pulsar4X.ECSLib
 
         internal void ProcessMining(Entity entity, IndustryDB industryDB)
         {
-            Entity mineableEntity = entity.GetDataBlob<MatedToDB>().Parent;
+            Entity mineableEntity = entity.GetDataBlob<MatedToDB>()?.Parent;
             var parentSystemBodyDB = mineableEntity?.GetDataBlob<SystemBodyDB>();
 
             if (parentSystemBodyDB == null)
@@ -24,7 +24,7 @@ namespace Pulsar4X.ECSLib
             }
 
             var entityCargoDB = entity.GetDataBlob<CargoDB>();
-            float remainingCapacity = CargoHelper.GetFreeCargoSpace(entityCargoDB, CargoType.General);
+            double remainingCapacity = CargoHelper.GetFreeCargoSpace(entityCargoDB, CargoType.General);
 
             foreach (KeyValuePair<Guid, MineralDepositInfo> mineralDepositInfo in parentSystemBodyDB.Minerals)
             {

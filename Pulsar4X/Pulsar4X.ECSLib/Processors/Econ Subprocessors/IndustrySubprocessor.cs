@@ -42,7 +42,7 @@ namespace Pulsar4X.ECSLib
             {
                 IndustryDB industryDB = UpdateIndustryDB(entity);
 
-                //ProcessTerraforming(entity, industryDB);
+                // ProcessTerraforming(entity, industryDB);
                 // JP stabilization
                 // Research
                 // Salvage
