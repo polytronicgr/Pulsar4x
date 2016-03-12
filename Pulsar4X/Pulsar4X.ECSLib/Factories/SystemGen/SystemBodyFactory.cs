@@ -840,7 +840,7 @@ namespace Pulsar4X.ECSLib
 
                 if (genChance >= genChanceThreshold)
                 {
-                    mdi.Accessibility = GMath.Clamp(_galaxyGen.Settings.MinMineralAccessibility + genChance, 0, 1);
+                    mdi.Accessibility = (float)GMath.Clamp(_galaxyGen.Settings.MinMineralAccessibility + genChance, 0, 1);
                     mdi.Amount = (int)Math.Round(_galaxyGen.Settings.MaxMineralAmmountByBodyType[bodyInfo.Type] * genChance);
                     mdi.HalfOriginalAmount = mdi.Amount / 2;
 
@@ -866,7 +866,7 @@ namespace Pulsar4X.ECSLib
                 // create a MineralDepositInfo
                 MineralDepositInfo mdi = new MineralDepositInfo
                 {
-                    Accessibility = GMath.Clamp(_galaxyGen.Settings.MinHomeworldMineralAccessibility + system.RNG.NextDouble() * min.Abundance[bodyInfo.Type], 0, 1), 
+                    Accessibility = (float)GMath.Clamp(_galaxyGen.Settings.MinHomeworldMineralAccessibility + system.RNG.NextDouble() * min.Abundance[bodyInfo.Type], 0, 1), 
                     Amount = (int)Math.Round(_galaxyGen.Settings.MinHomeworldMineralAmmount + _galaxyGen.Settings.HomeworldMineralAmmount * system.RNG.NextDouble() * min.Abundance[bodyInfo.Type])
                 };
                 mdi.HalfOriginalAmount = mdi.Amount / 2;

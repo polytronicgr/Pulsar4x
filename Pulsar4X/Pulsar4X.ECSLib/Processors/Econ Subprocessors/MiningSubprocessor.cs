@@ -29,7 +29,7 @@ namespace Pulsar4X.ECSLib.IndustryProcessors
             {
                 MineralDepositInfo depositInfo = mineralDepositInfo.Value;
 
-                float annualProduction = depositInfo.Accessibility * industrialEntity.IndustryDB.industryRates[IndustryType.MiningRate];
+                float annualProduction = depositInfo.Accessibility * industrialEntity.IndustryDB.industryRates[IndustryType.Mining];
                 float itemMultiplier = IndustrySubprocessor.GetIndustrialMultiplier(_game, mineralDepositInfo.Key, industrialEntity.IndustryDB);
 
                 double tickProduction = annualProduction * (_game.Settings.EconomyCycleTime.TotalDays / 365) * itemMultiplier;
