@@ -201,7 +201,7 @@ namespace Pulsar4X.Tests
             enginePowerModMax.DataFormula = "[Level] * 1.5";
             enginePowerModMax.Name = "Maximum Engine Power Modifier";
             enginePowerModMax.Description = "";
-            enginePowerModMax.Category = ResearchCategories.PowerAndPropulsion;
+            enginePowerModMax.Category = ResearchCategory.PowerAndPropulsion;
             enginePowerModMax.CostFormula = "[Level] * 1";
             enginePowerModMax.Requirements = new Dictionary<Guid, int>();
 
@@ -213,7 +213,7 @@ namespace Pulsar4X.Tests
             enginePowerModMin.DataFormula = "1.0 - [Level] * 0.05";
             enginePowerModMin.Name = "Minimum Engine Power Modifier";
             enginePowerModMin.Description = "";
-            enginePowerModMin.Category = ResearchCategories.PowerAndPropulsion;
+            enginePowerModMin.Category = ResearchCategory.PowerAndPropulsion;
             enginePowerModMin.CostFormula = "[Level] * 1";
             enginePowerModMin.Requirements = new Dictionary<Guid, int>();
 
@@ -226,7 +226,7 @@ namespace Pulsar4X.Tests
             fuelUsage.DataFormula = "1 - [Level] * 0.1";
             fuelUsage.Name = "Fuel Consumption: 1 Litre per Engine Power Hour";
             fuelUsage.Description = "";
-            fuelUsage.Category = ResearchCategories.PowerAndPropulsion;
+            fuelUsage.Category = ResearchCategory.PowerAndPropulsion;
             fuelUsage.CostFormula = "[Level] * 1";
             fuelUsage.Requirements = new Dictionary<Guid, int>();
             techs.Add(fuelUsage.ID, fuelUsage);
@@ -238,7 +238,7 @@ namespace Pulsar4X.Tests
             EngineTech1.DataFormula = "0.2";
             EngineTech1.Name = "Conventional Engine Technology";
             EngineTech1.Description = "";
-            EngineTech1.Category = ResearchCategories.PowerAndPropulsion;
+            EngineTech1.Category = ResearchCategory.PowerAndPropulsion;
             EngineTech1.CostFormula = "[Level] * 500";
             EngineTech1.Requirements = new Dictionary<Guid, int>();
             techs.Add(EngineTech1.ID, EngineTech1);
@@ -249,7 +249,7 @@ namespace Pulsar4X.Tests
             EngineTech2.DataFormula = "5";
             EngineTech2.Name = "Nuclear Thermal Engine Technology";
             EngineTech2.Description = "";
-            EngineTech2.Category = ResearchCategories.PowerAndPropulsion;
+            EngineTech2.Category = ResearchCategory.PowerAndPropulsion;
             EngineTech2.CostFormula = "[Level] * 2500";
             EngineTech2.Requirements = new Dictionary<Guid, int>();
             EngineTech2.Requirements.Add(new Guid("35608fe6-0d65-4a5f-b452-78a3e5e6ce2c"), 1);
@@ -261,7 +261,7 @@ namespace Pulsar4X.Tests
             EngineTech3.DataFormula = "5";
             EngineTech3.Name = "Nuclear Pulse Engine Technology";
             EngineTech3.Description = "";
-            EngineTech3.Category = ResearchCategories.PowerAndPropulsion;
+            EngineTech3.Category = ResearchCategory.PowerAndPropulsion;
             EngineTech3.CostFormula = "[Level] * 5000";
             EngineTech3.Requirements = new Dictionary<Guid, int>();
             EngineTech3.Requirements.Add(new Guid("c827d369-3f16-43ef-b112-7d5bcafb74c7"), 1);
@@ -273,7 +273,7 @@ namespace Pulsar4X.Tests
             EngineTech4.DataFormula = "5";
             EngineTech4.Name = "Ion Drive Technology";
             EngineTech4.Description = "";
-            EngineTech4.Category = ResearchCategories.PowerAndPropulsion;
+            EngineTech4.Category = ResearchCategory.PowerAndPropulsion;
             EngineTech4.CostFormula = "[Level] * 10000"; ;
             EngineTech4.Requirements = new Dictionary<Guid, int>();
             EngineTech4.Requirements.Add(new Guid("db6818f3-99e9-46c1-b903-f3af978c38b2"), 1);

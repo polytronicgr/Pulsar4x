@@ -159,7 +159,7 @@
     <Compile Include="DataBlobs\AbilityDBs\SensorSignatureDB.cs" />
     <Compile Include="DataBlobs\AbilityDBs\ActiveSensorAbilityDB.cs" />
     <Compile Include="DataBlobs\AbilityDBs\ComponentInfoDB.cs" />
-    <Compile Include="DataBlobs\EntityBonusesDB.cs" />
+    <Compile Include="DataBlobs\BonusesDB.cs" />
     <Compile Include="DataBlobs\ExampleDB.cs" />
     <Compile Include="DataBlobs\FactionAbilitiesDB.cs" />
     <Compile Include="DataBlobs\InstallationsDB.cs" />
@@ -185,8 +185,6 @@
     <Compile Include="Helpers\Pathfinding\PathfindingManager.cs" />
     <Compile Include="Helpers\Pulse.cs" />
     <Compile Include="Helpers\Vector4.cs" />
-    <Compile Include="DataBlobs\ScientistDB.cs" />
-    <Compile Include="DataBlobs\CommanderDB.cs" />
     <Compile Include="DataBlobs\TeamsDB.cs" />
     <Compile Include="DataBlobs\FactionTechDB.cs" />
     <Compile Include="EventLog\Event.cs" />
@@ -202,6 +200,7 @@
     <Compile Include="GameVersionInfo.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Processors\Econ Subprocessors\IndustrySubprocessor.cs" />
+    <Compile Include="DataBlobs\LeaderDB.cs" />
     <Compile Include="Processors\Econ Subprocessors\MiningSubprocessor.cs" />
     <Compile Include="Processors\EconProcessor.cs" />
     <Compile Include="Processors\AtmosphereProcessor.cs" />

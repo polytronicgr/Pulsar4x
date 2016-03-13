@@ -35,10 +35,39 @@ namespace Pulsar4X.ECSLib
 
         public float PercentToUtilize { get; set; }
 
+        public DateTime ProjectedCompletion { get; internal set; }
+
         [JsonProperty]
         internal Dictionary<Guid, float> materialsRequiredPerItem { get; set; } = new Dictionary<Guid, float>();
 
         [JsonIgnore]
         public IReadOnlyDictionary<Guid, float> MaterialsRequiredPerItem => materialsRequiredPerItem;
+    }
+
+    public class ScienceJob : IndustryJob
+    {
+        public Entity AssignedScientist { get; internal set; }
+        public int LabsAssigned { get; internal set; }
+    }
+
+    /// <summary>
+    /// Helper class that pulls the DB's from the EntityManager ONCE for multiple uses.
+    /// </summary>
+    internal class IndustrialEntity
+    {
+        internal readonly Entity Entity;
+        internal readonly CargoDB CargoDB;
+        internal readonly IndustryDB IndustryDB;
+        internal readonly MatedToDB MatedToDB;
+        internal readonly OwnedDB OwnedDB;
+
+        public IndustrialEntity(Entity entity)
+        {
+            Entity = entity;
+            CargoDB = entity.GetDataBlob<CargoDB>();
+            IndustryDB = entity.GetDataBlob<IndustryDB>();
+            MatedToDB = entity.GetDataBlob<MatedToDB>();
+            OwnedDB = entity.GetDataBlob<OwnedDB>();
+        }
     }
 }

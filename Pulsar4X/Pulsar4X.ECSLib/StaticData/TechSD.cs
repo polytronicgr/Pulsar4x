@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Pulsar4X.ECSLib
 {
-    public enum ResearchCategories
+    public enum ResearchCategory
     {
         BiologyGenetics,
         ConstructionProduction,
@@ -34,7 +34,7 @@ namespace Pulsar4X.ECSLib
         public int MaxLevel;
         public string DataFormula;
 
-        public ResearchCategories Category;        
+        public ResearchCategory Category;        
         public Dictionary<Guid,int> Requirements;        
         public string CostFormula; 
     }

@@ -232,7 +232,7 @@ namespace Pulsar4X.ViewModel
         }
         //public int ColonyFreeLabs { get}
 
-        public Dictionary<ResearchCategories,float> ScientistBonus { get { return ScientistEntity.GetDataBlob<ScientistDB>().Bonuses; } }
+        public Dictionary<ResearchCategory,float> ScientistBonus { get { return ScientistEntity.GetDataBlob<ScientistDB>().Bonuses; } }
         private ObservableCollection<ResearchTechControlVM> _projectQueue;
         public ObservableCollection<ResearchTechControlVM> ProjectQueue { get { return _projectQueue; } }
 

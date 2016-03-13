@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 
-namespace Pulsar4X.ECSLib.IndustryProcessors
+namespace Pulsar4X.ECSLib
 {
     class MiningSubprocessor
     {
         private readonly Game _game;
+        internal DateTime NextHaltTime { get; private set; } = DateTime.MaxValue;
 
         internal MiningSubprocessor(Game game)
         {
@@ -24,6 +26,7 @@ namespace Pulsar4X.ECSLib.IndustryProcessors
             }
             
             double remainingCapacity = CargoHelper.GetFreeCargoSpace(industrialEntity.CargoDB, CargoType.General);
+            double totalProduction = 0;
 
             foreach (KeyValuePair<Guid, MineralDepositInfo> mineralDepositInfo in parentSystemBodyDB.Minerals)
             {
@@ -36,19 +39,40 @@ namespace Pulsar4X.ECSLib.IndustryProcessors
 
                 if (tickProduction <= 0)
                 {
-                    return;
+                    continue;
                 }
 
                 if (tickProduction > remainingCapacity)
                 {
                     // Fill up cargo, flag event, break to avoid adding more.
+                    totalProduction += remainingCapacity;
+                    remainingCapacity = 0;
                     MineResource(mineralDepositInfo.Key, depositInfo, industrialEntity.CargoDB, remainingCapacity);
                     var cargoFullEvent = new Event(_game.CurrentDateTime, "Mining failed. Cargo full", EventType.CargoFull, null, industrialEntity.Entity);
                     _game.EventLog.AddEvent(cargoFullEvent);
                     break;
                 }
 
+                totalProduction += tickProduction;
+                remainingCapacity -= tickProduction;
                 MineResource(mineralDepositInfo.Key, depositInfo, industrialEntity.CargoDB, tickProduction);
+
+            }
+
+            if (totalProduction == 0 || remainingCapacity == double.MaxValue || remainingCapacity == 0)
+            {
+                return;
+            }
+
+            // Mining production complete. Estimate date this entity will fill its cargo.
+            double ticksToFill = 1 - 1 / totalProduction / remainingCapacity;
+            TimeSpan timeUntilFilled = TimeSpan.FromHours(_game.Settings.EconomyCycleTime.TotalHours * ticksToFill);
+
+            DateTime projectedFillDate = _game.CurrentDateTime + timeUntilFilled;
+
+            if (projectedFillDate < NextHaltTime)
+            {
+                NextHaltTime = projectedFillDate;
             }
         }
 

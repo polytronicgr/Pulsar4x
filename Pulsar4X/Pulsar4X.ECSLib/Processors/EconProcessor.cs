@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Pulsar4X.ECSLib.IndustryProcessors;
 
 namespace Pulsar4X.ECSLib
 {
@@ -12,6 +11,7 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         private DateTime _lastRun = DateTime.MinValue;
         internal readonly IndustrySubprocessor IndustrySubprocessor;
+        internal DateTime _nextEvent { get; private set; } = DateTime.MaxValue;
 
         internal EconProcessor(Game game)
         {
@@ -45,20 +45,17 @@ namespace Pulsar4X.ECSLib
         {
             IndustrySubprocessor.Process(system);
 
-            List<Entity> allPlanets = system.SystemManager.GetAllEntitiesWithDataBlob<SystemBodyDB>().Where(body =>
+            if (IndustrySubprocessor.NextHaltTime < _nextEvent)
             {
-                // ReSharper disable once PossibleNullReferenceException
-                var bodyDBType = body.GetDataBlob<SystemBodyDB>().Type;
-                return bodyDBType != BodyType.Moon && bodyDBType != BodyType.Asteroid && bodyDBType != BodyType.Comet;
-            }).ToList();
+                _nextEvent = IndustrySubprocessor.NextHaltTime;
+            }
 
             foreach (Entity colonyEntity in system.SystemManager.GetAllEntitiesWithDataBlob<RuinsDB>())
             {
-                // Process Ruins
+                // TODO: Process Ruins
             }
             
-            // Process Trade Goods
-            TechProcessor.ProcessSystem(system, game);
+            // TODO: Process Trade Goods
         }
     }
 }
