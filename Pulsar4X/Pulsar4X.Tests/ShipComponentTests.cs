@@ -97,10 +97,10 @@ namespace Pulsar4X.Tests
             ComponentDesign mineDesign = GenericComponentFactory.StaticToDesign(mine, _faction.GetDataBlob<FactionTechDB>(), _game.StaticData);
             mineDesign.ComponentDesignAbilities[0].SetValue();
             Entity mineEntity = GenericComponentFactory.DesignToEntity(_game, _faction, mineDesign);
+            
+            Assert.AreEqual(10, mineEntity.GetDataBlob<IndustryDB>().IndustryRates[IndustryType.Mining]);
 
-            Assert.AreEqual(10, mineEntity.GetDataBlob<MineResourcesDB>().ResourcesPerEconTick.Values.ElementAt(0));
-
-            Dictionary<Guid, ComponentTemplateSD> componentsDict = new Dictionary<Guid, ComponentTemplateSD>();
+            var componentsDict = new Dictionary<Guid, ComponentTemplateSD>();
             componentsDict.Add(mine.ID, mine);
             StaticDataManager.ExportStaticData(componentsDict, "MineComponentTest.json");
 
@@ -284,7 +284,7 @@ namespace Pulsar4X.Tests
                 {new Guid("2d4b2866-aa4a-4b9a-b8aa-755fe509c0b3"),"10"}
 
             };
-            mineAbility.AbilityDataBlobType = typeof(MineResourcesDB).ToString();
+            mineAbility.AbilityDataBlobType = typeof(IndustryDB).ToString();
             mineAbility.AbilityFormula = "DataBlobArgs([GuidDict])";
             component.ComponentAbilitySDs.Add(mineAbility);
             
@@ -323,7 +323,7 @@ namespace Pulsar4X.Tests
             researchPointsAbility.Name = "RP Amount Per EconTick";
             researchPointsAbility.Description = "";
             researchPointsAbility.GuiHint = GuiHint.None;
-            researchPointsAbility.AbilityDataBlobType = typeof(ResearchPointsAbilityDB).ToString();
+            researchPointsAbility.AbilityDataBlobType = typeof(IndustryDB).ToString();
             researchPointsAbility.AbilityFormula = "DataBlobArgs(20)";
             component.ComponentAbilitySDs.Add(researchPointsAbility);
 
@@ -363,7 +363,7 @@ namespace Pulsar4X.Tests
             refinePointsAbility.Name = "RP Amount Per EconTick";
             refinePointsAbility.Description = "";
             refinePointsAbility.GuiHint = GuiHint.None;
-            refinePointsAbility.AbilityDataBlobType = typeof(ResearchPointsAbilityDB).ToString();
+            refinePointsAbility.AbilityDataBlobType = typeof(IndustryDB).ToString();
             refinePointsAbility.AbilityFormula = "100";
             component.ComponentAbilitySDs.Add(refinePointsAbility);
 
@@ -376,7 +376,7 @@ namespace Pulsar4X.Tests
                 { new Guid("33E6AC88-0235-4917-A7FF-35C8886AAD3A"),"0"},
                 { new Guid("6DA93677-EE08-4853-A8A5-0F46D93FE0EB"),"0"}
             };
-            refineJobsAbility.AbilityDataBlobType = typeof(RefineResourcesDB).ToString();
+            refineJobsAbility.AbilityDataBlobType = typeof(IndustryDB).ToString();
             refineJobsAbility.AbilityFormula = "DataBlobArgs([GuidDict], Ability(0))";
             component.ComponentAbilitySDs.Add(refineJobsAbility);
             return component;

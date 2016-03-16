@@ -44,7 +44,7 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        private static void UpdateIndustryDB(IndustrialEntity industrialEntity)
+        internal static void UpdateIndustryDB(IndustrialEntity industrialEntity)
         {
             industrialEntity.IndustryDB.industryRates = GetIndustrialRates(industrialEntity);
         }
@@ -56,7 +56,7 @@ namespace Pulsar4X.ECSLib
             // Get the combined-type capacities.
             var industryCapacity = new Dictionary<IndustryType, float>();
 
-            foreach (KeyValuePair<Entity, List<ComponentInstance>> specificInstance in components.SpecificInstances)
+            foreach (KeyValuePair<Entity, List<ComponentInstance>> specificInstance in components.specificInstances)
             {
                 Entity componentDefinition = specificInstance.Key;
 
@@ -141,14 +141,14 @@ namespace Pulsar4X.ECSLib
             // TODO: Fleet Command
 
             // Now that the BonusDB's have been assembled, loop through and apply their bonuses.
-            foreach (BonusesDB entityBonusesDB in applicableBonuses)
+            foreach (BonusesDB BonusesDB in applicableBonuses)
             {
                 foreach (KeyValuePair<IndustryType, float> industialRate in industialRates)
                 {
                     IndustryType industryType = industialRate.Key;
                     
                     float currentBonus;
-                    if (!entityBonusesDB.industrialBonuses.TryGetValue(industryType, out currentBonus))
+                    if (!BonusesDB.industrialBonuses.TryGetValue(industryType, out currentBonus))
                     {
                         currentBonus = 1;
                     }

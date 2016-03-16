@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Pulsar4X.ECSLib
 {
@@ -6,27 +7,59 @@ namespace Pulsar4X.ECSLib
     {
         /// <summary>
         /// Creates a new colony with zero population.
+        /// TODO: Review access control on this function.
         /// </summary>
-        /// <param name="systemEntityManager"></param>
-        /// <param name="factionEntity"></param>
-        /// <returns></returns>
-        public static Entity CreateColony(Entity factionEntity, Entity speciesEntity, Entity planetEntity)
+        [NotNull]
+        public static Entity CreateColony([NotNull] Entity factionEntity, [NotNull] Entity speciesEntity, [NotNull] Entity planetEntity)
         {
-            List<BaseDataBlob> blobs = new List<BaseDataBlob>();
-            string planetName = planetEntity.GetDataBlob<NameDB>().GetName(factionEntity);
-            var OwnedDB = new OwnedDB(factionEntity);
-            blobs.Add(OwnedDB);
-            NameDB name = new NameDB(planetName + " Colony"); // TODO: Review default name.
-            blobs.Add(name);
-            ColonyInfoDB colonyInfoDB = new ColonyInfoDB(speciesEntity, 0);
-            blobs.Add(colonyInfoDB);
-            EntityBonusesDB entityBonuses = new EntityBonusesDB();
-            blobs.Add(entityBonuses);  
-            IndustryDB colonyIndustryDB = new IndustryDB();
-            blobs.Add(colonyIndustryDB);
-            
-            Entity colonyEntity = new Entity(planetEntity.Manager, blobs);
-            factionEntity.GetDataBlob<FactionInfoDB>().Colonies.Add(colonyEntity);
+            if (factionEntity == null || !factionEntity.IsValid)
+            {
+                throw new ArgumentNullException(nameof(factionEntity));
+            }
+            if (speciesEntity == null || !speciesEntity.IsValid)
+            {
+                throw new ArgumentNullException(nameof(speciesEntity));
+            }
+            if (planetEntity == null || !planetEntity.IsValid)
+            {
+                throw new ArgumentNullException(nameof(planetEntity));
+            }
+
+            var planetNameDB = planetEntity.GetDataBlob<NameDB>();
+
+            if (planetNameDB == null)
+            {
+                throw new ArgumentException("Provided planet is malformed: Has no NameDB.", nameof(planetEntity));
+            }
+
+            var factionInfoDB = factionEntity.GetDataBlob<FactionInfoDB>();
+
+            if (factionInfoDB == null)
+            {
+                throw new ArgumentException("Provided faction is malformed: Has no FactionInfoDB.", nameof(factionEntity));
+            }
+
+            string planetName = planetNameDB.GetName(factionEntity);
+            var ownedDB = new OwnedDB(factionEntity);
+            var name = new NameDB(planetName + " Colony"); // TODO: Review default name.
+            var colonyInfoDB = new ColonyInfoDB(speciesEntity, 0);
+            var entityBonuses = new BonusesDB();
+            var colonyIndustryDB = new IndustryDB();
+            var componentInstanceDB = new ComponentInstancesDB();
+
+            var blobs = new List<BaseDataBlob>
+            {
+                ownedDB,
+                name,
+                colonyInfoDB,
+                entityBonuses,
+                colonyIndustryDB,
+                componentInstanceDB,
+            };
+
+            var colonyEntity = new Entity(planetEntity.Manager, blobs);
+
+            factionInfoDB.Colonies.Add(colonyEntity);
             return colonyEntity;
         }
     }

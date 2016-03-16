@@ -256,6 +256,7 @@ namespace Pulsar4X.ECSLib
         }
 
         [PublicAPI]
+        [NotNull]
         public Player AddPlayer(string playerName, string playerPassword = "")
         {
             var player = new Player(playerName, playerPassword);
@@ -310,10 +311,9 @@ namespace Pulsar4X.ECSLib
 
             return null;
         }
-        
-        #endregion
 
         [CanBeNull]
+        [PublicAPI]
         public Player GetPlayerForToken(AuthenticationToken authToken)
         {
             if (SpaceMaster.IsTokenValid(authToken))
@@ -329,6 +329,7 @@ namespace Pulsar4X.ECSLib
             return null;
         }
 
+        [PublicAPI]
         public void GenerateSystems(AuthenticationToken authToken, int numSystems)
         {
             if (SpaceMaster.IsTokenValid(authToken))
@@ -340,6 +341,8 @@ namespace Pulsar4X.ECSLib
                 }
             }
         }
+
+        #endregion
 
         #endregion
     }

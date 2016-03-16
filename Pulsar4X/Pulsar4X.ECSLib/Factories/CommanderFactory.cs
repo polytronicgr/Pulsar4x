@@ -22,14 +22,14 @@ namespace Pulsar4X.ECSLib
             var newLeaderDB = new LeaderDB(name.IsFemale, rank, CommanderType.Scientist);
             var newMatedDB = new MatedToDB(parent);
             var newNameDB = new NameDB($"{name.First} {name.Last}");
-            var entityBonusesDB = new EntityBonusesDB();
+            var BonusesDB = new BonusesDB();
 
             var blobs = new List<BaseDataBlob>
             {
                 newLeaderDB,
                 newMatedDB,
                 newNameDB,
-                entityBonusesDB,
+                BonusesDB,
             };
 
             return new Entity(entityManager, blobs); ;    

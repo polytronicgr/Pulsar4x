@@ -43,7 +43,6 @@ namespace Pulsar4X.ECSLib
             var shipInfo = new ShipInfoDB();
             var armor = new ArmorDB();
             var beamWeapons = new BeamWeaponsDB();
-            var buildCost = new BuildCostDB();
             var cargo = new CargoDB();
             var crew = new CrewDB();
             var damage = new DamageDB();
@@ -66,7 +65,6 @@ namespace Pulsar4X.ECSLib
                 shipInfo,
                 armor,
                 beamWeapons,
-                buildCost,
                 cargo,
                 crew,
                 damage,

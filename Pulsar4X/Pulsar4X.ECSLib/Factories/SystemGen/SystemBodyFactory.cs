@@ -469,14 +469,17 @@ namespace Pulsar4X.ECSLib
             if (bodyOrbit.Children.Count > 0)
             {
                 // Remove any invalid children (ones that failed generation).
-                bodyOrbit.Children.RemoveAll(child => !child.IsValid);
+                foreach (Entity child in bodyOrbit.Children.Where(child => !child.IsValid))
+                {
+                    bodyOrbit.RemoveChild(child);
+                }
 
                 // Recursive call to finalize children.
                 int numChildren = bodyOrbit.Children.Count; // update as the count may have changed.
                 int recursiveBodyCount = 1;
-                for (int i = 0; i < numChildren; i++)
+
+                foreach (Entity child in bodyOrbit.Children)
                 {
-                    Entity child = bodyOrbit.Children[i];
                     FinalizeBodies(staticData, system, child, recursiveBodyCount, currentDateTime);
                     recursiveBodyCount++;
                 }

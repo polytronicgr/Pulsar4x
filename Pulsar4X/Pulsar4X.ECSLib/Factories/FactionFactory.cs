@@ -9,10 +9,10 @@ namespace Pulsar4X.ECSLib
         {
             var name = new NameDB(factionName);
             var factionDB = new FactionInfoDB();
-            var factionAbilitiesDB = new FactionAbilitiesDB();
+            var bonusesDB = new BonusesDB();
             var techDB = new FactionTechDB(game.StaticData.Techs.Values.ToList());
 
-            var blobs = new List<BaseDataBlob> { name, factionDB, factionAbilitiesDB, techDB };
+            var blobs = new List<BaseDataBlob> { name, factionDB, bonusesDB, techDB };
             var factionEntity = new Entity(game.GlobalManager, blobs);
 
             // Add this faction to the SM's access list.

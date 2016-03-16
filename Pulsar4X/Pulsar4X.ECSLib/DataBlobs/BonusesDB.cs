@@ -3,6 +3,41 @@ using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
+    public enum AbilityType
+    {
+        Invalid = 0,
+        ShipMaintenance,
+
+        Commercial, //ie aurora "Finance Center" 
+        Industrial, //intend to use this later on for civ economy and creating random tradegoods.
+        Agricultural, //as above.
+        MassDriver,
+        SpacePort, //loading/unloading speed;
+        GeneratesNavalOfficers,
+        GeneratesGroundOfficers,
+        GeneratesShipCrew,
+        GeneratesTroops, //not sure how we're going to do this yet.aurora kind of did toops and crew different.
+        GeneratesScientists,
+        GeneratesCivilianLeaders,
+        DetectionThermal, //radar
+        DetectionEM,    //radar
+        BasicLiving, //ie Auroras infrastructure will have this ability. 
+        //shipcomponent
+        ReducedSize,
+        LaunchMissileSize,
+        ReloadRateFromMag,
+        ReloadRateFromHanger,
+        ReloadRateMultiplyer,
+        MissileMagazine,
+
+        ComponentSize,
+        EnginePower,
+        EngineEfficency,
+        FuelConsumption,
+        ThermalSignature,
+        EMSignature,
+    }
+
     public class BonusesDB : BaseDataBlob
     {
         [JsonProperty]

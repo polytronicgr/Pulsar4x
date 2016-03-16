@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Pulsar4X.ECSLib
 {
@@ -18,34 +19,40 @@ namespace Pulsar4X.ECSLib
             Entity mineEntity = GenericComponentFactory.DesignToEntity(game, factionEntity, mineDesign);
 
 
-            ComponentTemplateSD refinarySD = game.StaticData.Components[new Guid("90592586-0BD6-4885-8526-7181E08556B5")];
-            ComponentDesign refinaryDesign = GenericComponentFactory.StaticToDesign(refinarySD, factionEntity.GetDataBlob<FactionTechDB>(), game.StaticData);
-            Entity refinaryEntity = GenericComponentFactory.DesignToEntity(game, factionEntity, refinaryDesign);
+            ComponentTemplateSD refinerySD = game.StaticData.Components[new Guid("90592586-0BD6-4885-8526-7181E08556B5")];
+            ComponentDesign refineryDesign = GenericComponentFactory.StaticToDesign(refinerySD, factionEntity.GetDataBlob<FactionTechDB>(), game.StaticData);
+            Entity refineryEntity = GenericComponentFactory.DesignToEntity(game, factionEntity, refineryDesign);
 
             ComponentTemplateSD labSD = game.StaticData.Components[new Guid("c203b7cf-8b41-4664-8291-d20dfe1119ec")];
             ComponentDesign labDesign = GenericComponentFactory.StaticToDesign(labSD, factionEntity.GetDataBlob<FactionTechDB>(), game.StaticData);
             Entity labEntity = GenericComponentFactory.DesignToEntity(game, factionEntity, labDesign);
 
-            ComponentTemplateSD facSD = game.StaticData.Components[new Guid("{07817639-E0C6-43CD-B3DC-24ED15EFB4BA}")];
-            ComponentDesign facDesign = GenericComponentFactory.StaticToDesign(facSD, factionEntity.GetDataBlob<FactionTechDB>(), game.StaticData);
-            Entity facEntity = GenericComponentFactory.DesignToEntity(game, factionEntity, facDesign);
+            ComponentTemplateSD factorySD = game.StaticData.Components[new Guid("{07817639-E0C6-43CD-B3DC-24ED15EFB4BA}")];
+            ComponentDesign factoryDesign = GenericComponentFactory.StaticToDesign(factorySD, factionEntity.GetDataBlob<FactionTechDB>(), game.StaticData);
+            Entity facoryEntity = GenericComponentFactory.DesignToEntity(game, factionEntity, factoryDesign);
 
             Entity scientistEntity = CommanderFactory.CreateScientist(game.GlobalManager, factionEntity);
-            colonyEntity.GetDataBlob<ColonyInfoDB>().Scientists.Add(scientistEntity);
+            MatedToDB.MateEntities(colonyEntity, scientistEntity);
 
             FactionTechDB factionTech = factionEntity.GetDataBlob<FactionTechDB>();
             //TechProcessor.ApplyTech(factionTech, game.StaticData.Techs[new Guid("35608fe6-0d65-4a5f-b452-78a3e5e6ce2c")]); //add conventional engine for testing. 
             TechProcessor.MakeResearchable(factionTech);
 
+            var componentInstancesDB = colonyEntity.GetDataBlob<ComponentInstancesDB>();
 
-            colonyEntity.GetDataBlob<ColonyInfoDB>().Installations.Add(mineEntity,1);
-            colonyEntity.GetDataBlob<ColonyInfoDB>().Installations.Add(refinaryEntity,1);
-            colonyEntity.GetDataBlob<ColonyInfoDB>().Installations.Add(labEntity,1);
-            colonyEntity.GetDataBlob<ColonyInfoDB>().Installations.Add(facEntity, 1);
+            var mineInstances = new List<ComponentInstance> {new ComponentInstance(mineEntity)};
+            componentInstancesDB.specificInstances.Add(mineEntity, mineInstances);
+            var refineryInstances = new List<ComponentInstance> { new ComponentInstance(refineryEntity) };
+            componentInstancesDB.specificInstances.Add(refineryEntity, refineryInstances);
+            var labInstances = new List<ComponentInstance> { new ComponentInstance(labEntity) };
+            componentInstancesDB.specificInstances.Add(labEntity, labInstances);
+            var factoryInstances = new List<ComponentInstance> { new ComponentInstance(facoryEntity) };
+            componentInstancesDB.specificInstances.Add(facoryEntity, factoryInstances);
+
             ReCalcProcessor.ReCalcAbilities(colonyEntity);
             colonyEntity.GetDataBlob<ColonyInfoDB>().population[speciesEntity] = 9000000000;
             
-            factionEntity.GetDataBlob<FactionInfoDB>().KnownSystems.Add(sol.Guid); //hack test because currently stuff doesnt get added to knownSystems automaticaly
+            factionEntity.GetDataBlob<FactionInfoDB>().KnownSystems.Add(sol.Guid);
 
             return factionEntity;
         }

@@ -55,7 +55,7 @@ namespace Pulsar4X.ECSLib
 
         [NotNull]
         [PublicAPI]
-        public List<Entity> Children => _children;
+        public IReadOnlyCollection<Entity> Children => _children;
         [JsonProperty]
         private readonly List<Entity> _children;
 
@@ -78,21 +78,17 @@ namespace Pulsar4X.ECSLib
 
         private void AddChild(Entity child)
         {
-            if (child.Guid == Guid.Empty)
-            {
-                
-            }
-            if (Children.Contains(child))
+            if (Children.Contains(child) || child == OwningEntity)
             {
                 return;
             }
-            Children.Add(child);
-            Children.Sort((entity1, entity2) => entity1.Guid.CompareTo(entity2.Guid));
+            _children.Add(child);
+            _children.Sort((entity1, entity2) => entity1.Guid.CompareTo(entity2.Guid));
         }
 
-        private void RemoveChild(Entity child)
+        internal void RemoveChild(Entity child)
         {
-            Children.Remove(child);
+            _children.Remove(child);
         }
 
         private TreeHierarchyDB GetSameTypeDB(Entity entity)

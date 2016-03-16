@@ -2,36 +2,36 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pulsar4X.ECSLib
 {
     public class ComponentInstancesDB : BaseDataBlob
     {
         [JsonProperty]
+        internal Dictionary<Entity, List<ComponentInstance>> specificInstances { get; set; } = new Dictionary<Entity, List<ComponentInstance>>();
+
         [PublicAPI]
-        public Dictionary<Entity, List<ComponentInstance>> SpecificInstances { get; internal set; } = new Dictionary<Entity, List<ComponentInstance>>();
+        public IReadOnlyDictionary<Entity, IReadOnlyCollection<ComponentInstance>> SpecificInstances => specificInstances.ToDictionary(componentKVP => componentKVP.Key, componentKVP => (IReadOnlyCollection<ComponentInstance>)componentKVP.Value);
 
         public ComponentInstancesDB() { }
 
-        public ComponentInstancesDB(List<Entity> componentDesigns)
+        public ComponentInstancesDB(IEnumerable<Entity> componentDesigns)
         {
             foreach (var item in componentDesigns)
             {
                 ComponentInstance instance = new ComponentInstance(item);
-                if (!SpecificInstances.ContainsKey(item))
-                    SpecificInstances.Add(item, new List<ComponentInstance>() { instance });
+                if (!specificInstances.ContainsKey(item))
+                    specificInstances.Add(item, new List<ComponentInstance>() { instance });
                 else
                 {
-                    SpecificInstances[item].Add(instance);
+                    specificInstances[item].Add(instance);
                 }
             }
         }
 
         public ComponentInstancesDB(ComponentInstancesDB db)
         {
-            SpecificInstances = new Dictionary<Entity, List<ComponentInstance>>(db.SpecificInstances);
+            specificInstances = new Dictionary<Entity, List<ComponentInstance>>(db.specificInstances);
         }
 
         public override object Clone()
@@ -54,15 +54,16 @@ namespace Pulsar4X.ECSLib
         /// <param name="isEnabled">whether the component is enabled on construction. default=true</param>
         internal ComponentInstance(Entity designEntity, bool isEnabled = true)
         {
-            if (designEntity.HasDataBlob<ComponentInfoDB>())
+            ComponentInfoDB componentInfo = designEntity.GetDataBlob<ComponentInfoDB>();
+
+            if (componentInfo == null)
             {
-                ComponentInfoDB componentInfo = designEntity.GetDataBlob<ComponentInfoDB>();
-                DesignEntity = designEntity;
-                IsEnabled = isEnabled;
-                HTKRemaining = componentInfo.HTK;
-            }
-            else
                 throw new Exception("designEntity Must contain a ComponentInfoDB");
+            }
+
+            DesignEntity = designEntity;
+            IsEnabled = isEnabled;
+            HTKRemaining = componentInfo.HTK;
         }
     }
 }

@@ -28,7 +28,7 @@ namespace Pulsar4X.Tests
             var requiredDataBlobs = new List<Type>()
             {
                 typeof(FactionInfoDB),
-                typeof(FactionAbilitiesDB),
+                typeof(BonusesDB),
                 typeof(NameDB),
                 typeof(FactionTechDB)
             };
@@ -69,7 +69,9 @@ namespace Pulsar4X.Tests
             //NameDB nameDB = colony.GetDataBlob<NameDB>();
 
             //Assert.IsTrue(HasAllRequiredDatablobs(colony, requiredDataBlobs), "Colony Entity doesn't contains all required datablobs");
-            Assert.IsTrue(colonyInfoDB.PlanetEntity == planet, "ColonyInfoDB.PlanetEntity refs to wrong entity");
+            var matedToDB = colony.GetDataBlob<MatedToDB>();
+            Assert.IsTrue(matedToDB?.Parent == planet, "Colony does not properly mate to its parent planet.");
+
         }
 
         [Test]
@@ -80,8 +82,8 @@ namespace Pulsar4X.Tests
 
             var requiredDataBlobs = new List<Type>()
             {
-                typeof(CommanderDB),
-                typeof(ScientistDB)
+                typeof(LeaderDB),
+                typeof(BonusesDB)
             };
 
             Entity scientist = CommanderFactory.CreateScientist(_game.GlobalManager, faction);
@@ -104,7 +106,6 @@ namespace Pulsar4X.Tests
                 typeof(ShipInfoDB),
                 typeof(ArmorDB),
                 typeof(BeamWeaponsDB),
-                typeof(BuildCostDB),
                 typeof(CargoDB),
                 typeof(CrewDB),
                 typeof(DamageDB),
