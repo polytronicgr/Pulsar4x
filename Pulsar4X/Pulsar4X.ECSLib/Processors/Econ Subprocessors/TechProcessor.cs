@@ -8,8 +8,15 @@ namespace Pulsar4X.ECSLib
     /// <summary>
     /// See also the Installation Processors for DoResearch
     /// </summary>
-    public static class TechProcessor
+    public class TechSubprocessor
     {
+        private readonly Game _game;
+
+        public TechSubprocessor(Game game)
+        {
+            _game = game;
+        }
+
         internal static void ProcessSystem(StarSystem system, Game game)
         {
             foreach (Entity colonyEntity in system.SystemManager.GetAllEntitiesWithDataBlob<ColonyInfoDB>())
@@ -76,6 +83,46 @@ namespace Pulsar4X.ECSLib
                     }
                 }
             }
+        }
+
+        internal void Process(IndustrialEntity industrialEntity)
+        {
+            LinkedList<IndustryJob> researchJobs = industrialEntity.IndustryDB.industryJobs[IndustryType.Research];
+            float annualResearchRate = industrialEntity.IndustryDB.IndustryRates[IndustryType.Research];
+            double tickResearchRate = annualResearchRate * (_game.Settings.EconomyCycleTime.TotalDays / 365);
+
+            LinkedListNode<IndustryJob> currentJobNode = researchJobs.First;
+
+            float utilizationLeft = 1;
+            while (currentJobNode != null && utilizationLeft != 0)
+            {
+                IndustryJob currentScienceJob = currentJobNode.Value;
+
+                if (currentScienceJob.ProjectManager == null || !currentScienceJob.ProjectManager.IsValid)
+                {
+                    // No valid leader. Leader might've died.
+                    var noManagerEvent = new Event(_game.CurrentDateTime, "Science project has no leader.", EventType.ResearchHalted, null, industrialEntity.Entity);
+                    _game.EventLog.AddEvent(noManagerEvent);
+                }
+
+                float jobUtilization = currentScienceJob.PercentToUtilize;
+
+                if (jobUtilization >= utilizationLeft)
+                {
+                    jobUtilization = utilizationLeft;
+                    utilizationLeft = 0;
+                }
+                else
+                {
+                    utilizationLeft -= jobUtilization;
+                }
+
+
+
+                currentJobNode = currentJobNode.Next;
+            }
+
+            throw new NotImplementedException();
         }
 
         /// <summary>

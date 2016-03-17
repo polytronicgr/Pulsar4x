@@ -24,6 +24,8 @@ namespace Pulsar4X.ECSLib
 
     public class IndustryJob
     {
+        public Entity ProjectManager { get; internal set; }
+
         public IndustryType IndustryType { get; internal set; }
 
         public Guid ItemGuid { get; internal set; }
@@ -42,12 +44,6 @@ namespace Pulsar4X.ECSLib
 
         [JsonIgnore]
         public IReadOnlyDictionary<Guid, float> MaterialsRequiredPerItem => materialsRequiredPerItem;
-    }
-
-    public class ScienceJob : IndustryJob
-    {
-        public Entity AssignedScientist { get; internal set; }
-        public int LabsAssigned { get; internal set; }
     }
 
     /// <summary>

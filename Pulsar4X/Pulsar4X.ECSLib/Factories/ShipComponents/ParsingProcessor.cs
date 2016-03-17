@@ -339,7 +339,7 @@ namespace Pulsar4X.ECSLib
 
                 Guid techGuid = Guid.Parse((string)args.EvaluateParameters()[0]);
                 TechSD techSD = _staticDataStore.Techs[techGuid];
-                args.Result = TechProcessor.DataFormula(_factionTechDB, techSD);
+                args.Result = TechSubprocessor.DataFormula(_factionTechDB, techSD);
             }
 
             //Returns the tech level for the given guid

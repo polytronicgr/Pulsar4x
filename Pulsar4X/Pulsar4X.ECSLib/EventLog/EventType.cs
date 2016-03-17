@@ -56,6 +56,7 @@ namespace Pulsar4X.ECSLib
         ResearchCompleted,
         InactiveLab,
         OverallocationOfLabs,
+        ResearchHalted,
 
         // Industry Events
         ProductionStarted,

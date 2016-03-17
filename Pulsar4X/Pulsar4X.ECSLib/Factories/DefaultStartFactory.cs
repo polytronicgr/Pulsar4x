@@ -36,7 +36,7 @@ namespace Pulsar4X.ECSLib
 
             FactionTechDB factionTech = factionEntity.GetDataBlob<FactionTechDB>();
             //TechProcessor.ApplyTech(factionTech, game.StaticData.Techs[new Guid("35608fe6-0d65-4a5f-b452-78a3e5e6ce2c")]); //add conventional engine for testing. 
-            TechProcessor.MakeResearchable(factionTech);
+            TechSubprocessor.MakeResearchable(factionTech);
 
             var componentInstancesDB = colonyEntity.GetDataBlob<ComponentInstancesDB>();
 

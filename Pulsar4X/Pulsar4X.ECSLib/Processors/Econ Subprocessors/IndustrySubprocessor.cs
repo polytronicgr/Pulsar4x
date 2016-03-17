@@ -25,9 +25,10 @@ namespace Pulsar4X.ECSLib
                 var industrialEntity = new IndustrialEntity(entity);
                 UpdateIndustryDB(industrialEntity);
 
+                TechSubprocessor.Process(industrialEntity);
+                // TODO: Research
                 // TODO: ProcessTerraforming(entity, industryDB);
                 // TODO: JP stabilization
-                // TODO: Research
                 // TODO: Salvage
                 _miningSubprocessor.ProcessMining(industrialEntity);
                 if (_miningSubprocessor.NextHaltTime < NextHaltTime)
@@ -92,7 +93,7 @@ namespace Pulsar4X.ECSLib
             return ApplyIndustryBonuses(industrialEntity, industialRates); ;
         }
 
-        private static Dictionary<IndustryType, float> ApplyIndustryBonuses(IndustrialEntity industrialEntity, Dictionary<IndustryType, float> industialRates)
+        internal static Dictionary<IndustryType, float> ApplyIndustryBonuses(IndustrialEntity industrialEntity, Dictionary<IndustryType, float> industialRates)
         {
             var applicableBonuses = new List<BonusesDB>();
 
