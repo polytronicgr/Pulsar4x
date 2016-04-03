@@ -352,7 +352,6 @@ namespace Pulsar4X.ECSLib
                     // Throw everything else in the cargo hold.
                     industrialEntity.CargoDB.cargoCarried.SafeValueAdd(outputCargoDefinition, numberCompleted);
                     break;
-
             }
         }
 
