@@ -55,13 +55,13 @@ namespace Pulsar4X.ECSLib
     /// <summary>
     /// Helper class that pulls the DB's from the EntityManager ONCE for multiple uses.
     /// </summary>
-    internal class IndustrialEntity
+    public class IndustrialEntity
     {
-        internal readonly Entity Entity;
-        internal readonly CargoDB CargoDB;
-        internal readonly IndustryDB IndustryDB;
-        internal readonly MatedToDB MatedToDB;
-        internal readonly OwnedDB OwnedDB;
+        public readonly Entity Entity;
+        public readonly CargoDB CargoDB;
+        public readonly IndustryDB IndustryDB;
+        public readonly MatedToDB MatedToDB;
+        public readonly OwnedDB OwnedDB;
 
         public IndustrialEntity(Entity entity)
         {

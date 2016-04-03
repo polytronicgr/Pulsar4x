@@ -1,4 +1,5 @@
-﻿using Pulsar4X.ECSLib;
+﻿using System.CodeDom;
+using Pulsar4X.ECSLib;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -7,25 +8,28 @@ namespace Pulsar4X.ViewModel
     public class JobVM<TDataBlob, TJob> : IViewModel
         where TDataBlob : BaseDataBlob
     {
+        private Game _game;
         private StaticDataStore _staticData;
         private IndustryJob _job;
-        private Entity _colonyEntity;
+        private IndustrialEntity _industrialEntity;
         JobAbilityBaseVM<TDataBlob, TJob> _parentJobAbility { get; set; }
 
         public JobPriorityCommand<TDataBlob, TJob> JobPriorityCommand { get; set; }
-
-        private int _jobTotalPoints;
+        
         public string Item
         {
             get
             {
-                if (_job.IndustryType == IndustryType.Refining)
-                    return _staticData.RefinedMaterials[_job.ItemGuid].Name;
-                else if (_job.IndustryType == IndustryType.InstallationConstruction)
-                    return _colonyEntity.GetDataBlob<OwnedDB>().ObjectOwner.GetDataBlob<FactionInfoDB>().ComponentDesigns[_job.ItemGuid].GetDataBlob<NameDB>().DefaultName;
-                else
-                    return "Unknown Jobtype";
-
+                switch (_job.IndustryType)
+                {
+                    case IndustryType.Refining:
+                        return _staticData.RefinedMaterials[_job.ItemGuid].Name;
+                    case IndustryType.InstallationConstruction:
+                        Entity installationDesign = _game.GlobalManager.GetGlobalEntityByGuid(_job.ItemGuid);
+                        return installationDesign.GetDataBlob<NameDB>()?.GetName(_industrialEntity.OwnedDB.EntityOwner) ?? "ERROR: NO NAMEDB FOUND FOR ENTITY";
+                    default:
+                        return "Unknown Jobtype";
+                }
             }
         }
 
@@ -36,24 +40,14 @@ namespace Pulsar4X.ViewModel
         public float ItemBuildPointsRemaining { get { return _job.BPPerItem - _job.PartialBPApplied; } set { OnPropertyChanged(); } }
         public double ItemPercentRemaining { get { return ItemBuildPointsRemaining / _job.BPPerItem; } set { OnPropertyChanged(); } }
 
-        
-        public JobVM()
+        public JobVM(Game game, StaticDataStore staticData, Entity entity, IndustryJob job, JobAbilityBaseVM<TDataBlob, TJob> parentJobAbilityVM)
         {
-        }
-
-
-        public JobVM(StaticDataStore staticData, Entity colonyEntity, IndustryJob job, JobAbilityBaseVM<TDataBlob, TJob> parentJobAbilityVM)
-        {
+            _game = game;
             _staticData = staticData;
-            _colonyEntity = colonyEntity;
+            _industrialEntity = new IndustrialEntity(entity);
             _job = job;
             _parentJobAbility = parentJobAbilityVM;
             
-            if (_job.IndustryType == IndustryType.Refining)
-                    _jobTotalPoints = _staticData.RefinedMaterials[_job.ItemGuid].RefinaryPointCost;
-            else if (_job.IndustryType == IndustryType.InstallationConstruction)
-                _jobTotalPoints = _colonyEntity.GetDataBlob<OwnedDB>().ObjectOwner.GetDataBlob<FactionInfoDB>().ComponentDesigns[_job.ItemGuid].GetDataBlob<ComponentInfoDB>().BuildPointCost;
-
             JobPriorityCommand = new JobPriorityCommand<TDataBlob, TJob>(this);
         }
 
@@ -67,11 +61,9 @@ namespace Pulsar4X.ViewModel
         [NotifyPropertyChangedInvocator]
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
         public void Refresh(bool partialRefresh = false)
         {
             if (PropertyChanged != null)
