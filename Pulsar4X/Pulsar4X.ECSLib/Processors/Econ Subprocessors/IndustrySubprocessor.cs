@@ -268,26 +268,29 @@ namespace Pulsar4X.ECSLib
             }
 
             // Update the job
-            UpdateIndustryJob(industrialEntity, industryJob, annualProduction, numberToProduce);
+            int totalCompleted = UpdateIndustryJob(industrialEntity, industryJob, annualProduction, numberToProduce);
 
             // Add completed products
-            DeliverProducts(industrialEntity, outputCargoDef, numberToProduce);
+            DeliverProducts(industrialEntity, industryJob, outputCargoDef, totalCompleted);
 
             // Return the percentage of produciton used for this job.
             return maxProduction / (float)(numberToProduce * industryJob.BPPerItem);
         }
 
-        private void UpdateIndustryJob(IndustrialEntity industrialEntity, IndustryJob industryJob, float annualProduction, double numberToProduce)
+        private int UpdateIndustryJob(IndustrialEntity industrialEntity, IndustryJob industryJob, float annualProduction, double numberToProduce)
         {
             // Apply partial construction
             int numberCompleted = (int)Math.Floor(numberToProduce);
 
+            // numberToProduce is not an int. We may have produced 1.5 this run. We completed 1. leftOver = 0.5
             double leftOver = numberToProduce - numberCompleted;
-            industryJob.BPToNextCompletion += industryJob.BPPerItem - (float)(industryJob.BPPerItem * leftOver);
-
-            if (industryJob.BPToNextCompletion >= industryJob.BPPerItem)
+            // Apply that 0.5 leftOver to our PartialBPApplied.
+            industryJob.PartialBPApplied += (float)(industryJob.BPPerItem * leftOver);
+            
+            // PartialBPApplied is cumulative from the last run, if we had 0.7, and add 0.5, we now have 1.2; make it 0.2 and add one to numberCompled.
+            if (industryJob.PartialBPApplied >= industryJob.BPPerItem)
             {
-                industryJob.BPToNextCompletion -= industryJob.BPPerItem;
+                industryJob.PartialBPApplied -= industryJob.BPPerItem;
                 numberCompleted++;
             }
 
@@ -295,11 +298,18 @@ namespace Pulsar4X.ECSLib
 
             if (industryJob.NumberCompleted == industryJob.NumberOrdered)
             {
-                var completedEvent = new Event(_game.CurrentDateTime, "Production job completed.", EventType.ProductionCompleted, null, industrialEntity.Entity);
-                _game.EventLog.AddEvent(completedEvent);
+                if (industryJob.AutoRepeat)
+                {
+                    industryJob.NumberCompleted = 0;
+                }
+                else
+                {
+                    var completedEvent = new Event(_game.CurrentDateTime, "Production job completed.", EventType.ProductionCompleted, null, industrialEntity.Entity);
+                    _game.EventLog.AddEvent(completedEvent);
+                }
             }
-
-            double remainingDays = annualProduction / (industryJob.BPPerItem * (industryJob.NumberOrdered - industryJob.NumberCompleted) - industryJob.BPToNextCompletion) / 365;
+            double totalRemainingBP = industryJob.BPPerItem * (industryJob.NumberCompleted - industryJob.NumberOrdered) - industryJob.PartialBPApplied;
+            double remainingDays = totalRemainingBP / annualProduction / 365;
             TimeSpan remainingTime = TimeSpan.FromDays(remainingDays);
 
             industryJob.ProjectedCompletion = _game.CurrentDateTime + remainingTime;
@@ -307,15 +317,46 @@ namespace Pulsar4X.ECSLib
             {
                 NextHaltTime = industryJob.ProjectedCompletion;
             }
+            return numberCompleted;
         }
 
-        private static void DeliverProducts(IndustrialEntity industrialEntity, CargoDefinition outputCargoDef, double numberToProduce)
+        private static void DeliverProducts(IndustrialEntity industrialEntity, IndustryJob industryJob, CargoDefinition outputCargoDefinition, int numberCompleted)
         {
-            int numberCompleted = (int)Math.Floor(numberToProduce);
-
             // TODO: Properly deliver non-cargo items
-            industrialEntity.CargoDB.cargoCarried.SafeValueAdd(outputCargoDef, numberCompleted);
+            switch (industryJob.IndustryType)
+            {
+                case IndustryType.InstallationConstruction:
+                    var installationsDB = industrialEntity.Entity.GetDataBlob<InstallationsDB>();
+                    if (installationsDB != null)
+                    {
+                        // Add it to the entity's installationDB
+                        installationsDB.Installations.SafeValueAdd(outputCargoDefinition.ItemGuid, numberCompleted);
+                    }
+                    else
+                    {
+                        // Throw it in the cargo.
+                        industrialEntity.CargoDB.cargoCarried.SafeValueAdd(outputCargoDefinition, numberCompleted);
+                    }
+                    break;
+                case IndustryType.FighterConstruction:
+                    // TODO: Spawn a fighter at my location, find default location/taskgroup for them, and mate it to them.
+                    // Probably do this in another function.
+                    throw new NotImplementedException("Delivery of Fighters not implemented.");
+                    break;
+                case IndustryType.ShipConstruction:
+                    // TODO: Spawn a ship at my location, find a default taskgroup for it, and add them to it.
+                    // Probably do this in another function.
+                    throw new NotImplementedException("Delivery of ships not implemented");
+                    break;
+                default:
+                    // Throw everything else in the cargo hold.
+                    industrialEntity.CargoDB.cargoCarried.SafeValueAdd(outputCargoDefinition, numberCompleted);
+                    break;
+
+            }
         }
+
+
 
         private void ProcessJobs(IndustrialEntity industrialEntity, IndustryType industryType)
         {

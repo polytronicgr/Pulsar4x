@@ -32,10 +32,14 @@ namespace Pulsar4X.ECSLib
         public int NumberOrdered { get; set; }
         public int NumberCompleted { get; internal set; }
 
-        public float BPToNextCompletion { get; internal set; }
+        public float PartialBPApplied { get; internal set; }
         public float BPPerItem { get; internal set; }
 
         public float PercentToUtilize { get; set; }
+
+        public float TotalBPApplied => NumberCompleted * BPPerItem + PartialBPApplied;
+        public float TotalBPRequired => NumberOrdered * BPPerItem;
+        public float PercentCompleted => TotalBPApplied / TotalBPRequired;
 
         public DateTime ProjectedCompletion { get; internal set; }
 
@@ -44,6 +48,8 @@ namespace Pulsar4X.ECSLib
 
         [JsonIgnore]
         public IReadOnlyDictionary<Guid, float> MaterialsRequiredPerItem => materialsRequiredPerItem;
+
+        public bool AutoRepeat { get; set; }
     }
 
     /// <summary>
