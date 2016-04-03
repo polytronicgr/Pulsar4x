@@ -115,7 +115,7 @@ namespace Pulsar4X.CrossPlatformUI.Views
 
             ConstructionAbilityView.SetViewModel(_colonyScreenVM.ConstructionAbilityVM);
             //ResearchAbilityView = new ResearchAbilityView(colonyScreenVM.ColonyResearchVM);
-            ResearchAbilityView.SetViewModel(_colonyScreenVM.ColonyResearchVM);
+            //ResearchAbilityView.SetViewModel(_colonyScreenVM.ColonyResearchVM);
 
 
 

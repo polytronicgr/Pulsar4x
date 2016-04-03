@@ -8,7 +8,7 @@ namespace Pulsar4X.ViewModel
         where TDataBlob : BaseDataBlob
     {
         private StaticDataStore _staticData;
-        private JobBase _job;
+        private IndustryJob _job;
         private Entity _colonyEntity;
         JobAbilityBaseVM<TDataBlob, TJob> _parentJobAbility { get; set; }
 
@@ -19,9 +19,9 @@ namespace Pulsar4X.ViewModel
         {
             get
             {
-                if (_job is RefineingJob)
+                if (_job.IndustryType == IndustryType.Refining)
                     return _staticData.RefinedMaterials[_job.ItemGuid].Name;
-                else if (_job is ConstructionJob)
+                else if (_job.IndustryType == IndustryType.InstallationConstruction)
                     return _colonyEntity.GetDataBlob<OwnedDB>().ObjectOwner.GetDataBlob<FactionInfoDB>().ComponentDesigns[_job.ItemGuid].GetDataBlob<NameDB>().DefaultName;
                 else
                     return "Unknown Jobtype";
@@ -29,30 +29,29 @@ namespace Pulsar4X.ViewModel
             }
         }
 
-        public ushort Completed { get { return _job.NumberCompleted; } set { OnPropertyChanged(); } }
-        public ushort BatchQuantity { get { return _job.NumberOrdered; } set { _job.NumberOrdered = value; OnPropertyChanged(); } } //note that we're directly changing the data here.
-        public bool Repeat { get { return _job.Auto; } set { _job.Auto = value; OnPropertyChanged(); } } //note that we're directly changing the data here.
+        public int Completed { get { return _job.NumberCompleted; } set { OnPropertyChanged(); } }
+        public int BatchQuantity { get { return _job.NumberOrdered; } set { _job.NumberOrdered = value; OnPropertyChanged(); } } //note that we're directly changing the data here.
+        public bool Repeat { get { return _job.AutoRepeat; } set { _job.AutoRepeat = value; OnPropertyChanged(); } } //note that we're directly changing the data here.
 
-        public int ItemBuildPointsRemaining { get { return _job.PointsLeft; } set { OnPropertyChanged(); } }
-        public double ItemPercentRemaining { get { return (double)_job.PointsLeft / _jobTotalPoints * 100; } set { OnPropertyChanged(); } }
+        public float ItemBuildPointsRemaining { get { return _job.BPPerItem - _job.PartialBPApplied; } set { OnPropertyChanged(); } }
+        public double ItemPercentRemaining { get { return ItemBuildPointsRemaining / _job.BPPerItem; } set { OnPropertyChanged(); } }
 
-
-
+        
         public JobVM()
         {
         }
 
 
-        public JobVM(StaticDataStore staticData, Entity colonyEntity, JobBase job, JobAbilityBaseVM<TDataBlob, TJob> parentJobAbilityVM)
+        public JobVM(StaticDataStore staticData, Entity colonyEntity, IndustryJob job, JobAbilityBaseVM<TDataBlob, TJob> parentJobAbilityVM)
         {
             _staticData = staticData;
             _colonyEntity = colonyEntity;
             _job = job;
             _parentJobAbility = parentJobAbilityVM;
-
-            if (_job is RefineingJob)
-                _jobTotalPoints = _staticData.RefinedMaterials[_job.ItemGuid].RefinaryPointCost;
-            else if (_job is ConstructionJob)
+            
+            if (_job.IndustryType == IndustryType.Refining)
+                    _jobTotalPoints = _staticData.RefinedMaterials[_job.ItemGuid].RefinaryPointCost;
+            else if (_job.IndustryType == IndustryType.InstallationConstruction)
                 _jobTotalPoints = _colonyEntity.GetDataBlob<OwnedDB>().ObjectOwner.GetDataBlob<FactionInfoDB>().ComponentDesigns[_job.ItemGuid].GetDataBlob<ComponentInfoDB>().BuildPointCost;
 
             JobPriorityCommand = new JobPriorityCommand<TDataBlob, TJob>(this);
