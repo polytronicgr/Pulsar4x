@@ -5,6 +5,10 @@ using System.Linq;
 
 namespace Pulsar4X.CrossPlatformUI.Views
 {
+    /*
+
+    Waiting redesign of TechProcessor and ResearchVM's
+
     public class ScientistUC : Panel
     {
         private ScientistControlVM _viewModel { get; set; }
@@ -56,4 +60,5 @@ namespace Pulsar4X.CrossPlatformUI.Views
             }
         }
     }
+    */
 }
