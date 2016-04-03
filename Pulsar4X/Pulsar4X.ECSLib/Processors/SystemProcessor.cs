@@ -1,13 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
-    internal abstract class SystemProcessor
+    internal abstract class SystemProcessor : Processor
     {
-        internal bool UseMultiThreading { get; set; }
+        internal override void Process(Game game)
+        {
+            List<StarSystem> systems = game.Systems.Values.ToList();
 
-        internal int Layer { get; set; }
+            for (int i = systems.Count - 1; i >= 0; i--)
+            {
+                StarSystem starSystem = systems[i];
+                // TODO: Eject invalid systems.
+            }
+
+            if (UseMultiThreading)
+            {
+                Parallel.ForEach(systems, starSystem => ProcessSystem(game, starSystem));
+            }
+            else
+            {
+                foreach (StarSystem starSystem in systems)
+                {
+                    ProcessSystem(game, starSystem);
+                }
+            }
+        }
 
         internal abstract void ProcessSystem(Game game, StarSystem system);
     }
@@ -15,7 +37,8 @@ namespace Pulsar4X.ECSLib
     internal abstract class TimedSystemProcessor : SystemProcessor
     {
         [JsonProperty]
-        private DateTime _lastRunTime = DateTime.MinValue;
+        private readonly Dictionary<Guid, DateTime> _lastRunTimes = new Dictionary<Guid, DateTime>();
+
         [JsonProperty]
         private TimeSpan RunFrequency { get; set; }
 
@@ -26,15 +49,23 @@ namespace Pulsar4X.ECSLib
 
         internal sealed override void ProcessSystem(Game game, StarSystem system)
         {
-            if (_lastRunTime + RunFrequency > game.CurrentDateTime)
+            DateTime lastRunTime;
+            if (!_lastRunTimes.TryGetValue(system.Guid, out lastRunTime))
+            {
+                lastRunTime = DateTime.MinValue;
+                _lastRunTimes.Add(system.Guid, lastRunTime);
+            }
+
+            if (lastRunTime + RunFrequency > game.CurrentDateTime)
             {
                 return;
             }
 
-            _lastRunTime = game.CurrentDateTime;
-            Process(game, system);
+            _lastRunTimes[system.Guid] = game.CurrentDateTime;
+
+            TimedProcessSystem(game, system);
         }
 
-        protected abstract void Process(Game game, StarSystem system);
+        internal abstract void TimedProcessSystem(Game game, StarSystem system);
     }
 }
