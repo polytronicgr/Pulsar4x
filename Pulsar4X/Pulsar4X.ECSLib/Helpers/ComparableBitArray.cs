@@ -162,6 +162,37 @@ namespace Pulsar4X.ECSLib
         }
 
         /// <summary>
+        /// Copy constructor
+        /// </summary>
+        public ComparableBitArray(ComparableBitArray toCopy)
+        {
+            int length = toCopy.Length;
+
+            SetBits = new List<int>();
+
+            int requiredBackingValues = 1;
+            while (length > BitsPerValue)
+            {
+                requiredBackingValues++;
+                length -= BitsPerValue;
+            }
+
+            _backingValues = new int[requiredBackingValues];
+
+            for (int i = 0; i < _backingValues.Length; i++)
+            {
+                _backingValues[i] = 0;
+            }
+
+            Length = length + ((requiredBackingValues * BitsPerValue) - BitsPerValue);
+
+            foreach (int bit in toCopy.SetBits)
+            {
+                this[bit] = true;
+            }
+        }
+
+        /// <summary>
         /// Operator overload for bitwise AND.
         /// </summary>
         public static ComparableBitArray operator &(ComparableBitArray arrayA, ComparableBitArray arrayB)

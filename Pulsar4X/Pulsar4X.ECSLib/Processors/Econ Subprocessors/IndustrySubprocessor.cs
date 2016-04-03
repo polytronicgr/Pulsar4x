@@ -24,8 +24,7 @@ namespace Pulsar4X.ECSLib
             {
                 var industrialEntity = new IndustrialEntity(entity);
                 UpdateIndustryDB(industrialEntity);
-
-                TechSubprocessor.Process(industrialEntity);
+                
                 // TODO: Research
                 // TODO: ProcessTerraforming(entity, industryDB);
                 // TODO: JP stabilization

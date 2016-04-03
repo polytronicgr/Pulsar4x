@@ -10,6 +10,7 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class TechSubprocessor
     {
+        /*
         private readonly Game _game;
 
         public TechSubprocessor(Game game)
@@ -24,7 +25,6 @@ namespace Pulsar4X.ECSLib
                 DoResearch(colonyEntity, game);
             }
         }
-
         /// <summary>
         /// adds research points to a scientists project.
         /// </summary>
@@ -150,7 +150,7 @@ namespace Pulsar4X.ECSLib
             //TechSD project = _game.StaticData.Techs[techID];
             scientistDB.ProjectQueue.Add(techID);
         }
-
+        */
         /// <summary>
         /// maybe techsd should link up as well as down. it would make this more efficent, but harder on the modder. 
         /// </summary>
