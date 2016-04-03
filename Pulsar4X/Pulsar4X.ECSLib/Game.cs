@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -69,11 +70,19 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         public GameSettings Settings { get; set; }
 
+        public bool IsRunning { get; private set; }
+
+        public bool Quit { get; set; }
+
+        public double TimeMultiplier { get; set; }
+
         [JsonProperty]
         private readonly OrbitProcessor _orbitProcessor = new OrbitProcessor();
 
         [JsonProperty]
         private readonly EconProcessor _econProcessor;
+
+        private readonly object _syncRoot = new object();
 
         #endregion
 
@@ -83,6 +92,19 @@ namespace Pulsar4X.ECSLib
         /// Event is cleared each load.
         /// </summary>
         internal event EventHandler PostLoad;
+
+        /// <summary>
+        /// FrameUpdate event fired each time the engine initiates a FrameUpdate.
+        /// The UI should register a function for this event and send it through the dispatcher
+        /// to update ViewModels
+        /// </summary>
+        internal event EventHandler<long> FrameUpdate;
+
+        /// <summary>
+        /// FixedUpdate event fired each time the engine initiates a FixedUpdate.
+        /// THis will be handled internally and will deal with firing the processors.
+        /// </summary>
+        internal event EventHandler<long> FixedUpdate;
         #endregion
 
         #region Constructors
@@ -147,6 +169,8 @@ namespace Pulsar4X.ECSLib
 
         #region Internal Functions
 
+
+
         internal void PostGameLoad()
         {
             _pathfindingManager = new PathfindingManager(this);
@@ -173,6 +197,53 @@ namespace Pulsar4X.ECSLib
         #endregion
 
         #region Public API
+
+        [PublicAPI]
+        public void RunEngine()
+        {
+            const double _fixedUpdateFrequency = 1; // Update frequency in Hz. This will cause the engine to update 1 time each (real second * TimeMultiplier).
+
+            lock (_syncRoot)
+            {
+                if (IsRunning)
+                {
+                    // Game loop is already running. Don't try to run another.
+                    return;
+                }
+                IsRunning = true;
+            }
+            long currentPhysicsTime = 0;
+            long frameAccumulation = 0;
+            // Number of ticks for each fixedUpdate.
+            long fixedUpdateTicks = Convert.ToInt64((1 / _fixedUpdateFrequency) * Stopwatch.Frequency);
+            float timeSpanConversionFactor = (float)TimeSpan.TicksPerSecond / Stopwatch.Frequency;
+            long currentRealTime = 0;
+
+            var gameTime = new Stopwatch();
+
+            // Game Loop
+            gameTime.Start();
+            while (!Quit)
+            {
+                // Current time
+                long newTime = gameTime.ElapsedTicks;
+                // How long the previous frame took
+                long frameTicks = Convert.ToInt64((newTime - currentRealTime) * TimeMultiplier);
+                currentRealTime = newTime;
+                frameAccumulation += frameTicks;
+
+                while (frameAccumulation >= fixedUpdateTicks)
+                {
+                    FixedUpdate?.Invoke(this, fixedUpdateTicks);
+                    frameAccumulation -= fixedUpdateTicks;
+                    currentPhysicsTime += fixedUpdateTicks;
+                }
+
+                FrameUpdate?.Invoke(this, frameTicks);
+            }
+
+            IsRunning = false;
+        }
 
         /// <summary>
         /// Time advancement code. Attempts to advance time by the number of seconds
