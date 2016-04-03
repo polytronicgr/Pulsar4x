@@ -22,7 +22,6 @@ namespace Pulsar4X.CrossPlatformUI.Views
         // Awaiting redesign of TechProcessor, and ResearchVM's     
         //protected ResearchAbilityView ResearchAbilityView { get; set; }
 
-
         private ColonyScreenVM _colonyScreenVM;
         private GameVM gameVM { get; set; }
 

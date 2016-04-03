@@ -113,6 +113,7 @@ namespace Pulsar4X.ECSLib
             {
                 // TODO: Debug log this exception. Do NOT fail to the UI. There is NO data-corruption on this exception.
                 // In this event, we did NOT update our position.
+                throw new Exception("Position Exception thrown in OrbitProcessor");
             }
 
             // Update our children.
