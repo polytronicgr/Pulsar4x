@@ -9,6 +9,13 @@ using System.Windows.Input;
 
 namespace Pulsar4X.ViewModel
 {
+    /*
+
+    Awaiting redesign of the TechProcessor
+
+
+
+
     public class FactionResearchVM : IViewModel
     {
         private Dictionary<Guid, Entity> _colonyDictionary;
@@ -315,4 +322,5 @@ namespace Pulsar4X.ViewModel
             PointsCompleted = PointsCompleted;
         }
     }
+    */
 }

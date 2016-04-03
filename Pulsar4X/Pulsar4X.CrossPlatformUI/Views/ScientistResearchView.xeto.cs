@@ -3,6 +3,10 @@ using Eto.Serialization.Xaml;
 using Pulsar4X.ViewModel;
 namespace Pulsar4X.CrossPlatformUI.Views
 {
+    /*
+
+    Awaiting redesign of TechProcessor, and ResearchVM's.
+
     public class ScientistResearchView : Panel
     {
         public ScientistResearchView()
@@ -21,4 +25,5 @@ namespace Pulsar4X.CrossPlatformUI.Views
             DataContext = viewModel;
         }
     }
+    */
 }

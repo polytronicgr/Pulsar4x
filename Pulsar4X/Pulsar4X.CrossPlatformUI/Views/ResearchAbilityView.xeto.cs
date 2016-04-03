@@ -5,6 +5,10 @@ using System.Collections.Generic;
 
 namespace Pulsar4X.CrossPlatformUI.Views
 {
+    /*
+
+    Awaiting redeisgn of TechProcessor and ResearchVM's.
+
     public class ResearchAbilityView : Panel
     {
         protected StackLayout ScientistsLayout { get; set; }
@@ -40,4 +44,5 @@ namespace Pulsar4X.CrossPlatformUI.Views
             }
         }
     }
+    */
 }

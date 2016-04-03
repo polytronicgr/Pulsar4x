@@ -18,7 +18,9 @@ namespace Pulsar4X.CrossPlatformUI.Views
         protected JobAbilityView RefinaryAbilityView { get; set; }
         protected GridView RefinedMats { get; set; }
         protected JobAbilityView ConstructionAbilityView { get; set; }
-        protected ResearchAbilityView ResearchAbilityView { get; set; }
+
+        // Awaiting redesign of TechProcessor, and ResearchVM's     
+        //protected ResearchAbilityView ResearchAbilityView { get; set; }
 
 
         private ColonyScreenVM _colonyScreenVM;
