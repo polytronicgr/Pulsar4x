@@ -22,8 +22,12 @@ namespace Pulsar4X.ECSLib
         [NotNull]
         [PublicAPI]
         public ComparableBitArray DataBlobMask => _protectedDataBlobMask_;
-
         protected ComparableBitArray _protectedDataBlobMask_ = EntityManager.BlankDataBlobMask();
+
+        [PublicAPI]
+        public ComparableBitArray DirtyDataBlobs => new ComparableBitArray(InternalDirtyDataBlobs);
+        internal ComparableBitArray InternalDirtyDataBlobs = EntityManager.BlankDataBlobMask();
+
 
         [PublicAPI]
         public static ProtoEntity Create(Guid guid, IEnumerable<BaseDataBlob> dataBlobs = null)
@@ -71,6 +75,7 @@ namespace Pulsar4X.ECSLib
             EntityManager.TryGetTypeIndex(dataBlob.GetType(), out typeIndex);
             DataBlobs[typeIndex] = dataBlob;
             _protectedDataBlobMask_[typeIndex] = true;
+            InternalDirtyDataBlobs[typeIndex] = true;
         }
 
         [PublicAPI]
@@ -78,6 +83,7 @@ namespace Pulsar4X.ECSLib
         {
             DataBlobs[typeIndex] = dataBlob;
             _protectedDataBlobMask_[typeIndex] = true;
+            InternalDirtyDataBlobs[typeIndex] = true;
         }
 
         [PublicAPI]
@@ -86,6 +92,7 @@ namespace Pulsar4X.ECSLib
             int typeIndex = EntityManager.GetTypeIndex<T>();
             DataBlobs[typeIndex] = null;
             _protectedDataBlobMask_[typeIndex] = false;
+            InternalDirtyDataBlobs[typeIndex] = true;
         }
 
         [PublicAPI]
@@ -93,6 +100,7 @@ namespace Pulsar4X.ECSLib
         {
             DataBlobs[typeIndex] = null;
             _protectedDataBlobMask_[typeIndex] = false;
+            InternalDirtyDataBlobs[typeIndex] = true;
         }
 
         internal class ProtoEntityConverter : JsonConverter

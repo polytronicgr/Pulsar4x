@@ -162,7 +162,7 @@ namespace Pulsar4X.ECSLib
                 throw new InvalidOperationException("Cannot set a datablob to an invalid entity.");
             }
 
-            Manager.SetDataBlob(ID, dataBlob);
+            Manager.SetDataBlob(this, dataBlob);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace Pulsar4X.ECSLib
                 throw new InvalidOperationException("Cannot set a datablob to an invalid entity.");
             }
 
-            Manager.SetDataBlob(ID, dataBlob, typeIndex);
+            Manager.SetDataBlob(this, dataBlob, typeIndex);
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace Pulsar4X.ECSLib
             {
                 throw new InvalidOperationException("Entity does not contain this datablob.");
             }
-            Manager.RemoveDataBlob<T>(ID);
+            Manager.RemoveDataBlob<T>(this);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace Pulsar4X.ECSLib
             {
                 throw new InvalidOperationException("Entity does not contain this datablob.");
             }
-            Manager.RemoveDataBlob(ID, typeIndex);
+            Manager.RemoveDataBlob(this, typeIndex);
         }
 
         /// <summary>

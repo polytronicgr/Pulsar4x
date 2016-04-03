@@ -203,36 +203,35 @@ namespace Pulsar4X.ECSLib
             return (T)_dataBlobMap[typeIndex][entityID];
         }
 
-        internal void SetDataBlob(int entityID, BaseDataBlob dataBlob)
+        internal void SetDataBlob(Entity entity, BaseDataBlob dataBlob)
         {
             int typeIndex;
             TryGetTypeIndex(dataBlob.GetType(), out typeIndex);
-
-            _dataBlobMap[typeIndex][entityID] = dataBlob;
-            EntityMasks[entityID][typeIndex] = true;
-            dataBlob.OwningEntity = _entities[entityID];
+            
+            SetDataBlob(entity, dataBlob, typeIndex);
         }
 
-        internal void SetDataBlob(int entityID, BaseDataBlob dataBlob, int typeIndex)
+        internal void SetDataBlob(Entity entity, BaseDataBlob dataBlob, int typeIndex)
         {
-            _dataBlobMap[typeIndex][entityID] = dataBlob;
-            EntityMasks[entityID][typeIndex] = true;
-            dataBlob.OwningEntity = _entities[entityID];
+            _dataBlobMap[typeIndex][entity.ID] = dataBlob;
+            EntityMasks[entity.ID][typeIndex] = true;
+            dataBlob.OwningEntity = _entities[entity.ID];
+            entity.InternalDirtyDataBlobs[typeIndex] = true;
         }
 
-        internal void RemoveDataBlob<T>(int entityID) where T : BaseDataBlob
+        internal void RemoveDataBlob<T>(Entity entity) where T : BaseDataBlob
         {
             int typeIndex = GetTypeIndex<T>();
-            _dataBlobMap[typeIndex][entityID].OwningEntity = null;
-            _dataBlobMap[typeIndex][entityID] = null;
-            EntityMasks[entityID][typeIndex] = false;
+            RemoveDataBlob(entity, typeIndex);
         }
 
-        internal void RemoveDataBlob(int entityID, int typeIndex)
+        internal void RemoveDataBlob(Entity entity, int typeIndex)
         {
-            _dataBlobMap[typeIndex][entityID].OwningEntity = null;
-            _dataBlobMap[typeIndex][entityID] = null;
-            EntityMasks[entityID][typeIndex] = false;
+            _dataBlobMap[typeIndex][entity.ID].OwningEntity = null;
+            _dataBlobMap[typeIndex][entity.ID] = null;
+            EntityMasks[entity.ID][typeIndex] = false;
+
+            entity.InternalDirtyDataBlobs[typeIndex] = true;
         }
 
         #endregion
