@@ -101,7 +101,7 @@ namespace Pulsar4X.ECSLib
                 // Parent-Relative coordinates
                 Vector4 newPosition = GetPosition(entityOrbitDB, game.CurrentDateTime);
                 // Absolute coordinates
-                newPosition += entityPosition.Position;
+                newPosition += parentPositionDB.Position;
 
                 var newPositionDB = new PositionDB(newPosition, entityPosition.SystemGuid);
 
