@@ -49,12 +49,6 @@ namespace Pulsar4X.ECSLib
         public Dictionary<Guid, TechSD> Techs = new Dictionary<Guid, TechSD>();
 
         /// <summary>
-        /// List which stores all of the installations
-        /// </summary>
-        [JsonIgnore]
-        public Dictionary<Guid, InstallationSD> Installations = new Dictionary<Guid, InstallationSD>();
-
-        /// <summary>
         /// Dictionary which stores all the Recipes.
         /// </summary>
         [JsonIgnore]
@@ -187,9 +181,6 @@ namespace Pulsar4X.ECSLib
             if (Techs.ContainsKey(id))
                 return Techs[id];
 
-            if (Installations.ContainsKey(id))
-                return Installations[id];
-
             if (RefinedMaterials.ContainsKey(id))
                 return RefinedMaterials[id];
 
@@ -284,17 +275,6 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        /// <summary>
-        /// Stores Installation Static Data. Will overwrite any existing Installations with the same ID.
-        /// </summary>
-        internal void Store(Dictionary<Guid, InstallationSD> installations)
-        {
-            if (installations != null)
-            {
-                foreach (KeyValuePair<Guid, InstallationSD> facility in installations)
-                    Installations[facility.Key] = facility.Value;
-            }
-        }
 
         /// <summary>
         /// Stores ConstructableObj Static Data. Will overwrite any existing ConstructableObjs with the same ID.
@@ -363,7 +343,6 @@ namespace Pulsar4X.ECSLib
                 AtmosphericGases = new WeightedList<AtmosphericGasSD>(AtmosphericGases),
                 CommanderNameThemes = new List<CommanderNameThemeSD>(CommanderNameThemes),
                 Components = new Dictionary<Guid, ComponentTemplateSD>(Components),
-                Installations = new Dictionary<Guid, InstallationSD>(Installations),
                 _loadedDataSets = new List<DataVersionInfo>(LoadedDataSets),
                 Minerals = new List<MineralSD>(Minerals),
                 RefinedMaterials = new Dictionary<Guid, RefinedMaterialSD>(RefinedMaterials),

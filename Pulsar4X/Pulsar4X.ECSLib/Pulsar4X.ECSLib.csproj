@@ -281,9 +281,6 @@
     <Content Include="Data\Pulsar4x\ComponentData.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Pulsar4x\InstallationData.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Data\Pulsar4x\Minerals.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
