@@ -27,7 +27,7 @@ namespace Pulsar4X.ViewModel.SystemView
             SystemBodies.Clear();
             this.scale_data = scale_data;
 
-            foreach (var item in starSys.SystemManager.GetAllEntitiesWithDataBlob<StarInfoDB>(gameVM.CurrentAuthToken))
+            foreach (var item in starSys.SystemManager.GetAllEntitiesWithDataBlob<StarDB>(gameVM.CurrentAuthToken))
             {
                 SystemBodies.Add(new SystemObjectGraphicsInfo(item, gameVM));
             }

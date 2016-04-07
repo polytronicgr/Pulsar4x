@@ -99,19 +99,19 @@ namespace Pulsar4X.ECSLib
 
             ItemName = itemEntity.GetDataBlob<NameDB>().GetName(OwningFaction);
 
-            var componentInfoDB = itemEntity.GetDataBlob<ComponentInfoDB>();
-            if (componentInfoDB == null)
+            var ComponentDB = itemEntity.GetDataBlob<ComponentDB>();
+            if (ComponentDB == null)
             {
-                throw new ArgumentException("Provided Guid resolved to an entity without a ComponentInfoDB.");
+                throw new ArgumentException("Provided Guid resolved to an entity without a ComponentDB.");
             }
 
-            BPPerItem = componentInfoDB.BuildPointCost;
-            foreach (KeyValuePair<Guid, int> materialCost in componentInfoDB.MaterialCosts)
+            BPPerItem = ComponentDB.BuildPointCost;
+            foreach (KeyValuePair<Guid, int> materialCost in ComponentDB.MaterialCosts)
             {
                 materialsRequiredPerItem.Add(materialCost.Key, materialCost.Value);
             }
 
-            foreach (KeyValuePair<Guid, int> componentCost in componentInfoDB.ComponentCosts)
+            foreach (KeyValuePair<Guid, int> componentCost in ComponentDB.ComponentCosts)
             {
                 materialsRequiredPerItem.Add(componentCost.Key, componentCost.Value);
             }

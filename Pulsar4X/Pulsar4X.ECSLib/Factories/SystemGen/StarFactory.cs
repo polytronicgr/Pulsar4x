@@ -27,17 +27,17 @@ namespace Pulsar4X.ECSLib
                 starName = system.NameDB.DefaultName;
             }
 
-            int starIndex = system.SystemManager.GetAllEntitiesWithDataBlob<StarInfoDB>().Count;
+            int starIndex = system.SystemManager.GetAllEntitiesWithDataBlob<StarDB>().Count;
 
             starName += " " + (char)('A' + starIndex) + " " + spectralType + subDivision + luminosityClass;
 
             MassVolumeDB starMassVolumeDB = MassVolumeDB.NewFromMassAndRadius(mass, radius);
-            StarInfoDB starInfoDB = new StarInfoDB {Age = age, Class = starClass, Luminosity = luminosity, SpectralType = spectralType, Temperature = temperature, LuminosityClass = luminosityClass, SpectralSubDivision = subDivision};
+            StarDB StarDB = new StarDB {Age = age, Class = starClass, Luminosity = luminosity, SpectralType = spectralType, Temperature = temperature, LuminosityClass = luminosityClass, SpectralSubDivision = subDivision};
             PositionDB starPositionDB = new PositionDB(new Vector4(0,0,0,0), system.Guid);
             NameDB starNameDB = new NameDB(starName);
             OrbitDB starOrbitDB = new OrbitDB();
 
-            return new Entity(system.SystemManager, new List<BaseDataBlob> {starOrbitDB, starMassVolumeDB, starInfoDB, starNameDB, starPositionDB});
+            return new Entity(system.SystemManager, new List<BaseDataBlob> {starOrbitDB, starMassVolumeDB, StarDB, starNameDB, starPositionDB});
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Pulsar4X.ECSLib
                     GMath.SelectFromRange(_galaxyGen.Settings.StarMassBySpectralType[starType], randomSelection),
                     GMath.SelectFromRange(_galaxyGen.Settings.StarRadiusBySpectralType[starType], randomSelection));
                 
-                StarInfoDB starData = GenerateStarInfo(starMVDB, starType, randomSelection);
+                StarDB starData = GenerateStarInfo(starMVDB, starType, randomSelection);
 
                 // Initialize Position as 0,0,0. It will be updated when the star's orbit is calculated.
                 PositionDB positionData = new PositionDB(0, 0, 0, system.Guid);
@@ -129,7 +129,7 @@ namespace Pulsar4X.ECSLib
             int starIndex = 0;
             foreach (Entity currentStar in stars)
             {
-                StarInfoDB currentStarInfo = currentStar.GetDataBlob<StarInfoDB>();
+                StarDB currentStarInfo = currentStar.GetDataBlob<StarDB>();
                 NameDB currentStarNameDB = new NameDB(system.NameDB.DefaultName + " " + (char)('A' + starIndex) + " " + currentStarInfo.SpectralType + currentStarInfo.SpectralSubDivision + currentStarInfo.LuminosityClass);
                 currentStar.SetDataBlob(currentStarNameDB);
 
@@ -140,7 +140,7 @@ namespace Pulsar4X.ECSLib
                 }
 
                 OrbitDB previousOrbit = previousStar.GetDataBlob<OrbitDB>();
-                StarInfoDB previousStarInfo = previousStar.GetDataBlob<StarInfoDB>();
+                StarDB previousStarInfo = previousStar.GetDataBlob<StarDB>();
 
                 double minDistance = _galaxyGen.Settings.OrbitalDistanceByStarSpectralType[previousStarInfo.SpectralType].Max + _galaxyGen.Settings.OrbitalDistanceByStarSpectralType[currentStarInfo.SpectralType].Max + previousOrbit.SemiMajorAxis;
 
@@ -185,12 +185,12 @@ namespace Pulsar4X.ECSLib
         /// <param name="starMVDB">The SystemBodyDB of the star.</param>
         /// <param name="spectralType">The Spectral Type of the star.</param>
         /// <param name="randomSelection">Random selection to generate consistent values.</param>
-        /// <returns>A StarInfoDB Populated with data generated based on Spectral Type and SystemBodyDB information provided.</returns>
-        private StarInfoDB GenerateStarInfo(MassVolumeDB starMVDB, SpectralType spectralType, double randomSelection)
+        /// <returns>A StarDB Populated with data generated based on Spectral Type and SystemBodyDB information provided.</returns>
+        private StarDB GenerateStarInfo(MassVolumeDB starMVDB, SpectralType spectralType, double randomSelection)
         {
             double maxStarAge = _galaxyGen.Settings.StarAgeBySpectralType[spectralType].Max;
 
-            StarInfoDB starData = new StarInfoDB {// for star age we will make it proportional to the inverse of the stars mass ratio (for that type of star).
+            StarDB starData = new StarDB {// for star age we will make it proportional to the inverse of the stars mass ratio (for that type of star).
                 // while this will produce the same age for the same mass/type of star the chances of getting the same
                 // mass/type are tiny. Tho there will still be the obvious inverse relationship here.
                 Age = (1 - starMVDB.Mass / _galaxyGen.Settings.StarMassBySpectralType[spectralType].Max) * maxStarAge,

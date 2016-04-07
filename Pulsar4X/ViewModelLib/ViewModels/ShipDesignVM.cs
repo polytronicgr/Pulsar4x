@@ -30,7 +30,7 @@ namespace Pulsar4X.ViewModel
         /// this is a list of all components designed and availible to this empire. it should probibly include components designed but not yet researched. 
         /// these are what get generated from the DesignToEntity factory.
         /// </summary>
-        public List<Entity> ComponentsDesigned { get { return _factionEntity.GetDataBlob<FactionInfoDB>().ComponentDesigns.Values.ToList(); } }
+        public List<Entity> ComponentsDesigned { get { return _factionEntity.GetDataBlob<FactionDB>().ComponentDesigns.Values.ToList(); } }
         //public List<ComponentListVM> ComponentsDesignedLists { get; set; }
         public ComponentListVM ComponentsDesignedLists { get; set; }
 
@@ -80,9 +80,9 @@ namespace Pulsar4X.ViewModel
 
         public ComponentListVM(Entity factionEntity)
         {
-            FactionInfoDB factionInfo = factionEntity.GetDataBlob<FactionInfoDB>();
+            FactionDB faction = factionEntity.GetDataBlob<FactionDB>();
             Engines = new ObservableCollection<ComponentListEngineVM>();
-            foreach (var componentDesign in factionInfo.ComponentDesigns.Values)
+            foreach (var componentDesign in faction.ComponentDesigns.Values)
             {
                 if (componentDesign.HasDataBlob<EnginePowerAbilityDB>())
                 {
@@ -102,7 +102,7 @@ namespace Pulsar4X.ViewModel
     public class ComponentListComponentVM : IViewModel
     {
         protected Entity _componentEntity_;
-        private ComponentInfoDB _designDB;
+        private ComponentDB _designDB;
 
         public string Name { get; private set ; }
         public int Size { get { return _designDB.SizeInTons; } }
@@ -114,7 +114,7 @@ namespace Pulsar4X.ViewModel
         public ComponentListComponentVM(Entity component)
         {
             _componentEntity_ = component;
-            _designDB = component.GetDataBlob<ComponentInfoDB>();
+            _designDB = component.GetDataBlob<ComponentDB>();
 
             Name = component.GetDataBlob<NameDB>().DefaultName;
         }

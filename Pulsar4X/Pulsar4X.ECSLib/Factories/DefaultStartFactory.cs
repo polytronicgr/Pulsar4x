@@ -50,9 +50,9 @@ namespace Pulsar4X.ECSLib
             componentInstancesDB.specificInstances.Add(facoryEntity, factoryInstances);
 
             ReCalcProcessor.ReCalcAbilities(colonyEntity);
-            colonyEntity.GetDataBlob<ColonyInfoDB>().population[speciesEntity] = 9000000000;
+            colonyEntity.GetDataBlob<ColonyDB>().population[speciesEntity] = 9000000000;
             
-            factionEntity.GetDataBlob<FactionInfoDB>().KnownSystems.Add(sol.Guid);
+            factionEntity.GetDataBlob<FactionDB>().KnownSystems.Add(sol.Guid);
 
             return factionEntity;
         }

@@ -30,7 +30,7 @@ namespace Pulsar4X.ECSLib
         D,          // White Dwarfs
     }
 
-    public class StarInfoDB : BaseDataBlob
+    public class StarDB : BaseDataBlob
     {
         [PublicAPI]
         [JsonProperty]
@@ -80,27 +80,27 @@ namespace Pulsar4X.ECSLib
 
         // in au
 
-        public StarInfoDB()
+        public StarDB()
         {
             
         }
 
-        public StarInfoDB(StarInfoDB starInfoDB)
+        public StarDB(StarDB StarDB)
         {
-            Age = starInfoDB.Age;
-            Temperature = starInfoDB.Temperature;
-            Luminosity = starInfoDB.Luminosity;
-            Class = starInfoDB.Class;
+            Age = StarDB.Age;
+            Temperature = StarDB.Temperature;
+            Luminosity = StarDB.Luminosity;
+            Class = StarDB.Class;
 
-            SpectralType = starInfoDB.SpectralType;
-            SpectralSubDivision = starInfoDB.SpectralSubDivision;
-            LuminosityClass = starInfoDB.LuminosityClass;
+            SpectralType = StarDB.SpectralType;
+            SpectralSubDivision = StarDB.SpectralSubDivision;
+            LuminosityClass = StarDB.LuminosityClass;
 
         }
 
         public override object Clone()
         {
-            return new StarInfoDB(this);
+            return new StarDB(this);
         }
     }
 }

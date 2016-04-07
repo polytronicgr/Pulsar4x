@@ -591,7 +591,7 @@ namespace Pulsar4X.ViewModel
                 throw new InvalidOperationException("PlanetVM provided invalid OrbitDB. Planets must have a valid parent.");
             }
 
-            if (orbitDB.Parent.GetDataBlob<StarInfoDB>() != null)
+            if (orbitDB.Parent.GetDataBlob<StarDB>() != null)
             {
                 // Parent is a star.
                 _parentPlanetGuid = null;

@@ -32,7 +32,7 @@ namespace Pulsar4X.ECSLib
                 throw new ArgumentException("Provided planet is malformed: Has no NameDB.", nameof(planetEntity));
             }
 
-            var factionInfoDB = factionEntity.GetDataBlob<FactionInfoDB>();
+            var factionInfoDB = factionEntity.GetDataBlob<FactionDB>();
 
             if (factionInfoDB == null)
             {
@@ -42,7 +42,7 @@ namespace Pulsar4X.ECSLib
             string planetName = planetNameDB.GetName(factionEntity);
             var ownedDB = new OwnedDB(factionEntity);
             var name = new NameDB(planetName + " Colony"); // TODO: Review default name.
-            var colonyInfoDB = new ColonyInfoDB(speciesEntity, 0);
+            var colonyInfoDB = new ColonyDB(speciesEntity, 0);
             var entityBonuses = new BonusesDB();
             var colonyIndustryDB = new IndustryDB();
             var componentInstanceDB = new ComponentInstancesDB();

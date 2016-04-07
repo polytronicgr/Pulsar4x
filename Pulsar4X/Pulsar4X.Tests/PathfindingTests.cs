@@ -120,7 +120,7 @@ namespace Pulsar4X.Tests
             _humanFaction = DefaultStartFactory.DefaultHumans(_game, _testPlayer, "TestHumanFaction");
 
             List<StarSystem> systems = _game.GetSystems(new AuthenticationToken(_game.SpaceMaster.ID));
-            var factionInfoDB = _humanFaction.GetDataBlob<FactionInfoDB>();
+            var factionInfoDB = _humanFaction.GetDataBlob<FactionDB>();
 
             List<StarSystem> testPlayerSystems = _game.GetSystems(_authToken);
 

@@ -45,7 +45,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         public Graph GetPathfindingGraph(Entity faction)
         {
-            var factionDB = faction.GetDataBlob<FactionInfoDB>();
+            var factionDB = faction.GetDataBlob<FactionDB>();
             var pathfindingGraph = new Graph();
 
             foreach (Guid starSystemGuid in factionDB.KnownSystems)

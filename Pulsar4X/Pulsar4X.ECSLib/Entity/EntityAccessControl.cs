@@ -46,7 +46,7 @@ namespace Pulsar4X.ECSLib
                 {
                     factions = FactionsWithAccess(authorizedPlayer, AccessRole.SensorVision);
                 }
-                if (entityMask[EntityManager.GetTypeIndex<ColonyInfoDB>()])
+                if (entityMask[EntityManager.GetTypeIndex<ColonyDB>()])
                 {
                     // Check if entity is a SensorContact
                     if (entityOwnedDB.EntityOwner == entityOwnedDB.ObjectOwner)
@@ -71,7 +71,7 @@ namespace Pulsar4X.ECSLib
                         }
                     }
                 }
-                else if (entityMask[EntityManager.GetTypeIndex<FactionInfoDB>()])
+                else if (entityMask[EntityManager.GetTypeIndex<FactionDB>()])
                 {
                     if (entityOwnedDB.EntityOwner == entityOwnedDB.ObjectOwner)
                     {
@@ -92,7 +92,7 @@ namespace Pulsar4X.ECSLib
 
         private static bool IsSystemBodyAuthorized(Player authorizedPlayer, Entity entity, ComparableBitArray entityMask)
         {
-            if (entityMask[EntityManager.GetTypeIndex<StarInfoDB>()] ||
+            if (entityMask[EntityManager.GetTypeIndex<StarDB>()] ||
                 entityMask[EntityManager.GetTypeIndex<SystemBodyDB>()] ||
                 entityMask[EntityManager.GetTypeIndex<JPSurveyableDB>()] ||
                 entityMask[EntityManager.GetTypeIndex<TransitableDB>()])
@@ -103,7 +103,7 @@ namespace Pulsar4X.ECSLib
                 List<Entity> factions = FactionsWithAccess(authorizedPlayer, AccessRole.SystemKnowledge);
                 foreach (Entity faction in factions)
                 {
-                    var factionInfoDB = faction.GetDataBlob<FactionInfoDB>();
+                    var factionInfoDB = faction.GetDataBlob<FactionDB>();
                     foreach (Guid knownSystem in factionInfoDB.KnownSystems)
                     {
                         if (knownSystem == entityPositionDB.SystemGuid)

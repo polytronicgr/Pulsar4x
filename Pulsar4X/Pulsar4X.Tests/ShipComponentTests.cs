@@ -81,7 +81,7 @@ namespace Pulsar4X.Tests
 
             Entity engineEntity = GenericComponentFactory.DesignToEntity(_game, _faction, design);
 
-            Assert.AreEqual(250, engineEntity.GetDataBlob<ComponentInfoDB>().SizeInTons);
+            Assert.AreEqual(250, engineEntity.GetDataBlob<ComponentDB>().SizeInTons);
 
             Dictionary<Guid, ComponentTemplateSD> componentsDict = new Dictionary<Guid, ComponentTemplateSD>();
             componentsDict.Add(engine.ID, engine);

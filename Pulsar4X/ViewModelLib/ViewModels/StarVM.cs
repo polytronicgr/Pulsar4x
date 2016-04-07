@@ -193,7 +193,7 @@ namespace Pulsar4X.ViewModel
                 _parentStarGuid = Entity.GetDataBlob<OrbitDB>().Parent.Guid;
             foreach (var childOrbit in Entity.GetDataBlob<OrbitDB>().Children)
             {
-                if(childOrbit.HasDataBlob<StarInfoDB>())
+                if(childOrbit.HasDataBlob<StarDB>())
                     _childStars.Add(_system.GetStar(childOrbit.Guid));
                 else if(childOrbit.HasDataBlob<SystemBodyDB>())
                     _childPlanets.Add(_system.GetPlanet(childOrbit.Guid));

@@ -8,7 +8,7 @@ namespace Pulsar4X.ECSLib
         public static Entity CreateFaction(Game game, string factionName)
         {
             var name = new NameDB(factionName);
-            var factionDB = new FactionInfoDB();
+            var factionDB = new FactionDB();
             var bonusesDB = new BonusesDB();
             var techDB = new FactionTechDB(game.StaticData.Techs.Values.ToList());
 

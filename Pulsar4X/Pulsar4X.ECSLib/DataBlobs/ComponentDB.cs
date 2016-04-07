@@ -15,7 +15,7 @@ namespace Pulsar4X.ECSLib
         Fighter             = 1 << 4,
     }
 
-    public class ComponentInfoDB : BaseDataBlob
+    public class ComponentDB : BaseDataBlob
     {
         [JsonProperty]
         public Guid DesignGuid { get; internal set; }
@@ -44,7 +44,7 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         public ComponentMountType ComponentMountType { get; internal set; }
         
-        public ComponentInfoDB()
+        public ComponentDB()
         {
         }
 
@@ -57,7 +57,7 @@ namespace Pulsar4X.ECSLib
         /// <param name="materialCosts"></param>
         /// <param name="techRequrement"></param>
         /// <param name="crewReqirement"></param>
-        public ComponentInfoDB(Guid designGuid, int size, int htk, int buildPointCost, Dictionary<Guid, int> materialCosts, Dictionary<Guid, int> componentCosts, Guid techRequrement, int crewReqirement)
+        public ComponentDB(Guid designGuid, int size, int htk, int buildPointCost, Dictionary<Guid, int> materialCosts, Dictionary<Guid, int> componentCosts, Guid techRequrement, int crewReqirement)
         {
             DesignGuid = designGuid;
             SizeInTons = size;
@@ -69,7 +69,7 @@ namespace Pulsar4X.ECSLib
             CrewRequrements = crewReqirement;
         }
 
-        public ComponentInfoDB(ComponentInfoDB db)
+        public ComponentDB(ComponentDB db)
         {
             SizeInTons = db.SizeInTons;
             HTK = db.HTK;
@@ -79,7 +79,7 @@ namespace Pulsar4X.ECSLib
 
         public override object Clone()
         {
-            return new ComponentInfoDB(this);
+            return new ComponentDB(this);
         }
     }
 }

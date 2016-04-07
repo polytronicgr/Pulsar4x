@@ -53,7 +53,7 @@ namespace Pulsar4X.Tests
 
             Assert.AreEqual(totalSystems, _game.GetSystems(_smAuthToken).Count);
             Assert.AreEqual(_testTime, _game.CurrentDateTime);
-            List<Entity> entities = _game.GlobalManager.GetAllEntitiesWithDataBlob<FactionInfoDB>(_smAuthToken);
+            List<Entity> entities = _game.GlobalManager.GetAllEntitiesWithDataBlob<FactionDB>(_smAuthToken);
             Assert.AreEqual(3, entities.Count);
             entities = _game.GlobalManager.GetAllEntitiesWithDataBlob<SpeciesDB>(_smAuthToken);
             Assert.AreEqual(2, entities.Count);

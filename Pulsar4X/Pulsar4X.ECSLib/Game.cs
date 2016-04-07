@@ -354,7 +354,7 @@ namespace Pulsar4X.ECSLib
                 // TODO: Implement vision access roles.
                 if ((accessRole.Value & AccessRole.FullAccess) == AccessRole.FullAccess)
                 {
-                    systems.AddRange(accessRole.Key.GetDataBlob<FactionInfoDB>().KnownSystems.Select(systemGuid => Systems[systemGuid]));
+                    systems.AddRange(accessRole.Key.GetDataBlob<FactionDB>().KnownSystems.Select(systemGuid => Systems[systemGuid]));
                 }
             }
             return systems;
@@ -376,7 +376,7 @@ namespace Pulsar4X.ECSLib
                 // TODO: Implement vision access roles.
                 if ((accessRole.Value & AccessRole.FullAccess) == AccessRole.FullAccess)
                 {
-                    foreach (Guid system in accessRole.Key.GetDataBlob<FactionInfoDB>().KnownSystems.Where(system => system == systemGuid))
+                    foreach (Guid system in accessRole.Key.GetDataBlob<FactionDB>().KnownSystems.Where(system => system == systemGuid))
                     {
                         return Systems[system];
                     }

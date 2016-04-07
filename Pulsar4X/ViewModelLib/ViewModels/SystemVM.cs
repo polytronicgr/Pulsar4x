@@ -49,7 +49,7 @@ namespace Pulsar4X.ViewModel
 
             else if (_gameVM.Game.GlobalManager.FindEntityByGuid(bodyGuid, out bodyEntity))
             {
-                if (bodyEntity.HasDataBlob<StarInfoDB>())
+                if (bodyEntity.HasDataBlob<StarDB>())
                 {
                     starGuid = bodyEntity.Guid;
                 }
@@ -118,9 +118,9 @@ namespace Pulsar4X.ViewModel
             _starDictionary = new Dictionary<Guid, StarVM>();
             _planetDictionary = new Dictionary<Guid, PlanetVM>();
             //find most massive star, this is the parent.
-            Entity parentStar = starSystem.SystemManager.GetFirstEntityWithDataBlob<StarInfoDB>(gameVM.CurrentAuthToken);
+            Entity parentStar = starSystem.SystemManager.GetFirstEntityWithDataBlob<StarDB>(gameVM.CurrentAuthToken);
             StarVM parentstarVM = StarVM.Create(_gameVM, parentStar, this);
-            foreach (var star in starSystem.SystemManager.GetAllEntitiesWithDataBlob<StarInfoDB>(gameVM.CurrentAuthToken))
+            foreach (var star in starSystem.SystemManager.GetAllEntitiesWithDataBlob<StarDB>(gameVM.CurrentAuthToken))
             {
                 StarVM starVM = StarVM.Create(_gameVM, star, this);
                 if(!_stars.Contains(starVM))

@@ -111,7 +111,7 @@ namespace Pulsar4X.ECSLib
                         {
                             return true;
                         }
-                        if (@event.Entity.HasDataBlob<ColonyInfoDB>() && (arRole & AccessRole.ColonyVision) == AccessRole.ColonyVision)
+                        if (@event.Entity.HasDataBlob<ColonyDB>() && (arRole & AccessRole.ColonyVision) == AccessRole.ColonyVision)
                         {
                             return true;
                         }
@@ -127,7 +127,7 @@ namespace Pulsar4X.ECSLib
                 {
                     Entity arFaction = keyValuePair.Key;
                     AccessRole arRole = keyValuePair.Value;
-                    var factionInfo = arFaction.GetDataBlob<FactionInfoDB>();
+                    var factionInfo = arFaction.GetDataBlob<FactionDB>();
 
                     if ((arRole & AccessRole.SystemKnowledge) == 0)
                     {

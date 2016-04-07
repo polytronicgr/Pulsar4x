@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 
 namespace Pulsar4X.ECSLib
 {
-    public class FactionInfoDB : BaseDataBlob
+    public class FactionDB : BaseDataBlob
     {
         [PublicAPI]
         [JsonProperty]
@@ -47,9 +47,9 @@ namespace Pulsar4X.ECSLib
 
         public Entity Owner { get; set; }
 
-        public FactionInfoDB() : this(new List<Entity>(), new List<Guid>(), new List<Entity>(), new List<Entity>() ) { }
+        public FactionDB() : this(new List<Entity>(), new List<Guid>(), new List<Entity>(), new List<Entity>() ) { }
 
-        public FactionInfoDB(
+        public FactionDB(
             List<Entity> species,
             List<Guid> knownSystems,
             List<Entity> colonies,
@@ -64,7 +64,7 @@ namespace Pulsar4X.ECSLib
         }
         
 
-        public FactionInfoDB(FactionInfoDB factionDB)
+        public FactionDB(FactionDB factionDB)
         {
             Species = new List<Entity>(factionDB.Species);
             KnownSystems = new List<Guid>(factionDB.KnownSystems);
@@ -76,7 +76,7 @@ namespace Pulsar4X.ECSLib
 
         public override object Clone()
         {
-            return new FactionInfoDB(this);
+            return new FactionDB(this);
         }
 
         [OnDeserialized]

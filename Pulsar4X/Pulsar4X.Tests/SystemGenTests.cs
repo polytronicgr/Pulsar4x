@@ -28,7 +28,7 @@ namespace Pulsar4X.Tests
             var system = ssf.CreateSystem(_game, "Argon Prime"); // Keeping with the X3 theme :P
 
             // lets test that the stars generated okay:
-            List<Entity> stars = system.SystemManager.GetAllEntitiesWithDataBlob<StarInfoDB>(_smAuthToken);
+            List<Entity> stars = system.SystemManager.GetAllEntitiesWithDataBlob<StarDB>(_smAuthToken);
             Assert.IsNotEmpty(stars);
 
             if (stars.Count > 1)

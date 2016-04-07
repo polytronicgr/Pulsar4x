@@ -83,7 +83,7 @@ namespace Pulsar4X.ViewModel
             PayloadTypes.Add(explosive, explosive.Name);
 
 
-            foreach (var design in gameVM.CurrentFaction.GetDataBlob<FactionInfoDB>().MissileDesigns)
+            foreach (var design in gameVM.CurrentFaction.GetDataBlob<FactionDB>().MissileDesigns)
             {
                 Payload payload = new Payload(design.Value);
                 PayloadTypes.Add(payload, payload.Name);

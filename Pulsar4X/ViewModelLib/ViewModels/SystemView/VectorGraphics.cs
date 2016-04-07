@@ -87,7 +87,7 @@ namespace Pulsar4X.ViewModel.SystemView
             //TODO: filter/sort what the object is by the datablobs that it has, and run the apropriate method for the type of icon.  
             if (entity.HasDataBlob<SystemBodyDB>())
                 PlanetIcon(entity);
-            else if (entity.HasDataBlob<StarInfoDB>())
+            else if (entity.HasDataBlob<StarDB>())
                 StarIcon(entity);
 
         }

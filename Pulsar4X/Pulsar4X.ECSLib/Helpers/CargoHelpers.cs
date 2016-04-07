@@ -68,7 +68,7 @@ namespace Pulsar4X.ECSLib
             }
 
             // Cargo is a component.
-            var componentInfo = entity.GetDataBlob<ComponentInfoDB>();
+            var componentInfo = entity.GetDataBlob<ComponentDB>();
             cargoDef = new CargoDefinition { Type = CargoType.General, Weight = componentInfo.SizeInTons * 1000 };
             return false;
         }

@@ -27,7 +27,7 @@ namespace Pulsar4X.Tests
 
             var requiredDataBlobs = new List<Type>()
             {
-                typeof(FactionInfoDB),
+                typeof(FactionDB),
                 typeof(BonusesDB),
                 typeof(NameDB),
                 typeof(FactionTechDB)
@@ -56,7 +56,7 @@ namespace Pulsar4X.Tests
             Entity species = SpeciesFactory.CreateSpeciesHuman(faction, _game.GlobalManager);
             var requiredDataBlobs = new List<Type>()
             {
-                typeof(ColonyInfoDB), 
+                typeof(ColonyDB), 
                 typeof(NameDB),
                 typeof(InstallationsDB)
 
@@ -64,8 +64,8 @@ namespace Pulsar4X.Tests
 
             //Entity colony = ColonyFactory.CreateColony(faction, planet);
             ColonyFactory.CreateColony(faction, species, planet);
-            Entity colony = faction.GetDataBlob<FactionInfoDB>().Colonies[0];
-            ColonyInfoDB colonyInfoDB = colony.GetDataBlob<ColonyInfoDB>();
+            Entity colony = faction.GetDataBlob<FactionDB>().Colonies[0];
+            ColonyDB colonyDB = colony.GetDataBlob<ColonyDB>();
             //NameDB nameDB = colony.GetDataBlob<NameDB>();
 
             //Assert.IsTrue(HasAllRequiredDatablobs(colony, requiredDataBlobs), "Colony Entity doesn't contains all required datablobs");

@@ -59,7 +59,7 @@ namespace Pulsar4X.ECSLib
             if (!Game.Systems.ContainsKey(Guid))
             {
                 Game.Systems.Add(Guid, this);
-                Game.GameMasterFaction.GetDataBlob<FactionInfoDB>().KnownSystems.Add(Guid);
+                Game.GameMasterFaction.GetDataBlob<FactionDB>().KnownSystems.Add(Guid);
             }
         }
     }

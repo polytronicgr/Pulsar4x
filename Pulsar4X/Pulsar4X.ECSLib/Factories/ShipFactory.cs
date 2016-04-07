@@ -86,7 +86,7 @@ namespace Pulsar4X.ECSLib
             Entity shipClassEntity = new Entity(game.GlobalManager, shipDBList); 
 
             // also gets factionDB:
-            FactionInfoDB factionDB = faction.GetDataBlob<FactionInfoDB>();
+            FactionDB factionDB = faction.GetDataBlob<FactionDB>();
 
             // and add it to the faction:
             factionDB.ShipClasses.Add(shipClassEntity);
@@ -114,9 +114,9 @@ namespace Pulsar4X.ECSLib
                 throw new Exception("Entity is not a ship or does not contain a ShipInfoDB datablob");
             ShipInfoDB shipinfo = ship.GetDataBlob<ShipInfoDB>();
 
-            if(!component.HasDataBlob<ComponentInfoDB>())
+            if(!component.HasDataBlob<ComponentDB>())
                 throw new Exception("Entity is not a ShipComponent or does not contain a ShipComponent datablob");
-            ComponentInfoDB componentInfo = component.GetDataBlob<ComponentInfoDB>();
+            ComponentDB componentInfo = component.GetDataBlob<ComponentDB>();
             
             shipinfo.ComponentList.Add(component);
             shipinfo.InternalHTK += componentInfo.HTK;

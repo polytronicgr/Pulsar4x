@@ -271,7 +271,7 @@ namespace Pulsar4X.ECSLib
         {
             // get the datablobs:
             var systemBodyDB = systemBody.GetDataBlob<SystemBodyDB>();
-            var starIfnoDB = systemBody.GetDataBlob<StarInfoDB>();
+            var starIfnoDB = systemBody.GetDataBlob<StarDB>();
             var positionDB = systemBody.GetDataBlob<PositionDB>();
             var massVolumeDB = systemBody.GetDataBlob<MassVolumeDB>();
             var nameDB = systemBody.GetDataBlob<NameDB>();

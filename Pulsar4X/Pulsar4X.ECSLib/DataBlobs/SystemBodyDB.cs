@@ -43,7 +43,7 @@ namespace Pulsar4X.ECSLib
     {
         [PublicAPI]
         [JsonProperty]
-        public BodyType Type { get; internal set; }
+        public BodyType BodyType { get; internal set; }
 
         /// <summary>
         /// Plate techtonics. Ammount of activity depends on age vs mass.
@@ -121,7 +121,7 @@ namespace Pulsar4X.ECSLib
 
         public SystemBodyDB(SystemBodyDB systemBodyDB)
         {
-            Type = systemBodyDB.Type;
+            BodyType = systemBodyDB.BodyType;
             Tectonics = systemBodyDB.Tectonics;
             AxialTilt = systemBodyDB.AxialTilt;
             MagneticField = systemBodyDB.MagneticField;

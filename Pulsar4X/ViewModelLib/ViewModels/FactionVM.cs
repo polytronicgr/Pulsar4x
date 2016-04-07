@@ -24,7 +24,7 @@ namespace Pulsar4X.ViewModel
         {
             _entity = factionEntity;
             Species = new List<SpeciesVM>();
-            foreach (var speciesEntity in factionEntity.GetDataBlob<FactionInfoDB>().Species)
+            foreach (var speciesEntity in factionEntity.GetDataBlob<FactionDB>().Species)
             {
                 Species.Add(SpeciesVM.Create(speciesEntity));
             }
@@ -32,7 +32,7 @@ namespace Pulsar4X.ViewModel
 
         public static FactionVM Create(Entity factionEntity)
         {
-            if (!factionEntity.HasDataBlob<FactionInfoDB>())
+            if (!factionEntity.HasDataBlob<FactionDB>())
                 throw new Exception("Entity is not a faction or does not have a FactionInfoDB");
             return new FactionVM(factionEntity);
         }

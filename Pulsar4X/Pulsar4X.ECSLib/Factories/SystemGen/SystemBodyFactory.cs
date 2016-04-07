@@ -44,7 +44,7 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Calculates the number of bodies this star will have.
         /// </summary>
-        private int CalcNumBodiesForStar(StarSystem system, MassVolumeDB starMassInfo, StarInfoDB starInfo)
+        private int CalcNumBodiesForStar(StarSystem system, MassVolumeDB starMassInfo, StarDB starInfo)
         {
             if (system.RNG.NextDouble() > _galaxyGen.Settings.PlanetGenerationChance)
             {
@@ -73,7 +73,7 @@ namespace Pulsar4X.ECSLib
         {
             // Get required info from the star.
             MassVolumeDB starMassInfo = star.GetDataBlob<MassVolumeDB>();
-            StarInfoDB starInfo = star.GetDataBlob<StarInfoDB>();
+            StarDB starInfo = star.GetDataBlob<StarDB>();
 
             // Calculate number of system bodies to generate.
             int numberOfBodies = CalcNumBodiesForStar(system, starMassInfo, starInfo);
@@ -196,7 +196,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         private void GenerateCometOrbit(StarSystem system, Entity star, ProtoEntity comet, DateTime currentDateTime)
         {
-            StarInfoDB starInfo = star.GetDataBlob<StarInfoDB>();
+            StarDB starInfo = star.GetDataBlob<StarDB>();
             MassVolumeDB starMVDB = star.GetDataBlob<MassVolumeDB>();
             MassVolumeDB cometMVDB = comet.GetDataBlob<MassVolumeDB>();
 
@@ -655,7 +655,7 @@ namespace Pulsar4X.ECSLib
             double parentSMA = 0;
 
             Entity star;
-            if (parent.HasDataBlob<StarInfoDB>())
+            if (parent.HasDataBlob<StarDB>())
             {
                 // Parent is a star.
                 star = parent;
@@ -671,7 +671,7 @@ namespace Pulsar4X.ECSLib
                 star = parentOrbit.Parent;
             }
 
-            StarInfoDB starInfo = star.GetDataBlob<StarInfoDB>();
+            StarDB starInfo = star.GetDataBlob<StarDB>();
 
             switch (bodyInfo.Type)
             {
@@ -727,7 +727,7 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Generate plate techtonics taking into consideration the mass of the planet and its age (via Star.Age).
         /// </summary>
-        private TectonicActivity GenerateTectonicActivity(StarSystem system, StarInfoDB starInfo, MassVolumeDB bodyMass)
+        private TectonicActivity GenerateTectonicActivity(StarSystem system, StarDB starInfo, MassVolumeDB bodyMass)
         {
             if (system.RNG.NextDouble() > _galaxyGen.Settings.TerrestrialBodyTectonicActivityChance)
             {
@@ -760,7 +760,7 @@ namespace Pulsar4X.ECSLib
         /// @note For info on how the Temp. is calculated see: http://en.wikipedia.org/wiki/Stefan%E2%80%93Boltzmann_law
         /// </summary>
         /// <returns>Temperature in Degrees C</returns>
-        private static double CalculateBaseTemperatureOfBody(Entity star, StarInfoDB starInfo, double distanceFromStar)
+        private static double CalculateBaseTemperatureOfBody(Entity star, StarDB starInfo, double distanceFromStar)
         {
             MassVolumeDB starMVDB = star.GetDataBlob<MassVolumeDB>();
             double temp = Temperature.ToKelvin(starInfo.Temperature);
@@ -955,19 +955,19 @@ namespace Pulsar4X.ECSLib
                     
                     // now we have a nice starting atm, lets modify it:
                     // first we will reduce it if the planet is closer to the star, increase it if it is further away using the ewchosphere of the star:
-                    StarInfoDB starInfo;
+                    StarDB starInfo;
                     double ecosphereRatio = 1;
                     if (body.Type == BodyType.Moon)
                     {
                         // if moon get planet orbit, then star
                         var parentOrbitDB = orbit.ParentDB as OrbitDB;
-                        starInfo = parentOrbitDB.Parent.GetDataBlob<StarInfoDB>();
+                        starInfo = parentOrbitDB.Parent.GetDataBlob<StarDB>();
                         ecosphereRatio = (parentOrbitDB.SemiMajorAxis / starInfo.EcoSphereRadius);
                     }
                     else
                     {
                         // if planet get star:
-                        starInfo = orbit.Parent.GetDataBlob<StarInfoDB>();
+                        starInfo = orbit.Parent.GetDataBlob<StarDB>();
                         ecosphereRatio = GMath.Clamp(orbit.SemiMajorAxis / starInfo.EcoSphereRadius, 0.1, 2);
                     }
 

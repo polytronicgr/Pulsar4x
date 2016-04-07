@@ -32,7 +32,7 @@ namespace Pulsar4X.ViewModel.SystemView
         {
             this.scale_data = scale_data;
             this.camera = camera;
-            foreach (var item in starSys.SystemManager.GetAllEntitiesWithDataBlob<StarInfoDB>(authToken))
+            foreach (var item in starSys.SystemManager.GetAllEntitiesWithDataBlob<StarDB>(authToken))
             {
                 SystemBodies.Add(new SystemObjectRenderInfo(item));
             }
@@ -104,13 +104,13 @@ namespace Pulsar4X.ViewModel.SystemView
             _positionDB = systemObjectEntity.GetDataBlob<PositionDB>();
             _massVolumeDB = systemObjectEntity.GetDataBlob<MassVolumeDB>();
 
-            if (systemObjectEntity.HasDataBlob<StarInfoDB>())//is a star
-                StarSetup(systemObjectEntity.GetDataBlob<StarInfoDB>());
+            if (systemObjectEntity.HasDataBlob<StarDB>())//is a star
+                StarSetup(systemObjectEntity.GetDataBlob<StarDB>());
             else if (systemObjectEntity.HasDataBlob<SystemBodyDB>())//is an object other than a star
                 Planetetup(systemObjectEntity.GetDataBlob<SystemBodyDB>());
         }
 
-        private void StarSetup(StarInfoDB starInfo)
+        private void StarSetup(StarDB starInfo)
         {
             switch (starInfo.SpectralType)
             {

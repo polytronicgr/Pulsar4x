@@ -13,7 +13,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         private static readonly int OrbitTypeIndex = EntityManager.GetTypeIndex<OrbitDB>();
         private static readonly int PositionTypeIndex = EntityManager.GetTypeIndex<PositionDB>();
-        private static readonly int StarInfoTypeIndex = EntityManager.GetTypeIndex<StarInfoDB>();
+        private static readonly int StarInfoTypeIndex = EntityManager.GetTypeIndex<StarDB>();
 
         [JsonProperty]
         private DateTime _lastRun = DateTime.MinValue;

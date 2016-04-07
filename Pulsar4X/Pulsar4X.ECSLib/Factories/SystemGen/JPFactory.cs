@@ -7,7 +7,7 @@ namespace Pulsar4X.ECSLib
     {
         public static Entity CreateJumpPoint(StarSystemFactory ssf, StarSystem system)
         {
-            var primaryStarInfoDB = system.SystemManager.GetFirstEntityWithDataBlob<StarInfoDB>().GetDataBlob<OrbitDB>().Root.GetDataBlob<StarInfoDB>();
+            var primaryStarDB = system.SystemManager.GetFirstEntityWithDataBlob<StarDB>().GetDataBlob<OrbitDB>().Root.GetDataBlob<StarDB>();
 
             NameDB jpNameDB = new NameDB("Jump Point");
             PositionDB jpPositionDB = new PositionDB(0,0,0, system.Guid);
@@ -20,7 +20,7 @@ namespace Pulsar4X.ECSLib
                 // TODO: Introduce a random chance to stablize jumppoints.
             }
             
-            var jpPositionLimits = new MinMaxStruct(ssf.GalaxyGen.Settings.OrbitalDistanceByStarSpectralType[primaryStarInfoDB.SpectralType].Min, ssf.GalaxyGen.Settings.OrbitalDistanceByStarSpectralType[primaryStarInfoDB.SpectralType].Max);
+            var jpPositionLimits = new MinMaxStruct(ssf.GalaxyGen.Settings.OrbitalDistanceByStarSpectralType[primaryStarDB.SpectralType].Min, ssf.GalaxyGen.Settings.OrbitalDistanceByStarSpectralType[primaryStarDB.SpectralType].Max);
 
             jpPositionDB.X = GMath.SelectFromRange(jpPositionLimits, system.RNG.NextDouble());
             jpPositionDB.Y = GMath.SelectFromRange(jpPositionLimits, system.RNG.NextDouble());
@@ -48,7 +48,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         public static int GetNumJPForSystem(StarSystem system)
         {
-            Entity primaryStar = system.SystemManager.GetFirstEntityWithDataBlob<StarInfoDB>().GetDataBlob<OrbitDB>().Root;
+            Entity primaryStar = system.SystemManager.GetFirstEntityWithDataBlob<StarDB>().GetDataBlob<OrbitDB>().Root;
             var starMVDB = primaryStar.GetDataBlob<MassVolumeDB>();
 
             int numJumpPoints = 0;

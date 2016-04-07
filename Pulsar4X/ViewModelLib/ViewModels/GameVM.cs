@@ -44,13 +44,13 @@ namespace Pulsar4X.ViewModel
                 //TODO: factionDB.knownfactions need to be filled with... a blank copy of the actual faction that gets filled as the facion finds out more about it?
                 //excepting in the case of GM where the actual faction should be good. 
                 _visibleFactions = new List<Guid>();
-                foreach (var knownFaction in _currentFaction.GetDataBlob<FactionInfoDB>().KnownFactions)
+                foreach (var knownFaction in _currentFaction.GetDataBlob<FactionDB>().KnownFactions)
                 {
                     _visibleFactions.Add(knownFaction.Guid);
                 }
                 _systems.Clear();
                 _systemDictionary.Clear();
-                foreach (var knownsystem in _currentFaction.GetDataBlob<FactionInfoDB>().KnownSystems)
+                foreach (var knownsystem in _currentFaction.GetDataBlob<FactionDB>().KnownSystems)
                 {
                     SystemVM systemVM = SystemVM.Create(this, knownsystem);
                     _systems.Add(systemVM);
@@ -58,7 +58,7 @@ namespace Pulsar4X.ViewModel
                 }
 
                 Colonys.Clear();
-                foreach (var colonyEntity in _currentFaction.GetDataBlob<FactionInfoDB>().Colonies)
+                foreach (var colonyEntity in _currentFaction.GetDataBlob<FactionDB>().Colonies)
                 {
                     Colonys.Add(colonyEntity.Guid, colonyEntity.GetDataBlob<NameDB>().GetName(_currentFaction));
                 }

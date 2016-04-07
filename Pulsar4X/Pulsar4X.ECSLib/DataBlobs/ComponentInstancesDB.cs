@@ -50,15 +50,15 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="designEntity">The Component Entity, MUST have a ComponentInfoDB</param>
+        /// <param name="designEntity">The Component Entity, MUST have a ComponentDB</param>
         /// <param name="isEnabled">whether the component is enabled on construction. default=true</param>
         internal ComponentInstance(Entity designEntity, bool isEnabled = true)
         {
-            ComponentInfoDB componentInfo = designEntity.GetDataBlob<ComponentInfoDB>();
+            ComponentDB componentInfo = designEntity.GetDataBlob<ComponentDB>();
 
             if (componentInfo == null)
             {
-                throw new Exception("designEntity Must contain a ComponentInfoDB");
+                throw new Exception("designEntity Must contain a ComponentDB");
             }
 
             DesignEntity = designEntity;

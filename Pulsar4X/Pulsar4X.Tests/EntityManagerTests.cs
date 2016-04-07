@@ -54,14 +54,14 @@ namespace Pulsar4X.Tests
             Assert.AreEqual(EntityManager.BlankDataBlobMask(), testEntity.DataBlobMask);
 
             // Create entity with existing datablobs:
-            var dataBlobs = new List<BaseDataBlob> {new OrbitDB(), new ColonyInfoDB(_pop1)};
+            var dataBlobs = new List<BaseDataBlob> {new OrbitDB(), new ColonyDB(_pop1)};
             testEntity = Entity.Create(_game.GlobalManager, dataBlobs);
             Assert.IsTrue(testEntity.IsValid);
 
             // Check the mask.
             ComparableBitArray expectedMask = EntityManager.BlankDataBlobMask();
             int orbitTypeIndex = EntityManager.GetTypeIndex<OrbitDB>();
-            int colonyTypeIndex = EntityManager.GetTypeIndex<ColonyInfoDB>();
+            int colonyTypeIndex = EntityManager.GetTypeIndex<ColonyDB>();
             expectedMask[orbitTypeIndex] = true;
             expectedMask[colonyTypeIndex] = true;
 
@@ -78,7 +78,7 @@ namespace Pulsar4X.Tests
         {
             Entity testEntity = Entity.Create(_game.GlobalManager);
             testEntity.SetDataBlob(new OrbitDB());
-            testEntity.SetDataBlob(new ColonyInfoDB(_pop1));
+            testEntity.SetDataBlob(new ColonyDB(_pop1));
             testEntity.SetDataBlob(new PositionDB(0, 0, 0, Guid.Empty), EntityManager.GetTypeIndex<PositionDB>());
 
             // test bad input:
@@ -109,7 +109,7 @@ namespace Pulsar4X.Tests
             Entity testEntity = PopulateEntityManager();
 
             // Get the Population DB of a specific entity.
-            ColonyInfoDB popDB = testEntity.GetDataBlob<ColonyInfoDB>();
+            ColonyDB popDB = testEntity.GetDataBlob<ColonyDB>();
             Assert.IsNotNull(popDB);
 
             // get a DB we know the entity does not have:
@@ -124,8 +124,8 @@ namespace Pulsar4X.Tests
 
             // and again for the second lookup type:
             // Get the Population DB of a specific entity.
-            int typeIndex = EntityManager.GetTypeIndex<ColonyInfoDB>();
-            popDB = testEntity.GetDataBlob<ColonyInfoDB>(typeIndex);
+            int typeIndex = EntityManager.GetTypeIndex<ColonyDB>();
+            popDB = testEntity.GetDataBlob<ColonyDB>(typeIndex);
             Assert.IsNotNull(popDB);
 
             // get a DB we know the entity does not have:
@@ -140,7 +140,7 @@ namespace Pulsar4X.Tests
             });
 
             // test with invalid T vs type at typeIndex
-            typeIndex = EntityManager.GetTypeIndex<ColonyInfoDB>();
+            typeIndex = EntityManager.GetTypeIndex<ColonyDB>();
             Assert.Catch(typeof(InvalidCastException), () =>
             {
                 testEntity.GetDataBlob<SystemBodyDB>(typeIndex);
@@ -177,14 +177,14 @@ namespace Pulsar4X.Tests
         {
             // a little setup:
             Entity testEntity = Entity.Create(_game.GlobalManager);
-            testEntity.SetDataBlob(new ColonyInfoDB(_pop1));
+            testEntity.SetDataBlob(new ColonyDB(_pop1));
 
-            Assert.IsTrue(testEntity.GetDataBlob<ColonyInfoDB>() != null);  // check that it has the data blob
-            testEntity.RemoveDataBlob<ColonyInfoDB>();                     // Remove a data blob
-            Assert.IsTrue(testEntity.GetDataBlob<ColonyInfoDB>() == null); // now check that it doesn't
+            Assert.IsTrue(testEntity.GetDataBlob<ColonyDB>() != null);  // check that it has the data blob
+            testEntity.RemoveDataBlob<ColonyDB>();                     // Remove a data blob
+            Assert.IsTrue(testEntity.GetDataBlob<ColonyDB>() == null); // now check that it doesn't
 
             // now lets try remove it again:
-            Assert.Catch<InvalidOperationException>(testEntity.RemoveDataBlob<ColonyInfoDB>);
+            Assert.Catch<InvalidOperationException>(testEntity.RemoveDataBlob<ColonyDB>);
 
             // cannot remove baseDataBlobs, invalid data blob type:
             Assert.Catch(typeof(KeyNotFoundException), () =>
@@ -194,12 +194,12 @@ namespace Pulsar4X.Tests
 
 
             // reset:
-            testEntity.SetDataBlob(new ColonyInfoDB(_pop1));
-            int typeIndex = EntityManager.GetTypeIndex<ColonyInfoDB>();
+            testEntity.SetDataBlob(new ColonyDB(_pop1));
+            int typeIndex = EntityManager.GetTypeIndex<ColonyDB>();
 
-            Assert.IsTrue(testEntity.GetDataBlob<ColonyInfoDB>() != null);  // check that it has the data blob
+            Assert.IsTrue(testEntity.GetDataBlob<ColonyDB>() != null);  // check that it has the data blob
             testEntity.RemoveDataBlob(typeIndex);              // Remove a data blob
-            Assert.IsTrue(testEntity.GetDataBlob<ColonyInfoDB>() == null); // now check that it doesn't
+            Assert.IsTrue(testEntity.GetDataBlob<ColonyDB>() == null); // now check that it doesn't
 
             // now lets try remove it again:
             Assert.Catch<InvalidOperationException>(() => testEntity.RemoveDataBlob(typeIndex));
@@ -219,7 +219,7 @@ namespace Pulsar4X.Tests
             PopulateEntityManager();
 
             // Find all entities with a specific DataBlob.
-            List<Entity> entities = _game.GlobalManager.GetAllEntitiesWithDataBlob<ColonyInfoDB>(_smAuthToken);
+            List<Entity> entities = _game.GlobalManager.GetAllEntitiesWithDataBlob<ColonyDB>(_smAuthToken);
             Assert.AreEqual(2, entities.Count);
 
             // again, but look for a datablob that no entity has:
@@ -231,7 +231,7 @@ namespace Pulsar4X.Tests
 
             // now lets lookup using a mask:
             ComparableBitArray dataBlobMask = EntityManager.BlankDataBlobMask();
-            dataBlobMask.Set(EntityManager.GetTypeIndex<ColonyInfoDB>(), true);
+            dataBlobMask.Set(EntityManager.GetTypeIndex<ColonyDB>(), true);
             dataBlobMask.Set(EntityManager.GetTypeIndex<OrbitDB>(), true);
             entities = _game.GlobalManager.GetAllEntitiesWithDataBlobs(_smAuthToken, dataBlobMask);
             Assert.AreEqual(2, entities.Count);
@@ -254,7 +254,7 @@ namespace Pulsar4X.Tests
 
 
             // now lets just get the one entity:
-            Entity testEntity = _game.GlobalManager.GetFirstEntityWithDataBlob<ColonyInfoDB>(_smAuthToken);
+            Entity testEntity = _game.GlobalManager.GetFirstEntityWithDataBlob<ColonyDB>(_smAuthToken);
             Assert.IsTrue(testEntity.IsValid);
 
             // lookup an entity that does not exist:
@@ -269,7 +269,7 @@ namespace Pulsar4X.Tests
 
 
             // now lets just get the one entity, but use a different function to do it:
-            int type = EntityManager.GetTypeIndex<ColonyInfoDB>();
+            int type = EntityManager.GetTypeIndex<ColonyDB>();
             testEntity = _game.GlobalManager.GetFirstEntityWithDataBlob(_smAuthToken, type);
             Assert.IsTrue(testEntity.IsValid);
 
@@ -387,14 +387,14 @@ namespace Pulsar4X.Tests
             // Create an entity with individual DataBlobs.
             Entity testEntity = Entity.Create(_game.GlobalManager);
             testEntity.SetDataBlob(new OrbitDB());
-            testEntity.SetDataBlob(new ColonyInfoDB(_pop1));
+            testEntity.SetDataBlob(new ColonyDB(_pop1));
 
             // Create an entity with a DataBlobList.
             var dataBlobs = new List<BaseDataBlob> { new OrbitDB() };
             Entity.Create(_game.GlobalManager, dataBlobs);
 
             // Create one more, just for kicks.
-            dataBlobs = new List<BaseDataBlob> { new OrbitDB(), new ColonyInfoDB(_pop2) };
+            dataBlobs = new List<BaseDataBlob> { new OrbitDB(), new ColonyDB(_pop2) };
             Entity.Create(_game.GlobalManager, dataBlobs);
 
             return testEntity;

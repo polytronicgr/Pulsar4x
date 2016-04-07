@@ -108,7 +108,7 @@ namespace Pulsar4X.ECSLib
             EntityManager globalEntityManager = game.GlobalManager;
             StaticDataStore staticData = game.StaticData;
             FactionTechDB factionTech = factionEntity.GetDataBlob<FactionTechDB>();
-            FactionInfoDB factionInfo = factionEntity.GetDataBlob<FactionInfoDB>();
+            FactionDB faction = factionEntity.GetDataBlob<FactionDB>();
             //TODO probilby do checking to see if valid here?
             Entity component = new Entity(globalEntityManager);
             
@@ -145,7 +145,7 @@ namespace Pulsar4X.ECSLib
                     throw new Exception("GUID object {" + kvp.Key + "} not found in materialCosting for " + componentDesign.Name + " This object needs to be either a mineral, material or component defined in the Data folder");
             }
 
-            ComponentInfoDB componentInfo = new ComponentInfoDB(component.Guid, componentDesign.SizeValue, componentDesign.HTKValue, componentDesign.BuildCostValue , mineralCosts,materalCosts,componentCosts , tech.ID, componentDesign.CrewReqValue);
+            ComponentDB componentInfo = new ComponentDB(component.Guid, componentDesign.SizeValue, componentDesign.HTKValue, componentDesign.BuildCostValue , mineralCosts,materalCosts,componentCosts , tech.ID, componentDesign.CrewReqValue);
             componentInfo.ComponentMountType = componentDesign.ComponentMountType;
 
             component.SetDataBlob(componentInfo);
@@ -163,7 +163,7 @@ namespace Pulsar4X.ECSLib
                 }
             }
 
-            factionInfo.InternalComponentDesigns.Add(component.Guid,component);
+            faction.InternalComponentDesigns.Add(component.Guid,component);
             return component;
         }        
     }
