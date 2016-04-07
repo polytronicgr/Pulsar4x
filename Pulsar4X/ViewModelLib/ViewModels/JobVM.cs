@@ -41,6 +41,8 @@ namespace Pulsar4X.ViewModel
 
         public float BPToNextItem => _job.BPToNextItem;
 
+        public float PartialBPApplied => _job.PartialBPApplied;
+
         public float PercentToUtilized
         {
             get { return _job.PercentToUtilize; }
