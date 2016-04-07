@@ -106,6 +106,11 @@ namespace Pulsar4X.ECSLib
             }
 
             BPPerItem = ComponentDB.BuildPointCost;
+            foreach (KeyValuePair<Guid, int> mineralCost in ComponentDB.MineralCosts)
+            {
+                materialsRequiredPerItem.Add(mineralCost.Key, mineralCost.Value);
+            }
+
             foreach (KeyValuePair<Guid, int> materialCost in ComponentDB.MaterialCosts)
             {
                 materialsRequiredPerItem.Add(materialCost.Key, materialCost.Value);

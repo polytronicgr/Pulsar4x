@@ -25,7 +25,10 @@ namespace Pulsar4X.ECSLib
 
         [JsonProperty]
         public int HTK { get; internal set; }
-        
+
+        [JsonProperty]
+        public Dictionary<Guid, int> MineralCosts { get; internal set; }
+
         [JsonProperty]
         public Dictionary<Guid, int> MaterialCosts { get; internal set; }
 
@@ -57,12 +60,13 @@ namespace Pulsar4X.ECSLib
         /// <param name="materialCosts"></param>
         /// <param name="techRequrement"></param>
         /// <param name="crewReqirement"></param>
-        public ComponentDB(Guid designGuid, int size, int htk, int buildPointCost, Dictionary<Guid, int> materialCosts, Dictionary<Guid, int> componentCosts, Guid techRequrement, int crewReqirement)
+        public ComponentDB(Guid designGuid, int size, int htk, int buildPointCost,Dictionary<Guid, int> mineralCosts, Dictionary<Guid, int> materialCosts, Dictionary<Guid, int> componentCosts, Guid techRequrement, int crewReqirement)
         {
             DesignGuid = designGuid;
             SizeInTons = size;
             HTK = htk;
             BuildPointCost = buildPointCost;
+            MineralCosts = mineralCosts;
             MaterialCosts = materialCosts;
             ComponentCosts = componentCosts;
             TechRequirementToBuild = techRequrement;
