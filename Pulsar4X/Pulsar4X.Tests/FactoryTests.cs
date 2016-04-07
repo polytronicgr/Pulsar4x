@@ -54,13 +54,6 @@ namespace Pulsar4X.Tests
             List<Entity> solBodies = sol.SystemManager.GetAllEntitiesWithDataBlob<NameDB>(_smAuthToken);
             Entity planet = solBodies.Find(item => item.GetDataBlob<NameDB>().DefaultName == "Earth");
             Entity species = SpeciesFactory.CreateSpeciesHuman(faction, _game.GlobalManager);
-            var requiredDataBlobs = new List<Type>()
-            {
-                typeof(ColonyDB), 
-                typeof(NameDB),
-                typeof(InstallationsDB)
-
-            };
 
             //Entity colony = ColonyFactory.CreateColony(faction, planet);
             ColonyFactory.CreateColony(faction, species, planet);

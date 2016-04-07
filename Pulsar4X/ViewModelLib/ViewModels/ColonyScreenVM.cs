@@ -45,7 +45,7 @@ namespace Pulsar4X.ViewModel
             gameVM.DateChangedEvent += GameVM_DateChangedEvent;
             _colonyEntity = colonyEntity;
             _facilities = new ObservableCollection<FacilityVM>();
-            foreach (var installation in colonyEntity.GetDataBlob<InstallationsDB>().Installations)
+            //foreach (var installation in colonyEntity.GetDataBlob<InstallationsDB>().Installations)
             {
                 //Facilities.Add(new FacilityVM(installation.Key, Colony));
             }

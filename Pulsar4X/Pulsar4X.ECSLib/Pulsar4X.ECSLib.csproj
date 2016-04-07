@@ -162,7 +162,6 @@
     <Compile Include="DataBlobs\ComponentDB.cs" />
     <Compile Include="DataBlobs\BonusesDB.cs" />
     <Compile Include="DataBlobs\ExampleDB.cs" />
-    <Compile Include="DataBlobs\InstallationsDB.cs" />
     <Compile Include="DataBlobs\JPSurveyableDB.cs" />
     <Compile Include="DataBlobs\OwnedDB.cs" />
     <Compile Include="DataBlobs\TransitableDB.cs" />
