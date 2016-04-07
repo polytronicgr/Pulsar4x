@@ -176,7 +176,7 @@
                   }
                 ]
               },
-              "AbilityFormula": "EnumDict(IndustryType)"
+              "AbilityFormula": "EnumDict('IndustryType')"
             },
             {
               "Name": "IndustryRates",
