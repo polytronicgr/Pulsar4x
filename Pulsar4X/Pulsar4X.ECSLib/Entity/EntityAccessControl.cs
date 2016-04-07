@@ -7,6 +7,11 @@ namespace Pulsar4X.ECSLib
     {
         public static bool IsAuthorized(Game game, AuthenticationToken authToken, Entity entity)
         {
+            if (entity == Entity.InvalidEntity)
+            {
+                return false;
+            }
+
             // Initial player verification.
             Player authorizedPlayer = game?.GetPlayerForToken(authToken);
 
