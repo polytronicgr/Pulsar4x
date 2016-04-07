@@ -147,7 +147,7 @@ namespace Pulsar4X.ViewModel.SystemView
             float width = 6;
             float height = 6;
 
-            switch (sysBody.Type)
+            switch (sysBody.BodyType)
             {
                 case BodyType.Asteroid: //throw some rand in the shape?
                     { }

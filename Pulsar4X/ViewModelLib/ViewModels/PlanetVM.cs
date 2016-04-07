@@ -649,7 +649,7 @@ namespace Pulsar4X.ViewModel
             if (!partialRefresh)
             {
                 // Full Refresh. Update unchanging variables.
-                PlanetType = systemBodyDB.Type.ToString();
+                PlanetType = systemBodyDB.BodyType.ToString();
                 AxialTilt = systemBodyDB.AxialTilt;
                 BaseTemperature = systemBodyDB.BaseTemperature;
                 LengthOfDay = systemBodyDB.LengthOfDay;

@@ -406,7 +406,7 @@ namespace Pulsar4X.ECSLib
             if (systemBodyDB != null)
             {
                 varNode = xmlDoc.CreateNode(XmlNodeType.Element, "Type", "NS");
-                varNode.InnerText = systemBodyDB.Type.ToString();
+                varNode.InnerText = systemBodyDB.BodyType.ToString();
                 bodyNode.AppendChild(varNode);
 
                 varNode = xmlDoc.CreateNode(XmlNodeType.Element, "AxialTilt", "NS");

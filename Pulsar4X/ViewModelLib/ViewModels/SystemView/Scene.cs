@@ -136,7 +136,7 @@ namespace Pulsar4X.ViewModel.SystemView
         private void Planetetup(SystemBodyDB sysBodyInfo)
         {
             //maybe look at proceduraly genning textures? also look at diferentiating an icon (zoomed out) and a textue (zoomed right in)
-            switch (sysBodyInfo.Type)
+            switch (sysBodyInfo.BodyType)
             {
                 case BodyType.Asteroid:
                     {

@@ -102,7 +102,7 @@ namespace Pulsar4X.ViewModel.SystemView
 
             if (item.HasDataBlob<OrbitDB>() && !item.GetDataBlob<OrbitDB>().IsStationary)
             {
-                switch (item.GetDataBlob<SystemBodyDB>()?.Type)
+                switch (item.GetDataBlob<SystemBodyDB>()?.BodyType)
                 {
                     case BodyType.Comet:
                         SimpleOrbitEllipseFading = new OrbitEllipseSimpleFading(item);

@@ -78,7 +78,7 @@ namespace Pulsar4X.ECSLib
             if (!game.Settings.OrbitalMotionForPlanetsMoons ?? true) //if NOT orbital motion or NOT null
             {
                 var systemBodyDB = entity.GetDataBlob<SystemBodyDB>();
-                if (systemBodyDB != null && systemBodyDB.Type == BodyType.Moon) //what were you trying to do here? if (systemBodyDB != null && systemBodyDB.Type != BodyType.Asteroid && systemBodyDB.Type != BodyType.Comet)
+                if (systemBodyDB != null && systemBodyDB.BodyType == BodyType.Moon) //what were you trying to do here? if (systemBodyDB != null && systemBodyDB.Type != BodyType.Asteroid && systemBodyDB.Type != BodyType.Comet)
                 {
                     // Do not process this planet or moon.
                     return;
@@ -88,7 +88,7 @@ namespace Pulsar4X.ECSLib
             if (!game.Settings.OrbitalMotionForAsteroids ?? true) //if NOT orbital motion or NOT null
             {
                 var systemBodyDB = entity.GetDataBlob<SystemBodyDB>();
-                if (systemBodyDB != null && systemBodyDB.Type == BodyType.Asteroid)
+                if (systemBodyDB != null && systemBodyDB.BodyType == BodyType.Asteroid)
                 {
                     // Do not process this asteroid
                     return;
