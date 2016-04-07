@@ -53,7 +53,7 @@ namespace Pulsar4X.CrossPlatformUI.Views
             });
             MineralDeposits.Columns.Add(new GridColumn
             {
-                DataCell = new TextBoxCell { Binding = Binding.Property<PlanetMineralInfoVM, int>(r => r.Amount).Convert(r => r.ToString()) }
+                //DataCell = new TextBoxCell { Binding = Binding.Property<PlanetMineralInfoVM, int>(r => r.Amount).Convert(r => r.ToString()) }
             });
 
             MineralStockpile.Columns.Add(new GridColumn
