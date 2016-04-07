@@ -1,20 +1,17 @@
-﻿using System.CodeDom;
+﻿using System;
+using System.CodeDom;
 using Pulsar4X.ECSLib;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Pulsar4X.ViewModel
 {
-    public class JobVM<TDataBlob, TJob> : IViewModel
-        where TDataBlob : BaseDataBlob
+    public class JobVM
     {
         private Game _game;
         private StaticDataStore _staticData;
         private IndustryJob _job;
         private IndustrialEntity _industrialEntity;
-        JobAbilityBaseVM<TDataBlob, TJob> _parentJobAbility { get; set; }
-
-        public JobPriorityCommand<TDataBlob, TJob> JobPriorityCommand { get; set; }
         
         public string Item
         {
@@ -33,29 +30,57 @@ namespace Pulsar4X.ViewModel
             }
         }
 
-        public int Completed { get { return _job.NumberCompleted; } set { OnPropertyChanged(); } }
-        public int BatchQuantity { get { return _job.NumberOrdered; } set { _job.NumberOrdered = value; OnPropertyChanged(); } } //note that we're directly changing the data here.
-        public bool Repeat { get { return _job.AutoRepeat; } set { _job.AutoRepeat = value; OnPropertyChanged(); } } //note that we're directly changing the data here.
+        internal Entity projectManager => _job.ProjectManager;
+        public IndustryType IndustryType => _job.IndustryType;
+        internal Guid itemGuid => _job.ItemGuid;
 
-        public float ItemBuildPointsRemaining { get { return _job.BPPerItem - _job.PartialBPApplied; } set { OnPropertyChanged(); } }
-        public double ItemPercentRemaining { get { return ItemBuildPointsRemaining / _job.BPPerItem; } set { OnPropertyChanged(); } }
+        public int NumberOrdered
+        {
+            get { return _job.NumberOrdered; }
+            set
+            {
+                _job.NumberOrdered = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public JobVM(Game game, StaticDataStore staticData, Entity entity, IndustryJob job, JobAbilityBaseVM<TDataBlob, TJob> parentJobAbilityVM)
+        public int NumberCompleted => _job.NumberCompleted;
+
+        public bool AutoRepeat
+        {
+            get { return _job.AutoRepeat; }
+            set
+            {
+                _job.AutoRepeat = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public float BPToNextItem => _job.BPToNextItem;
+
+        public float PercentToUtilized
+        {
+            get { return _job.PercentToUtilize; }
+            set
+            {
+                _job.PercentToUtilize = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public float TotalBPApplied => _job.TotalBPApplied;
+        public float TotalBPRequired => _job.TotalBPRequired;
+        public float PercentCompleted => _job.PercentCompleted;
+
+        public DateTime ProjectCompletion => _job.ProjectedCompletion;
+
+        public JobVM(Game game, StaticDataStore staticData, Entity entity, IndustryJob job)
         {
             _game = game;
             _staticData = staticData;
             _industrialEntity = new IndustrialEntity(entity);
             _job = job;
-            _parentJobAbility = parentJobAbilityVM;
-            
-            JobPriorityCommand = new JobPriorityCommand<TDataBlob, TJob>(this);
         }
-
-        public void ChangePriority(int delta)
-        {
-            _parentJobAbility.ChangeJobPriority(_job, delta);
-        }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
         [NotifyPropertyChangedInvocator]
