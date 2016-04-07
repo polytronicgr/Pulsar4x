@@ -121,6 +121,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\ComponentDesignView.xeto">
       <SubType>Designer</SubType>
+    </EmbeddedResource>    
+	<EmbeddedResource Include="Views\IndustryView.xeto">
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\AbilitySelectionList.xeto">
       <SubType>Designer</SubType>
@@ -217,6 +220,9 @@
     <Compile Include="MainForm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Pulsar4XApplication.cs" />
+    <Compile Include="Views\IndustryView.xeto.cs">
+      <DependentUpon>IndustryView.xeto</DependentUpon>
+    </Compile>
     <Compile Include="Views\AbilitySelectionList.xeto.cs">
       <DependentUpon>AbilitySelectionList.xeto</DependentUpon>
     </Compile>
