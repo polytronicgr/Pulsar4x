@@ -111,6 +111,7 @@
     <Compile Include="ViewModels\FactionVM.cs" />
     <Compile Include="ViewModels\GameVM.cs" />
     <Compile Include="ViewModels\IViewModel.cs" />
+    <Compile Include="ViewModels\JobAbilityBaseVM.cs" />
     <Compile Include="ViewModels\JobVM.cs" />
     <Compile Include="ViewModels\MinMaxSliderVM.cs" />
     <Compile Include="ViewModels\MissileDesignVM.cs" />
