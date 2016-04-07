@@ -6,6 +6,26 @@
   <TabControl>
     
     <TabPage Text="Component Construction">
+      <TableLayout>
+        <TableRow>
+          <TableCell>
+            <GridView x:Name="ComponentGridView">
+              <GridColumn HeaderText="Item Name" Editable="False"/>
+              <GridColumn HeaderText="Number Completed" Editable="False"/>
+              <GridColumn HeaderText="Number Ordered"/>
+              <GridColumn HeaderText="Industrial Utilization"/>
+              <GridColumn HeaderText="BP Per Item" Editable="False"/>
+              <GridColumn HeaderText="BP Applied" Editable="False"/>
+              <GridColumn HeaderText="Total BP Remaining" Editable="False"/>
+              <GridColumn HeaderText="AutoRepeat"/>
+              <GridColumn HeaderText="Estimated Completion" Editable="False"/>
+            </GridView>
+          </TableCell>
+          <TableCell>
+          </TableCell>
+        </TableRow>
+      </TableLayout>
+      
     </TabPage>
     
     <TabPage Text="Fighter Construction">

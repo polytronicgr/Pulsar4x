@@ -8,7 +8,7 @@ namespace Pulsar4X.CrossPlatformUI.Views
 {
     public class IndustryView : Scrollable
     {
-        public IndustryView()
+        private IndustryView()
         {
             XamlReader.Load(this);
         }
