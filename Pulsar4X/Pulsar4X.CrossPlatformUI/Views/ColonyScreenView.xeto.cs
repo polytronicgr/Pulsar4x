@@ -15,12 +15,10 @@ namespace Pulsar4X.CrossPlatformUI.Views
         protected GridView PopDataGrid { get; set; }
         protected GridView MineralDeposits { get; set; }
         protected GridView MineralStockpile { get; set; }
-        protected JobAbilityView RefinaryAbilityView { get; set; }
         protected GridView RefinedMats { get; set; }
-        protected JobAbilityView ConstructionAbilityView { get; set; }
 
         // Awaiting redesign of TechProcessor, and ResearchVM's     
-        //protected ResearchAbilityView ResearchAbilityView { get; set; }
+        // protected ResearchAbilityView ResearchAbilityView { get; set; }
 
         private ColonyScreenVM _colonyScreenVM;
         private GameVM gameVM { get; set; }
@@ -84,7 +82,6 @@ namespace Pulsar4X.CrossPlatformUI.Views
             this.gameVM = gameVM;
 
             ColonySelection.DataContext = gameVM.Colonys;
-            //ColonySelection.SelectedKeyChanged += SetViewModel;
             gameVM.Colonys.SelectionChangedEvent += SetViewModel;
             SetViewModel(0, 0);
         }
@@ -106,19 +103,9 @@ namespace Pulsar4X.CrossPlatformUI.Views
 
             MineralStockpile.DataStore = _colonyScreenVM.RawMineralStockpileVM.MineralStockpile.Values;
             gameVM.SelectedColonyScreenVM.RawMineralStockpileVM.PropertyChanged += RawMineralStockpileVM_PropertyChanged;
-            //RefinaryAbilityView = new JobAbilityView(colonyScreenVM.RefinaryAbilityVM);
-            RefinaryAbilityView.SetViewModel(_colonyScreenVM.RefinaryAbilityVM);
             
             RefinedMats.DataStore = _colonyScreenVM.RefinedMatsStockpileVM.MaterialStockpile.Values;
             gameVM.SelectedColonyScreenVM.RefinedMatsStockpileVM.PropertyChanged += RefinedMatsStockpileVM_PropertyChanged;
-
-
-            ConstructionAbilityView.SetViewModel(_colonyScreenVM.ConstructionAbilityVM);
-            //ResearchAbilityView = new ResearchAbilityView(colonyScreenVM.ColonyResearchVM);
-            //ResearchAbilityView.SetViewModel(_colonyScreenVM.ColonyResearchVM);
-
-
-
         }
 
         private void RefinedMatsStockpileVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

@@ -6,29 +6,12 @@ using System.Runtime.CompilerServices;
 
 namespace Pulsar4X.ViewModel
 {
-    public class JobVM
+    public class JobVM : IViewModel
     {
-        private Game _game;
-        private StaticDataStore _staticData;
-        private IndustryJob _job;
+        private readonly IndustryJob _job;
         private IndustrialEntity _industrialEntity;
-        
-        public string Item
-        {
-            get
-            {
-                switch (_job.IndustryType)
-                {
-                    case IndustryType.Refining:
-                        return _staticData.RefinedMaterials[_job.ItemGuid].Name;
-                    case IndustryType.InstallationConstruction:
-                        Entity installationDesign = _game.GlobalManager.GetGlobalEntityByGuid(_job.ItemGuid);
-                        return installationDesign.GetDataBlob<NameDB>()?.GetName(_industrialEntity.OwnedDB.EntityOwner) ?? "ERROR: NO NAMEDB FOUND FOR ENTITY";
-                    default:
-                        return "Unknown Jobtype";
-                }
-            }
-        }
+
+        public string Item => _job.ItemName;
 
         internal Entity projectManager => _job.ProjectManager;
         public IndustryType IndustryType => _job.IndustryType;
@@ -74,10 +57,8 @@ namespace Pulsar4X.ViewModel
 
         public DateTime ProjectCompletion => _job.ProjectedCompletion;
 
-        public JobVM(Game game, StaticDataStore staticData, Entity entity, IndustryJob job)
+        public JobVM(Entity entity, IndustryJob job)
         {
-            _game = game;
-            _staticData = staticData;
             _industrialEntity = new IndustrialEntity(entity);
             _job = job;
         }
@@ -91,14 +72,7 @@ namespace Pulsar4X.ViewModel
 
         public void Refresh(bool partialRefresh = false)
         {
-            if (PropertyChanged != null)
-            {
-                Completed = Completed;
-                BatchQuantity = BatchQuantity;
-                Repeat = Repeat;
-                ItemBuildPointsRemaining = ItemBuildPointsRemaining;
-                ItemPercentRemaining = ItemPercentRemaining;
-            }
+            OnPropertyChanged();
         }
     }
 }

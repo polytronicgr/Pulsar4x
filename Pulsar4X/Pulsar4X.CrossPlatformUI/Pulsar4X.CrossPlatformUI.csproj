@@ -107,12 +107,6 @@
     <EmbeddedResource Include="Views\ScientistUC.xeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\JobUC.xeto">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\JobAbilityView.xeto">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Views\ColonyScreenView.xeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -121,8 +115,8 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\ComponentDesignView.xeto">
       <SubType>Designer</SubType>
-    </EmbeddedResource>    
-	<EmbeddedResource Include="Views\IndustryView.xeto">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\IndustryView.xeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\AbilitySelectionList.xeto">
@@ -265,12 +259,6 @@
     </Compile>
     <Compile Include="Views\ComponentTemplateDesigner\TechList.xeto.cs">
       <DependentUpon>TechList.xeto</DependentUpon>
-    </Compile>
-    <Compile Include="Views\JobAbilityView.xeto.cs">
-      <DependentUpon>JobAbilityView.xeto</DependentUpon>
-    </Compile>
-    <Compile Include="Views\JobUC.xeto.cs">
-      <DependentUpon>JobUC.xeto</DependentUpon>
     </Compile>
     <Compile Include="Views\MainWindow.xeto.cs">
       <DependentUpon>MainWindow.xeto</DependentUpon>
