@@ -20,7 +20,13 @@ namespace Pulsar4X.ECSLib
 
         [JsonProperty]
         public bool HasUnlimitedCapacity { get; internal set; }
-        
+
+        [JsonConstructor]
+        public CargoDB(bool unlimitedCapacity = false)
+        {
+            HasUnlimitedCapacity = unlimitedCapacity;
+        }
+
         public override object Clone()
         {
             return new CargoDB {cargoCarried = cargoCarried, cargoCapacity = cargoCapacity, HasUnlimitedCapacity = HasUnlimitedCapacity};

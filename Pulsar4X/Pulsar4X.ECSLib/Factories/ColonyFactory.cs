@@ -46,6 +46,7 @@ namespace Pulsar4X.ECSLib
             var entityBonuses = new BonusesDB();
             var colonyIndustryDB = new IndustryDB();
             var componentInstanceDB = new ComponentInstancesDB();
+            var colonyCargo = new CargoDB(true);
 
             var blobs = new List<BaseDataBlob>
             {
@@ -55,6 +56,7 @@ namespace Pulsar4X.ECSLib
                 entityBonuses,
                 colonyIndustryDB,
                 componentInstanceDB,
+                colonyCargo
             };
 
             var colonyEntity = new Entity(planetEntity.Manager, blobs);
