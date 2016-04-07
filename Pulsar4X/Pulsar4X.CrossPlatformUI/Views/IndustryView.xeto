@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Scrollable
+  xmlns="http://schema.picoe.ca/eto.forms" 
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  >
+  <TabControl>
+    
+    <TabPage Text="Component Construction">
+    </TabPage>
+    
+    <TabPage Text="Fighter Construction">
+    </TabPage>
+    
+    <TabPage Text="Installation Construction">
+    </TabPage>
+
+    <TabPage Text="Ordnance Construction">
+    </TabPage>
+
+    <TabPage Text="Refining">
+    </TabPage>
+    
+    <TabPage Text="Research and Development">
+    </TabPage>
+    
+    <TabPage Text="Ship Construction">
+    </TabPage>
+    
+  </TabControl>
+</Scrollable>
