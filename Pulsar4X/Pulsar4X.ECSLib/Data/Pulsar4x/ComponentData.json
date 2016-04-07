@@ -161,11 +161,25 @@
           "ResearchCostFormula": "0",
           "CreditCostFormula": "120",
           "BuildPointCostFormula": "[Size]",
-          "MountType": "PlanetInstallation, ShipCargo",
+          "MountType": "ShipComponent, ShipCargo, PlanetInstallation, Fighter",
+          "CargoType": "None",
           "ComponentAbilitySDs": [
             {
               "Name": "MiningAmount",
               "Description": "",
+              "GuiHint": "None",
+              "GuidDictionary": {
+                "Entries": [
+                  {
+                    "Key": "Mining",
+                    "Value": "10"
+                  }
+                ]
+              },
+              "AbilityFormula": "EnumDict(IndustryType)"
+            },
+            {
+              "Name": "IndustryRates",
               "GuiHint": "None",
               "GuidDictionary": {
                 "Entries": [
@@ -215,8 +229,16 @@
                   }
                 ]
               },
-              "AbilityFormula": "DataBlobArgs([GuidDict])",
-              "AbilityDataBlobType": "Pulsar4X.ECSLib.MineResourcesDB"
+              "AbilityFormula": "[GuidDict]"
+            },
+            {
+              "Name": "BlobConstructor",
+              "GuiHint": "None",
+              "GuidDictionary": {
+                "Entries": []
+              },
+              "AbilityFormula": "DataBlobArgs(Ability(0), Ability(1))",
+              "AbilityDataBlobType": "Pulsar4X.ECSLib.IndustryAbilityDB"
             }
           ]
         }
