@@ -10,18 +10,26 @@
         <TableRow>
           <TableCell>
             <GridView x:Name="ComponentGridView">
-              <GridColumn HeaderText="Item Name" Editable="False"/>
-              <GridColumn HeaderText="Number Completed" Editable="False"/>
-              <GridColumn HeaderText="Number Ordered"/>
-              <GridColumn HeaderText="Industrial Utilization"/>
-              <GridColumn HeaderText="BP Per Item" Editable="False"/>
-              <GridColumn HeaderText="BP Applied" Editable="False"/>
-              <GridColumn HeaderText="Total BP Remaining" Editable="False"/>
-              <GridColumn HeaderText="AutoRepeat"/>
-              <GridColumn HeaderText="Estimated Completion" Editable="False"/>
+              <GridColumn HeaderText="Item Name" Editable="False" x:Name="ItemNameColumn"/>
+              <GridColumn HeaderText="Number Completed" Editable="False" x:Name="NumberCompletedColumn"/>
+              <GridColumn HeaderText="Number Ordered" x:Name="NumberOrderedColumn"/>
+              <GridColumn HeaderText="Industrial Utilization" x:Name="IndustrialUtilizationColumn"/>
+              <GridColumn HeaderText="BP Per Item" Editable="False" x:Name="BPPerItemColumn"/>
+              <GridColumn HeaderText="BP Applied" Editable="False" x:Name="BPAppliedColumn"/>
+              <GridColumn HeaderText="Total BP Remaining" Editable="False" x:Name="TotalBPRemainingColumn"/>
+              <GridColumn HeaderText="AutoRepeat" x:Name="AutoRepeatColumn"/>
+              <GridColumn HeaderText="Estimated Completion" Editable="False" x:Name="ProjectCompletionColumn"/>
             </GridView>
           </TableCell>
           <TableCell>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>
+
+            <ComboBox>
+
+            </ComboBox>
           </TableCell>
         </TableRow>
       </TableLayout>
