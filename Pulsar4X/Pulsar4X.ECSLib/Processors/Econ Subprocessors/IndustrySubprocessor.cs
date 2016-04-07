@@ -288,8 +288,9 @@ namespace Pulsar4X.ECSLib
             industryJob.PartialBPApplied += (float)(industryJob.BPPerItem * leftOver);
             
             // PartialBPApplied is cumulative from the last run, if we had 0.7, and add 0.5, we now have 1.2; make it 0.2 and add one to numberCompled.
-            if (industryJob.PartialBPApplied >= industryJob.BPPerItem)
+            while (industryJob.PartialBPApplied >= industryJob.BPPerItem)
             {
+                // Done in a loop so if BPPerItem is changed (SD change, or something) you complete the right number no matter what.
                 industryJob.PartialBPApplied -= industryJob.BPPerItem;
                 numberCompleted++;
             }

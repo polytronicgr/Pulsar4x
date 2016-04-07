@@ -25,10 +25,7 @@ namespace Pulsar4X.ECSLib
 
         [JsonProperty]
         public int HTK { get; internal set; }
-
-        [JsonProperty]
-        public Dictionary<Guid, int> MinerialCosts { get; internal set; }
-
+        
         [JsonProperty]
         public Dictionary<Guid, int> MaterialCosts { get; internal set; }
 
