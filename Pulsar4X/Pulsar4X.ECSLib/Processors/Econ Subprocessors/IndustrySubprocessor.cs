@@ -307,6 +307,7 @@ namespace Pulsar4X.ECSLib
                 {
                     var completedEvent = new Event(_game.CurrentDateTime, "Production job completed.", EventType.ProductionCompleted, null, industrialEntity.Entity);
                     _game.EventLog.AddEvent(completedEvent);
+                    industrialEntity.IndustryDB.industryJobs[industryJob.IndustryType].Remove(industryJob);
                 }
             }
             double totalRemainingBP = industryJob.BPPerItem * (industryJob.NumberCompleted - industryJob.NumberOrdered) - industryJob.PartialBPApplied;
@@ -321,17 +322,28 @@ namespace Pulsar4X.ECSLib
             return numberCompleted;
         }
 
-        private static void DeliverProducts(IndustrialEntity industrialEntity, IndustryJob industryJob, CargoDefinition outputCargoDefinition, int numberCompleted)
+        private void DeliverProducts(IndustrialEntity industrialEntity, IndustryJob industryJob, CargoDefinition outputCargoDefinition, int numberCompleted)
         {
             // TODO: Properly deliver non-cargo items
             switch (industryJob.IndustryType)
             {
                 case IndustryType.InstallationConstruction:
-                    var installationsDB = industrialEntity.Entity.GetDataBlob<InstallationsDB>();
-                    if (installationsDB != null)
+                    var componentInstancesDB = industrialEntity.Entity.GetDataBlob<ComponentInstancesDB>();
+                    if (componentInstancesDB != null)
                     {
                         // Add it to the entity's installationDB
-                        installationsDB.Installations.SafeValueAdd(outputCargoDefinition.ItemGuid, numberCompleted);
+                        Entity installationDesign = _game.GlobalManager.GetLocalEntityByGuid(industryJob.ItemGuid);
+
+                        var newInstallation = new ComponentInstance(installationDesign);
+
+                        if (componentInstancesDB.specificInstances.ContainsKey(installationDesign))
+                        {
+                            componentInstancesDB.specificInstances[installationDesign].Add(newInstallation);
+                        }
+                        else
+                        {
+                            componentInstancesDB.specificInstances.Add(installationDesign, new List<ComponentInstance> { newInstallation });
+                        }
                     }
                     else
                     {
