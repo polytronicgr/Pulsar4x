@@ -292,7 +292,6 @@ namespace Pulsar4X.Tests
             // store counts for later:
             int mineralsNum = staticDataStore.Minerals.Count;
             int techNum = staticDataStore.Techs.Count;
-            int installationsNum = staticDataStore.Installations.Count;
             int constructableObjectsNum = staticDataStore.RefinedMaterials.Count;
 
             // check that data was loaded:
@@ -301,7 +300,6 @@ namespace Pulsar4X.Tests
             Assert.IsNotEmpty(staticDataStore.CommanderNameThemes);
             Assert.IsNotEmpty(staticDataStore.Minerals);
             Assert.IsNotEmpty(staticDataStore.Techs);
-            Assert.IsNotEmpty(staticDataStore.Installations);
 
             // now lets re-load the same data, to test that duplicates don't occure as required:
             StaticDataManager.LoadData("Pulsar4x", game);
@@ -309,7 +307,6 @@ namespace Pulsar4X.Tests
             // now check that overwriting occured and that there were no duplicates:
             Assert.AreEqual(mineralsNum, staticDataStore.Minerals.Count);
             Assert.AreEqual(techNum, staticDataStore.Techs.Count);
-            Assert.AreEqual(installationsNum, staticDataStore.Installations.Count);
             Assert.AreEqual(constructableObjectsNum, staticDataStore.RefinedMaterials.Count);
 
             // now lets test some malformed data folders.
@@ -368,8 +365,7 @@ namespace Pulsar4X.Tests
             testObj = staticDataStore.FindDataObjectUsingID(testID);
             Assert.IsNotNull(testObj);
             Assert.AreEqual(testID, ((MineralSD)testObj).ID);
-
-            testID = staticDataStore.Installations.First().Key;
+            
             testObj = staticDataStore.FindDataObjectUsingID(testID);
             Assert.IsNotNull(testObj);
             Assert.AreEqual(testID, ((InstallationSD)testObj).ID);
