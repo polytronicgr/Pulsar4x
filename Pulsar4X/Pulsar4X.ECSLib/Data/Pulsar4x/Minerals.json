@@ -5,6 +5,11 @@
             "Name": "Sorium",
             "Description": "Gas used to convert into fuel.",
             "ID": "08f15d35-ea1d-442f-a2e3-bde04c5c22e9",
+            "Cargo": {
+              "ItemGuid": "08f15d35-ea1d-442f-a2e3-bde04c5c22e9",
+              "Type": "General",
+              "Weight": 1
+            },
             "Abundance": {
                 "List": [
                     {
@@ -46,6 +51,11 @@
             "Name": "Duranium",
             "Description": "The most common of the Trans-Newtonian metals.",
             "ID": "2dfc78ea-f8a4-4257-bc04-47279bf104ef",
+            "Cargo": {
+              "ItemGuid": "2dfc78ea-f8a4-4257-bc04-47279bf104ef",
+              "Type": "General",
+              "Weight": 1
+            },
             "Abundance": {
                 "List": [
                     {
@@ -87,6 +97,11 @@
             "Name": "Neutronium",
             "Description": "A rare, dense mineral, formed naturally in the cores of neutron stars.",
             "ID": "b12acce2-7c7d-4acf-ad41-1c08093fcad8",
+            "Cargo": {
+              "ItemGuid": "b12acce2-7c7d-4acf-ad41-1c08093fcad8",
+              "Type": "General",
+              "Weight": 1
+            },
             "Abundance": {
                 "List": [
                     {
@@ -128,6 +143,11 @@
             "Name": "Corbomite",
             "Description": "A metal with excellent conductivity, used for electronics.",
             "ID": "a03863a3-a364-45ff-8c7b-a4f7486bd710",
+            "Cargo": {
+              "ItemGuid": "a03863a3-a364-45ff-8c7b-a4f7486bd710",
+              "Type": "General",
+              "Weight": 1
+            },
             "Abundance": {
                 "List": [
                     {
@@ -169,6 +189,11 @@
             "Name": "Tritanium",
             "Description": "Metallic, not stable under atmospheric temperatures.",
             "ID": "14a83fc3-04fd-4ea3-82f4-290995c4418e",
+            "Cargo": {
+              "ItemGuid": "14a83fc3-04fd-4ea3-82f4-290995c4418e",
+              "Type": "General",
+              "Weight": 1
+            },
             "Abundance": {
                 "List": [
                     {
@@ -210,6 +235,11 @@
             "Name": "Boronide",
             "Description": "A rare mineral ore.",
             "ID": "29b3797d-f9d7-4e73-a593-2b05bf4ef012",
+            "Cargo": {
+              "ItemGuid": "29b3797d-f9d7-4e73-a593-2b05bf4ef012",
+              "Type": "General",
+              "Weight": 1
+            },
             "Abundance": {
                 "List": [
                     {
@@ -251,6 +281,11 @@
             "Name": "Uridium",
             "Description": "An unstable mineral.",
             "ID": "5fdfb85c-fad2-4a48-8a75-04eb65dc9741",
+            "Cargo": {
+              "ItemGuid": "5fdfb85c-fad2-4a48-8a75-04eb65dc9741",
+              "Type": "General",
+              "Weight": 1
+            },
             "Abundance": {
                 "List": [
                     {
@@ -292,6 +327,11 @@
             "Name": "Corundium",
             "Description": "Comparable to diamond but out of aluminium oxide.",
             "ID": "2ae2a928-3e14-45d5-befc-5bd6ed16ec0a",
+            "Cargo": {
+              "ItemGuid": "2ae2a928-3e14-45d5-befc-5bd6ed16ec0a",
+              "Type": "General",
+              "Weight": 1
+            },
             "Abundance": {
                 "List": [
                     {
@@ -333,6 +373,11 @@
             "Name": "Mercassium",
             "Description": "A synthetic composite.",
             "ID": "c3bcb597-a2d1-4b12-9349-26586c8a921c",
+            "Cargo": {
+              "ItemGuid": "c3bcb597-a2d1-4b12-9349-26586c8a921c",
+              "Type": "General",
+              "Weight": 1
+            },
             "Abundance": {
                 "List": [
                     {
@@ -374,6 +419,11 @@
             "Name": "Vendarite",
             "Description": "A valuable mineral.",
             "ID": "6a38b268-041f-4103-9d23-c13c1041cecd",
+            "Cargo": {
+              "ItemGuid": "6a38b268-041f-4103-9d23-c13c1041cecd",
+              "Type": "General",
+              "Weight": 1
+            },
             "Abundance": {
                 "List": [
                     {
@@ -415,6 +465,11 @@
             "Name": "Gallicite",
             "Description": "A naturally-occurring mineral in large deposits.",
             "ID": "2d4b2866-aa4a-4b9a-b8aa-755fe509c0b3",
+            "Cargo": {
+              "ItemGuid": "2d4b2866-aa4a-4b9a-b8aa-755fe509c0b3",
+              "Type": "General",
+              "Weight": 1
+            },
             "Abundance": {
                 "List": [
                     {
