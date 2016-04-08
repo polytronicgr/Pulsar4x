@@ -321,9 +321,18 @@ namespace Pulsar4X.ECSLib
                 Type type = Type.GetType(typeAsString);
                 Type dictType = typeof(Dictionary<,>).MakeGenericType(type, typeof(double));
                 dynamic dict = Activator.CreateInstance(dictType);
+
+                Type enumDictType = typeof(Dictionary<,>).MakeGenericType(typeof(string), type);
+                dynamic enumConstants = Activator.CreateInstance(enumDictType);
+                foreach (dynamic value in Enum.GetValues(type))
+                {
+                    enumConstants.Add(Enum.GetName(type, value), value);
+                }
+
                 foreach (var kvp in _designAbility.GuidDictionary)
-                {                    
-                    dict.Add(kvp.Key, kvp.Value.DResult);
+                {
+                    dynamic key = enumConstants[(string)kvp.Key];
+                    dict.Add(key, kvp.Value.DResult);         
                 }
                 args.Result = dict;
             }
