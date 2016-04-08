@@ -176,7 +176,7 @@
                   }
                 ]
               },
-              "AbilityFormula": "EnumDict('IndustryType')"
+              "AbilityFormula": "EnumDict('Pulsar4X.ECSLib.IndustryType')"
             },
             {
               "Name": "IndustryRates",
