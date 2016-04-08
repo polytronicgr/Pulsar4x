@@ -27,9 +27,10 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Casting constructor. Casts from double to int.
         /// </summary>
-        public IndustryAbilityDB(IDictionary<IndustryType, double> industryRates, IDictionary<Guid, float> industryMultipliers = null, bool canPullFromHost = false) 
-            : this(industryRates.ToDictionary(industryRate => industryRate.Key, industryRate => (int)industryRate.Value), industryMultipliers, canPullFromHost) { }
-        
+        public IndustryAbilityDB(IDictionary<IndustryType, double> industryRates, IDictionary<Guid, double> industryMultipliers = null, bool canPullFromHost = false)
+            : this(industryRates.ToDictionary(industryRate => industryRate.Key, industryRate => (int)industryRate.Value), industryMultipliers.ToDictionary(industryMultiplier => industryMultiplier.Key, industryMultiplier => (float)industryMultiplier.Value), canPullFromHost)
+        { }
+
         [JsonConstructor]
         public IndustryAbilityDB(IDictionary<IndustryType, int> industryRates = null, IDictionary<Guid, float> industryMultipliers = null, bool canPullFromHost = false)
         {
