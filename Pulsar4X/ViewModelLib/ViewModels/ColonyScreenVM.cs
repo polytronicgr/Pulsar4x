@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 
@@ -195,8 +196,15 @@ namespace Pulsar4X.ViewModel
     {
         private Entity _colonyEntity;
         private ColonyDB Colony { get { return _colonyEntity.GetDataBlob<ColonyDB>(); } }
-        private Dictionary<Guid, MineralSD> _mineralDictionary;
+        private CargoDB _cargoDB; 
 
+
+        private Dictionary<CargoDefinition, double> MineralDictionary { get { return _cargoDB.CargoCarried.Where(kvp => _mineralGuids.Contains(kvp.Key.ItemGuid)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);  } }
+
+
+
+        private StaticDataStore _staticData;
+        List<Guid> _mineralGuids; 
         private readonly ObservableDictionary<Guid, RawMineralInfoVM> _mineralStockpile = new ObservableDictionary<Guid, RawMineralInfoVM>();
         public ObservableDictionary<Guid, RawMineralInfoVM> MineralStockpile
         {
@@ -205,20 +213,22 @@ namespace Pulsar4X.ViewModel
 
         public RawMineralStockpileVM(StaticDataStore staticData, Entity colonyEntity)
         {
-            _mineralDictionary = new Dictionary<Guid, MineralSD>();
-            foreach (var mineral in staticData.Minerals)
-            {
-                _mineralDictionary.Add(mineral.ID, mineral);
-            }
+
+            _mineralGuids = staticData.Minerals.Select(mineralSD => mineralSD.ID).ToList();
+
             _colonyEntity = colonyEntity;
+            _cargoDB = colonyEntity.GetDataBlob<CargoDB>();
             Initialise();
         }
 
         private void Initialise()
         {
-            /*
-            var rawMinerals = Colony.MineralStockpile;
+
+            //var rawMinerals = Colony.MineralStockpile;
+            var entityCargo = _colonyEntity.GetDataBlob<CargoDB>().CargoCarried;
+            var rawMinerals = entityCargo.Where(kvp => _mineralGuids.Contains(kvp.Key.ItemGuid)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             _mineralStockpile.Clear();
+
             foreach (var kvp in rawMinerals)
             {
                 MineralSD mineral = _mineralDictionary[kvp.Key];
@@ -226,7 +236,13 @@ namespace Pulsar4X.ViewModel
                     _mineralStockpile.Add(kvp.Key, new RawMineralInfoVM(kvp.Key, mineral.Name, Colony));             
             }
             OnPropertyChanged(nameof(MineralStockpile));
-            */
+            
+            
+
+            
+
+            
+           
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -240,8 +256,8 @@ namespace Pulsar4X.ViewModel
         }
         public void Refresh(bool partialRefresh = false)
         {
-            /*
-            if (Colony.MineralStockpile.Count != MineralStockpile.Count)
+            
+            if (_cargoDB.CargoCarried.Count != MineralStockpile.Count)
                 Initialise();
             else
                 foreach (var mineral in MineralStockpile)
@@ -250,7 +266,7 @@ namespace Pulsar4X.ViewModel
                     
                 }
             OnPropertyChanged();
-            */
+            
         }
     }
     public class RawMineralInfoVM : IViewModel
