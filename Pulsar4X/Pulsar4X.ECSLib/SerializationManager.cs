@@ -28,11 +28,27 @@ namespace Pulsar4X.ECSLib
         private static readonly JsonSerializer PersistenceSerializer = new JsonSerializer { Context = new StreamingContext(StreamingContextStates.Persistence), NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented, ContractResolver = new ForceUseISerializable(), PreserveReferencesHandling = PreserveReferencesHandling.None };
         private static readonly JsonSerializer RemoteSerializer = new JsonSerializer {Context = new StreamingContext(StreamingContextStates.Remoting), NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.None, ContractResolver = new ForceUseISerializable(), PreserveReferencesHandling = PreserveReferencesHandling.None};
 
-        public static string Export([NotNull] Game game, bool compress = false) => Export<Game>(game, game, compress);
-        public static string Export([NotNull] Game game, [NotNull] Entity entity, bool compress = false) => Export<ProtoEntity>(game, entity.Clone(), compress);
-        public static string Export([NotNull] Game game, [NotNull] StarSystem system, bool compress = false) => Export<StarSystem>(game, system, compress);
-        public static string Export([NotNull] Game game, [NotNull] EventLog eventLog, bool compress = false) => Export<EventLog>(game, eventLog, compress);
-        private static string Export<TObj>([NotNull] Game game, [NotNull] TObj obj, bool compress = false)
+        public static string Export(Game game, bool compress = false)
+        {
+            return Export<Game>(game, game, compress);
+        }
+
+        public static string Export(Game game, Entity entity, bool compress = false)
+        {
+            return Export<ProtoEntity>(game, entity.Clone(), compress);
+        }
+
+        public static string Export(Game game, StarSystem system, bool compress = false)
+        {
+            return Export<StarSystem>(game, system, compress);
+        }
+
+        public static string Export(Game game, EventLog eventLog, bool compress = false)
+        {
+            return Export<EventLog>(game, eventLog, compress);
+        }
+
+        private static string Export<TObj>(Game game, TObj obj, bool compress = false)
         {
             using (var stream = new MemoryStream())
             {
@@ -46,11 +62,27 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        public static void Export([NotNull] Game game, [NotNull] string filePath, bool compress = false) => ExportFile(game, filePath, game, compress);
-        public static void Export([NotNull] Game game, [NotNull] string filePath, [NotNull] Entity entity, bool compress = false) => ExportFile(game, filePath, entity.Clone(), compress);
-        public static void Export([NotNull] Game game, [NotNull] string filePath, [NotNull] StarSystem system, bool compress = false) => ExportFile(game, filePath, system, compress);
-        public static void Export([NotNull] Game game, [NotNull] string filePath, [NotNull] EventLog eventLog, bool compress = false) => ExportFile(game, filePath, eventLog, compress);
-        private static void ExportFile<TObj>([NotNull] Game game, [NotNull] string filePath, [NotNull] TObj obj, bool compress = false)
+        public static void Export(Game game, string filePath, bool compress = false)
+        {
+            ExportFile(game, filePath, game, compress);
+        }
+
+        public static void Export(Game game, string filePath, Entity entity, bool compress = false)
+        {
+            ExportFile(game, filePath, entity.Clone(), compress);
+        }
+
+        public static void Export(Game game, string filePath, StarSystem system, bool compress = false)
+        {
+            ExportFile(game, filePath, system, compress);
+        }
+
+        public static void Export(Game game, string filePath, EventLog eventLog, bool compress = false)
+        {
+            ExportFile(game, filePath, eventLog, compress);
+        }
+
+        private static void ExportFile<TObj>(Game game, string filePath, TObj obj, bool compress = false)
         {
             using (var fileStream = GetFileStream(filePath, FileAccess.Write))
             {
@@ -58,11 +90,27 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        public static void Export([NotNull] Game game, [NotNull] Stream outputStream, bool compress = false) => ExportInternal(game, outputStream, game, compress);
-        public static void Export([NotNull] Game game, [NotNull] Stream outputStream, [NotNull] Entity entity, bool compress = false) => ExportInternal(game, outputStream, entity.Clone(), compress);
-        public static void Export([NotNull] Game game, [NotNull] Stream outputStream, [NotNull] StarSystem system, bool compress = false) => ExportInternal(game, outputStream, system, compress);
-        public static void Export([NotNull] Game game, [NotNull] Stream outputStream, [NotNull] EventLog eventLog, bool compress = false) => ExportInternal(game, outputStream, eventLog, compress);
-        private static void ExportInternal<TObj>([NotNull] Game game, [NotNull] Stream outputStream, [NotNull] TObj obj, bool compress = false)
+        public static void Export(Game game, Stream outputStream, bool compress = false)
+        {
+            ExportInternal(game, outputStream, game, compress);
+        }
+
+        public static void Export(Game game, Stream outputStream, Entity entity, bool compress = false)
+        {
+            ExportInternal(game, outputStream, entity.Clone(), compress);
+        }
+
+        public static void Export(Game game, Stream outputStream, StarSystem system, bool compress = false)
+        {
+            ExportInternal(game, outputStream, system, compress);
+        }
+
+        public static void Export(Game game, Stream outputStream, EventLog eventLog, bool compress = false)
+        {
+            ExportInternal(game, outputStream, eventLog, compress);
+        }
+
+        private static void ExportInternal<TObj>(Game game, Stream outputStream, TObj obj, bool compress = false)
         {
             if (game == null)
             {
@@ -102,7 +150,7 @@ namespace Pulsar4X.ECSLib
                 return ImportGame(stream);
             }
         }
-        public static Entity ImportEntityJson([NotNull] Game game, string jsonString, [NotNull] EntityManager manager)
+        public static Entity ImportEntityJson(Game game, string jsonString, EntityManager manager)
         {
             using (MemoryStream stream = GetMemoryStream(jsonString))
             {
@@ -110,14 +158,14 @@ namespace Pulsar4X.ECSLib
             }
             
         }
-        public static StarSystem ImportSystemJson([NotNull] Game game, string jsonString)
+        public static StarSystem ImportSystemJson(Game game, string jsonString)
         {
             using (MemoryStream stream = GetMemoryStream(jsonString))
             {
                 return ImportSystem(game, stream);
             }
         }
-        public static EventLog ImportEventLogJson([NotNull] Game game, string jsonString)
+        public static EventLog ImportEventLogJson(Game game, string jsonString)
         {
             using (MemoryStream stream = GetMemoryStream(jsonString))
             {
@@ -125,28 +173,28 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        public static Game ImportGame([NotNull] string filePath)
+        public static Game ImportGame(string filePath)
         {
             using (FileStream fs = GetFileStream(filePath, FileAccess.Read))
             {
                 return ImportGame(fs);
             }
         }
-        public static Entity ImportEntity([NotNull] Game game, string filePath, [NotNull] EntityManager manager)
+        public static Entity ImportEntity(Game game, string filePath, EntityManager manager)
         {
             using (FileStream fs = GetFileStream(filePath, FileAccess.Read))
             {
                 return ImportEntity(game, fs, manager);
             }
         }
-        public static StarSystem ImportSystem([NotNull] Game game, string filePath)
+        public static StarSystem ImportSystem(Game game, string filePath)
         {
             using (FileStream fs = GetFileStream(filePath, FileAccess.Read))
             {
                 return ImportSystem(game, fs);
             }
         }
-        public static EventLog ImportEventLog([NotNull] Game game, string filePath)
+        public static EventLog ImportEventLog(Game game, string filePath)
         {
             using (FileStream fs = GetFileStream(filePath, FileAccess.Read))
             {
@@ -154,12 +202,12 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        public static Game ImportGame([NotNull] Stream inputStream)
+        public static Game ImportGame(Stream inputStream)
         {
             var game = new Game();
             return Import(game, inputStream, game);
         }
-        public static Entity ImportEntity([NotNull] Game game, [NotNull] Stream inputStream, [NotNull] EntityManager manager)
+        public static Entity ImportEntity(Game game, Stream inputStream, EntityManager manager)
         {
             if (manager == null)
             {
@@ -172,21 +220,21 @@ namespace Pulsar4X.ECSLib
             game.PostGameLoad();
             return entity;
         }
-        public static StarSystem ImportSystem([NotNull] Game game, [NotNull] Stream inputStream)
+        public static StarSystem ImportSystem(Game game, Stream inputStream)
         {
             var system = new StarSystem();
             system = Import(game, inputStream, system);
             game.PostGameLoad();
             return system;
         }
-        public static EventLog ImportEventLog([NotNull] Game game, [NotNull] Stream inputStream)
+        public static EventLog ImportEventLog(Game game, Stream inputStream)
         {
             var eventLog = new EventLog();
             eventLog = Import(game, inputStream, eventLog);
             game.EventLog = eventLog;
             return eventLog;
         }
-        private static TObj Import<TObj>([NotNull] Game game, [NotNull] Stream inputStream, [NotNull] TObj obj)
+        private static TObj Import<TObj>(Game game, Stream inputStream, TObj obj)
         {
             if (game == null)
             {
