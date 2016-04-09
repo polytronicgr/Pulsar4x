@@ -8,39 +8,39 @@ namespace Pulsar4X.ECSLib
 {
     public class FactionDB : BaseDataBlob
     {
-        [PublicAPI]
+        
         [JsonProperty]
         public List<Entity> Species { get; internal set; }
 
-        [PublicAPI]
+        
         [JsonProperty]
         public List<Guid> KnownSystems { get; internal set; }
 
-        [PublicAPI]
+        
         public ReadOnlyDictionary<Guid, List<Entity>> KnownJumpPoints => new ReadOnlyDictionary<Guid, List<Entity>>(InternalKnownJumpPoints);
         [JsonProperty]
         internal Dictionary<Guid, List<Entity>> InternalKnownJumpPoints = new Dictionary<Guid, List<Entity>>();
 
-        [PublicAPI]
+        
         [JsonProperty]
         public List<Entity> KnownFactions { get; internal set; }
 
 
-        [PublicAPI]
+        
         [JsonProperty]
         public List<Entity> Colonies { get; internal set; }
 
-        [PublicAPI]
+        
         [JsonProperty]
         public List<Entity> ShipClasses { get; internal set; }
 
-        [PublicAPI]
+        
         public ReadOnlyDictionary<Guid, Entity> ComponentDesigns => new ReadOnlyDictionary<Guid, Entity>(InternalComponentDesigns);
         [JsonProperty]
         internal Dictionary<Guid, Entity> InternalComponentDesigns = new Dictionary<Guid, Entity>();
 
 
-        [PublicAPI]
+        
         public ReadOnlyDictionary<Guid, Entity> MissileDesigns => new ReadOnlyDictionary<Guid, Entity>(InternalMissileDesigns);
         [JsonProperty]
         internal Dictionary<Guid, Entity> InternalMissileDesigns = new Dictionary<Guid, Entity>();

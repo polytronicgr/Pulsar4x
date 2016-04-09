@@ -12,7 +12,7 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         private readonly Dictionary<Entity, string> _names = new Dictionary<Entity, string>();
 
-        [PublicAPI]
+        
         public string DefaultName => _names[Entity.InvalidEntity];
 
         public NameDB() { }
@@ -36,7 +36,7 @@ namespace Pulsar4X.ECSLib
 
         #endregion
 
-        [PublicAPI]
+        
         public string GetName(Entity requestingFaction)
         {
             string name;
@@ -49,7 +49,7 @@ namespace Pulsar4X.ECSLib
             return name;
         }
 
-        [PublicAPI]
+        
         public void SetName(Entity requestingFaction, string specifiedName)
         {
             if (_names.ContainsKey(requestingFaction))

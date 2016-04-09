@@ -41,7 +41,7 @@ namespace Pulsar4X.ECSLib
 
     public class SystemBodyDB : BaseDataBlob
     {
-        [PublicAPI]
+        
         [JsonProperty]
         public BodyType BodyType { get; internal set; }
 
@@ -49,7 +49,7 @@ namespace Pulsar4X.ECSLib
         /// Plate techtonics. Ammount of activity depends on age vs mass.
         /// Influences magnitic field. maybe this should be in the processor?
         /// </summary>
-        [PublicAPI]
+        
         [JsonProperty]
         public TectonicActivity Tectonics { get; internal set; }
 
@@ -57,7 +57,7 @@ namespace Pulsar4X.ECSLib
         /// The Axial Tilt of this body.
         /// Measured in degrees.
         /// </summary>
-        [PublicAPI]
+        
         [JsonProperty]
         public float AxialTilt { get; internal set; }
 
@@ -65,7 +65,7 @@ namespace Pulsar4X.ECSLib
         /// Magnetic field of the body. It is important as it affects how much atmosphere a body will have.
         /// In Microtesla (uT)
         /// </summary>
-        [PublicAPI]
+        
         [JsonProperty]
         public float MagneticField { get; internal set; }
 
@@ -74,7 +74,7 @@ namespace Pulsar4X.ECSLib
         /// This is mostly a factor of how much light reaches the planet nad is calculated at generation time.
         /// In Degrees C.
         /// </summary>
-        [PublicAPI]
+        
         [JsonProperty]
         public float BaseTemperature { get; internal set; }
 
@@ -83,26 +83,26 @@ namespace Pulsar4X.ECSLib
         /// Todo: Decide if we want RadiationLevel and AtmosphericDust game play features.
         /// arnt these going to affect how many Infrastructure or colony cost?
         /// </summary>
-        [PublicAPI]
+        
         [JsonProperty]
         public float RadiationLevel { get; internal set; }
 
-        [PublicAPI]
+        
         [JsonProperty]
         public float AtmosphericDust { get; internal set; }
 
         /// <summary>
         /// Indicates if the system body supports populations and can be settled by Players/NPRs..
         /// </summary>
-        [PublicAPI]
+        
         [JsonProperty]
         public bool SupportsPopulations { get; internal set; }
         
-        [PublicAPI]
+        
         [JsonProperty]
         public List<Entity> Colonies { get; internal set; }
 
-        [PublicAPI]
+        
         [JsonProperty]
         public TimeSpan LengthOfDay { get; internal set; }
 
@@ -110,7 +110,7 @@ namespace Pulsar4X.ECSLib
         /// Stores the amount of the variopus minerials. the guid can be used to lookup the
         /// minerial definition (MineralSD) from the StaticDataStore.
         /// </summary>
-        [PublicAPI]
+        
         [JsonProperty]
         public Dictionary<Guid, MineralDepositInfo> Minerals { get; internal set; }
 

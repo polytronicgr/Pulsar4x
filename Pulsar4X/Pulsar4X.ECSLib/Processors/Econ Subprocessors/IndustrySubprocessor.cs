@@ -403,7 +403,7 @@ namespace Pulsar4X.ECSLib
 
         #region Public Interactions
 
-        [PublicAPI]
+        
         public static void AddPendingJob(Entity entity, IndustryJob job)
         {
             var industryDB = entity?.GetDataBlob<IndustryDB>();
@@ -416,7 +416,7 @@ namespace Pulsar4X.ECSLib
             industryDB.industryJobs[job.IndustryType].AddLast(job);
         }
 
-        [PublicAPI]
+        
         public static void RemoveJob(Entity entity, IndustryJob job)
         {
             var industryDB = entity?.GetDataBlob<IndustryDB>();
@@ -432,7 +432,7 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        [PublicAPI]
+        
         public static void ReorderJob(Entity entity, IndustryJob job, int newIndex)
         {
             var industryDB = entity?.GetDataBlob<IndustryDB>();

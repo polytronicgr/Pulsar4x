@@ -19,7 +19,7 @@ namespace Pulsar4X.ECSLib
     /// so the check for <c>null</c> is necessary before its usage
     /// </summary>
     /// <example><code>
-    /// [CanBeNull] public object Test() { return null; }
+    ///  public object Test() { return null; }
     /// public void UseTest() {
     ///   var p = Test();
     ///   var s = p.ToString(); // Warning: Possible 'System.NullReferenceException'
@@ -35,7 +35,7 @@ namespace Pulsar4X.ECSLib
   /// Indicates that the value of the marked element could never be <c>null</c>
   /// </summary>
   /// <example><code>
-  /// [NotNull] public object Foo() {
+  ///  public object Foo() {
   ///   return null; // Warning: Possible 'null' assignment
   /// }
   /// </code></example>
@@ -104,7 +104,7 @@ namespace Pulsar4X.ECSLib
       Name = name;
     }
 
-    [NotNull] public string Name { get; private set; }
+     public string Name { get; private set; }
   }
 
   /// <summary>
@@ -218,10 +218,10 @@ namespace Pulsar4X.ECSLib
   [Conditional("JETBRAINS_ANNOTATIONS")]
   public sealed class ContractAnnotationAttribute : Attribute
   {
-    public ContractAnnotationAttribute([NotNull] string contract)
+    public ContractAnnotationAttribute( string contract)
       : this(contract, false) { }
 
-    public ContractAnnotationAttribute([NotNull] string contract, bool forceFullStates)
+    public ContractAnnotationAttribute( string contract, bool forceFullStates)
     {
       Contract = contract;
       ForceFullStates = forceFullStates;
@@ -292,12 +292,12 @@ namespace Pulsar4X.ECSLib
   [Conditional("JETBRAINS_ANNOTATIONS")]
   public sealed class BaseTypeRequiredAttribute : Attribute
   {
-    public BaseTypeRequiredAttribute([NotNull] Type baseType)
+    public BaseTypeRequiredAttribute( Type baseType)
     {
       BaseType = baseType;
     }
 
-    [NotNull] public Type BaseType { get; private set; }
+     public Type BaseType { get; private set; }
   }
 
   /// <summary>
@@ -399,7 +399,7 @@ namespace Pulsar4X.ECSLib
   public sealed class PublicAPIAttribute : Attribute
   {
     public PublicAPIAttribute() { }
-    public PublicAPIAttribute([NotNull] string comment)
+    public PublicAPIAttribute( string comment)
     {
       Comment = comment;
     }
@@ -423,7 +423,7 @@ namespace Pulsar4X.ECSLib
   /// The same as <c>System.Diagnostics.Contracts.PureAttribute</c>
   /// </summary>
   /// <example><code>
-  /// [Pure] private int Multiply(int x, int y) { return x * y; }
+  ///  private int Multiply(int x, int y) { return x * y; }
   /// public void Foo() {
   ///   const int a = 2, b = 2;
   ///   Multiply(a, b); // Waring: Return value of pure method is not used
@@ -682,12 +682,12 @@ namespace Pulsar4X.ECSLib
   [Conditional("JETBRAINS_ANNOTATIONS")]
   public sealed class HtmlAttributeValueAttribute : Attribute
   {
-    public HtmlAttributeValueAttribute([NotNull] string name)
+    public HtmlAttributeValueAttribute( string name)
     {
       Name = name;
     }
 
-    [NotNull] public string Name { get; private set; }
+     public string Name { get; private set; }
   }
 
   /// <summary>
@@ -853,7 +853,7 @@ namespace Pulsar4X.ECSLib
   [Conditional("JETBRAINS_ANNOTATIONS")]
   public sealed class AspRequiredAttributeAttribute : Attribute
   {
-    public AspRequiredAttributeAttribute([NotNull] string attribute)
+    public AspRequiredAttributeAttribute( string attribute)
     {
       Attribute = attribute;
     }

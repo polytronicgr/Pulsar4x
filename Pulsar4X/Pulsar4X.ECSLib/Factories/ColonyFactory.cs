@@ -9,8 +9,8 @@ namespace Pulsar4X.ECSLib
         /// Creates a new colony with zero population.
         /// TODO: Review access control on this function.
         /// </summary>
-        [NotNull]
-        public static Entity CreateColony([NotNull] Entity factionEntity, [NotNull] Entity speciesEntity, [NotNull] Entity planetEntity)
+        
+        public static Entity CreateColony( Entity factionEntity,  Entity speciesEntity,  Entity planetEntity)
         {
             if (factionEntity == null || !factionEntity.IsValid)
             {

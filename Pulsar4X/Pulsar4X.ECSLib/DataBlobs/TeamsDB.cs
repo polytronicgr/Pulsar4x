@@ -9,7 +9,7 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         private object _teamTask;
 
-        [PublicAPI]
+        
         public int TeamSize
         {
             get { return _teamSize; }
@@ -19,7 +19,7 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// not sure if this should be a blob, entity or guid. and maybe a queue as well. 
         /// </summary>
-        [PublicAPI]
+        
         public object TeamTask
         {
             get { return _teamTask; }

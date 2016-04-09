@@ -16,8 +16,8 @@ namespace Pulsar4X.ECSLib
         }
         
         // TODO: Review access control
-        [PublicAPI]
-        public static void MateEntities([NotNull] Entity parent, [NotNull] Entity child)
+        
+        public static void MateEntities( Entity parent,  Entity child)
         {
             if (parent == null || !parent.IsValid)
             {
@@ -47,8 +47,8 @@ namespace Pulsar4X.ECSLib
         }
 
         // TODO: Review access control
-        [PublicAPI]
-        public static void UnMateEntities([NotNull] Entity parent, [NotNull] Entity child)
+        
+        public static void UnMateEntities( Entity parent,  Entity child)
         {
             var parentMatedDB = parent?.GetDataBlob<MatedToDB>();
             if (parentMatedDB == null)
