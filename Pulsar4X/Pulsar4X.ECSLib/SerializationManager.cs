@@ -62,10 +62,6 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        public static void SaveGameToFile(Game game, string filePath, bool compress = false)
-        {
-            Export(game, filePath, compress);
-        }
         public static void Export(Game game, string filePath, bool compress = false)
         {
             ExportFile(game, filePath, game, compress);
@@ -177,10 +173,6 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        public static Game LoadGameFromFile(string filePath)
-        {
-            return ImportGame(filePath);
-        }
         public static Game ImportGame(string filePath)
         {
             using (FileStream fs = GetFileStream(filePath, FileAccess.Read))
