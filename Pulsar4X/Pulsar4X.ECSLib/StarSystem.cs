@@ -9,22 +9,22 @@ namespace Pulsar4X.ECSLib
     {
         public Game Game { get; private set; }
 
-        
+        [PublicAPI]
         [JsonProperty]
         public Guid Guid { get; private set; }
 
         [JsonProperty]
         internal int SystemIndex { get; set; }
 
-        
+        [PublicAPI]
         [JsonProperty]
         public NameDB NameDB { get; private set; }
 
-        
+        [PublicAPI]
         [JsonProperty]
         public EntityManager SystemManager { get; private set; }
 
-        
+        [PublicAPI]
         [JsonProperty]
         public int Seed { get; private set; }
         internal Random RNG { get; private set; }

@@ -9,7 +9,7 @@ namespace Pulsar4X.ECSLib
 {
     public abstract class TreeHierarchyDB : BaseDataBlob
     {
-        
+        [PublicAPI]
         public override Entity OwningEntity
         {
             get { return _owningEntity_; }
@@ -26,13 +26,13 @@ namespace Pulsar4X.ECSLib
         }
         protected Entity _owningEntity_;
 
-        
-        
+        [CanBeNull]
+        [PublicAPI]
         [JsonProperty]
         public Entity Parent { get; private set; }
 
-        
-        
+        [CanBeNull]
+        [PublicAPI]
         public TreeHierarchyDB ParentDB
         {
             get
@@ -45,22 +45,22 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        
-        
+        [NotNull]
+        [PublicAPI]
         public Entity Root => ParentDB?.Root ?? OwningEntity;
 
-        
-        
+        [NotNull]
+        [PublicAPI]
         public TreeHierarchyDB RootDB => GetSameTypeDB(Root);
 
-        
-        
+        [NotNull]
+        [PublicAPI]
         public IReadOnlyCollection<Entity> Children => _children;
         [JsonProperty]
         private readonly List<Entity> _children;
 
-        
-        
+        [NotNull]
+        [PublicAPI]
         public List<TreeHierarchyDB> ChildrenDBs => Children.Select(GetSameTypeDB).ToList();
 
         protected TreeHierarchyDB(Entity parent)

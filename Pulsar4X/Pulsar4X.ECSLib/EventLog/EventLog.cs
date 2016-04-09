@@ -82,7 +82,7 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        private bool IsPlayerConcerned( Event @event,  Player player)
+        private bool IsPlayerConcerned([NotNull] Event @event, [NotNull] Player player)
         {
             if (@event == null)
             {

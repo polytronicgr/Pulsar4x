@@ -69,7 +69,7 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// This list holds the version info of all the loaded data sets.
         /// </summary>
-        
+        [PublicAPI]
         [JsonIgnore]
         public List<DataVersionInfo> LoadedDataSets => _loadedDataSets;
 
@@ -168,8 +168,8 @@ namespace Pulsar4X.ECSLib
         /// matches the one provided.
         /// Returns null if the id is not found.
         /// </summary>
-        
-        
+        [PublicAPI]
+        [CanBeNull]
         public object FindDataObjectUsingID(Guid id)
         {
             foreach (var m in Minerals)

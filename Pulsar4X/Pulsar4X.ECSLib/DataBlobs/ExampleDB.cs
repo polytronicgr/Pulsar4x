@@ -41,8 +41,8 @@ namespace Pulsar4X.ECSLib
     public class IntermediateExampleDB : BaseDataBlob
     {
         // Most variables need to be viewable outside this library by the UI.
-        // They should be marked with a  attribute.
-        
+        // They should be marked with a [PublicAPI] attribute.
+        [PublicAPI]
         public int ViewableInt
         {
             get { return _viewableInt; }
@@ -57,11 +57,11 @@ namespace Pulsar4X.ECSLib
         private int _viewableInt;
 
         // The above is actually equivilent to this, use this format for reabibility.
-        
+        [PublicAPI]
         [JsonProperty]
         public int ViewableInt2 { get; internal set; }
         
-        
+        [PublicAPI]
         public void BadFunction()
         {
             // DataBlobs are DATA, not LOGIC. You should have MINIMAL logic in datablobs.
@@ -94,7 +94,7 @@ namespace Pulsar4X.ECSLib
     public class AdvancedExampleDB : BaseDataBlob
     {
         // References to other entities are ok. The EntityManager will handle serializing and deserializing the references properly.
-        
+        [PublicAPI]
         public Entity FriendEntity
         {
             get { return _friendEntity; }

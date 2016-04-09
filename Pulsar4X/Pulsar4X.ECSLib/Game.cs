@@ -13,22 +13,22 @@ namespace Pulsar4X.ECSLib
     {
         #region Properties
 
-        
+        [PublicAPI]
         [JsonProperty]
         public List<Player> Players;
         
-        
+        [PublicAPI]
         [JsonProperty]
         public Player SpaceMaster;
 
-        
+        [PublicAPI]
         [JsonProperty]
         public Entity GameMasterFaction;
 
-        
+        [PublicAPI]
         public bool IsLoaded { get; internal set; } = false;
 
-        
+        [PublicAPI]
         public DateTime CurrentDateTime
         {
             get { return _currentDateTime; }
@@ -45,28 +45,28 @@ namespace Pulsar4X.ECSLib
 
         [JsonProperty] public readonly EntityManager GlobalManager;
 
-        
+        [PublicAPI]
         [JsonProperty]
         public StaticDataStore StaticData { get; internal set; } = new StaticDataStore();
 
-        
-        
+        [CanBeNull]
+        [PublicAPI]
         public PulseInterrupt CurrentInterrupt { get; private set; }
 
-        
+        [PublicAPI]
         public SubpulseLimit NextSubpulse { get; private set; } = new SubpulseLimit();
 
         [JsonProperty]
         internal GalaxyFactory GalaxyGen { get; private set; }
 
-        
+        [PublicAPI]
         public EventLog EventLog { get; internal set; }
 
         internal readonly Dictionary<Guid, EntityManager> GlobalGuidDictionary = new Dictionary<Guid, EntityManager>();
         internal readonly ReaderWriterLockSlim GuidDictionaryLock = new ReaderWriterLockSlim();
         private PathfindingManager _pathfindingManager;
 
-        
+        [PublicAPI]
         [JsonProperty]
         public GameSettings Settings { get; set; }
 
@@ -115,7 +115,7 @@ namespace Pulsar4X.ECSLib
             GlobalManager = new EntityManager(this);
         }
 
-        public Game( NewGameSettings newGameSettings) : this()
+        public Game([NotNull] NewGameSettings newGameSettings) : this()
         {
             if (newGameSettings == null)
             {
@@ -201,7 +201,7 @@ namespace Pulsar4X.ECSLib
 
         #region Public API
 
-        
+        [PublicAPI]
         public void RunEngine()
         {
             const double _fixedUpdateFrequency = 1; // Update frequency in Hz. This will cause the engine to update 1 time each (real second * TimeMultiplier).
@@ -257,7 +257,7 @@ namespace Pulsar4X.ECSLib
         /// <param name="progress">IProgress implementation to report progress.</param>
         /// <returns>Total Time Advanced</returns>
         /// <exception cref="OperationCanceledException">Thrown when a cancellation request is honored.</exception>
-        
+        [PublicAPI]
         public int AdvanceTime(int deltaSeconds, IProgress<double> progress = null)
         {
             return AdvanceTime(deltaSeconds, CancellationToken.None, progress);
@@ -274,7 +274,7 @@ namespace Pulsar4X.ECSLib
         /// <param name="progress">IProgress implementation to report progress.</param>
         /// <exception cref="OperationCanceledException">Thrown when a cancellation request is honored.</exception>
         /// <returns>Total Time Advanced (in seconds)</returns>
-        
+        [PublicAPI]
         public int AdvanceTime(int deltaSeconds, CancellationToken cancellationToken, IProgress<double> progress = null)
         {
             int timeAdvanced = 0;
@@ -320,7 +320,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <param name="systems">Systems to have processors run on them.</param>
         /// <param name="deltaSeconds">Game-time to progress in the processors.</param>
-        
+        [PublicAPI]
         public void RunProcessors(List<StarSystem> systems, int deltaSeconds)
         {
             _orbitProcessor.Process(this, systems);
@@ -329,8 +329,8 @@ namespace Pulsar4X.ECSLib
             _econProcessor.Process(this, systems, deltaSeconds);
         }
 
-        
-        
+        [PublicAPI]
+        [NotNull]
         public Player AddPlayer(string playerName, string playerPassword = "")
         {
             var player = new Player(playerName, playerPassword);
@@ -338,7 +338,7 @@ namespace Pulsar4X.ECSLib
             return player;
         }
 
-        
+        [PublicAPI]
         public List<StarSystem> GetSystems(AuthenticationToken authToken)
         {
             Player player = GetPlayerForToken(authToken);
@@ -360,8 +360,8 @@ namespace Pulsar4X.ECSLib
             return systems;
         }
 
-        
-        
+        [PublicAPI]
+        [CanBeNull]
         public StarSystem GetSystem(AuthenticationToken authToken, Guid systemGuid)
         {
             Player player = GetPlayerForToken(authToken);
@@ -386,8 +386,8 @@ namespace Pulsar4X.ECSLib
             return null;
         }
 
-        
-        
+        [CanBeNull]
+        [PublicAPI]
         public Player GetPlayerForToken(AuthenticationToken authToken)
         {
             if (SpaceMaster.IsTokenValid(authToken))
@@ -403,7 +403,7 @@ namespace Pulsar4X.ECSLib
             return null;
         }
 
-        
+        [PublicAPI]
         public void GenerateSystems(AuthenticationToken authToken, int numSystems)
         {
             var systemSeeds = new List<int>(numSystems);
@@ -416,7 +416,7 @@ namespace Pulsar4X.ECSLib
             GenerateSystems(authToken, systemSeeds);
         }
 
-        
+        [PublicAPI]
         public void GenerateSystems(AuthenticationToken authToken, List<int> systemSeeds)
         {
             if (SpaceMaster.IsTokenValid(authToken))

@@ -32,7 +32,7 @@ namespace Pulsar4X.ECSLib
         /// Returns a list of DataVersionInfo objects representing the datasets that the StaticDataManager
         /// could find and are available for loading.
         /// </summary>
-        
+        [PublicAPI]
         public static List<DataVersionInfo> AvailableData()
         {
             string dataDirectory = Path.Combine(SerializationManager.GetWorkingDirectory(), DataDirectory);
@@ -58,7 +58,7 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Loads the data from a specified data subdirectory into the provided game
         /// </summary>
-        
+        [PublicAPI]
         public static void LoadData(string dataDir, Game game)
         {
             StaticDataStore newStore = game.StaticData.Clone();

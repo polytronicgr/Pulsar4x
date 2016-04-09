@@ -10,7 +10,7 @@ namespace Pulsar4X.ECSLib
         /// dictionary of technolagy levels that have been fully researched.
         /// techs will be added to this dictionary or incremeted by the processor once research is complete.
         /// </summary>
-        
+        [PublicAPI]
         [JsonProperty]
         public Dictionary<Guid,int> ResearchedTechs { get; internal set; }
 
@@ -19,18 +19,18 @@ namespace Pulsar4X.ECSLib
         /// techs will get added to this dict as they become available by the processor.
         /// the int is how much research has been compleated on this tech.
         /// </summary>
-        
+        [PublicAPI]
         [JsonProperty]
         public Dictionary<TechSD, int> ResearchableTechs { get; internal set; }
 
         /// <summary>
         /// a list of techs not yet meeting the requirements to research
         /// </summary>
-        
+        [PublicAPI]
         [JsonProperty]
         public Dictionary<TechSD, int> UnavailableTechs { get; internal set; }
 
-        
+        [PublicAPI]
         [JsonProperty]
         public int ResearchPoints { get; internal set; }
 
@@ -72,7 +72,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <param name="techSD"></param>
         /// <returns></returns>
-        
+        [PublicAPI]
         public int LevelforTech(TechSD techSD)
         {
             if (ResearchedTechs.ContainsKey(techSD.ID))

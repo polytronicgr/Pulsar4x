@@ -9,7 +9,7 @@ namespace Pulsar4X.ECSLib
 {
     public class EntityManager : ISerializable
     {
-        
+        [CanBeNull]
         private readonly Game _game;
         private readonly List<Entity> _entities = new List<Entity>();
         private readonly List<List<BaseDataBlob>> _dataBlobMap = new List<List<BaseDataBlob>>();
@@ -20,7 +20,7 @@ namespace Pulsar4X.ECSLib
         internal readonly List<ComparableBitArray> EntityMasks = new List<ComparableBitArray>();
 
         private static readonly Dictionary<Type, int> InternalDataBlobTypes = InitializeDataBlobTypes();
-        
+        [PublicAPI]
         public static ReadOnlyDictionary<Type, int> DataBlobTypes = new ReadOnlyDictionary<Type, int>(InternalDataBlobTypes);
 
         internal ReadOnlyCollection<Entity> Entities => _entities.AsReadOnly();
@@ -121,7 +121,7 @@ namespace Pulsar4X.ECSLib
         /// Verifies that the supplied entity is valid in this manager.
         /// </summary>
         /// <returns>True is the entity is considered valid.</returns>
-        internal bool IsValidEntity( Entity entity)
+        internal bool IsValidEntity([CanBeNull] Entity entity)
         {
             if (entity == null)
             {
@@ -192,7 +192,7 @@ namespace Pulsar4X.ECSLib
             return dataBlobs;
         }
 
-        
+        [CanBeNull]
         internal T GetDataBlob<T>(int entityID) where T : BaseDataBlob
         {
             return (T)_dataBlobMap[GetTypeIndex<T>()][entityID];
@@ -246,7 +246,7 @@ namespace Pulsar4X.ECSLib
         /// DO NOT ASSUME THE ORDER OF THE RETURNED LIST!
         /// </summary>
         /// <exception cref="KeyNotFoundException">Thrown when T is not derived from BaseDataBlob.</exception>
-        
+        [NotNull]
         public List<Entity> GetAllEntitiesWithDataBlob<T>(AuthenticationToken authToken) where T : BaseDataBlob
         {
             List<Entity> allEntities = GetAllEntitiesWithDataBlob<T>();
@@ -271,7 +271,7 @@ namespace Pulsar4X.ECSLib
         /// DO NOT ASSUME THE ORDER OF THE RETURNED LIST!
         /// </summary>
         /// <exception cref="KeyNotFoundException">Thrown when T is not derived from BaseDataBlob.</exception>
-        
+        [NotNull]
         internal List<Entity> GetAllEntitiesWithDataBlob<T>() where T : BaseDataBlob
         {
             int typeIndex = GetTypeIndex<T>();
@@ -291,8 +291,8 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when dataBlobMask is null.</exception>
         /// <exception cref="ArgumentException">Thrown when passed a malformed (incorrect length) dataBlobMask.</exception>
-        
-        public List<Entity> GetAllEntitiesWithDataBlobs(AuthenticationToken authToken,  ComparableBitArray dataBlobMask)
+        [NotNull]
+        public List<Entity> GetAllEntitiesWithDataBlobs(AuthenticationToken authToken, [NotNull] ComparableBitArray dataBlobMask)
         {
             List<Entity> allEntities = GetAllEntitiesWithDataBlobs(dataBlobMask);
             var authorizedEntities = new List<Entity>();
@@ -317,8 +317,8 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when dataBlobMask is null.</exception>
         /// <exception cref="ArgumentException">Thrown when passed a malformed (incorrect length) dataBlobMask.</exception>
-        
-        internal List<Entity> GetAllEntitiesWithDataBlobs( ComparableBitArray dataBlobMask)
+        [NotNull]
+        internal List<Entity> GetAllEntitiesWithDataBlobs([NotNull] ComparableBitArray dataBlobMask)
         {
             if (dataBlobMask == null)
             {
@@ -349,8 +349,8 @@ namespace Pulsar4X.ECSLib
         }
 
 
-        
-        public List<Entity> GetAllEntitiesWithOUTDataBlobs(AuthenticationToken authToken,  ComparableBitArray dataBlobMask)
+        [NotNull]
+        public List<Entity> GetAllEntitiesWithOUTDataBlobs(AuthenticationToken authToken, [NotNull] ComparableBitArray dataBlobMask)
         {
             List<Entity> allEntities = GetAllEntitiesWithOUTDataBlobs(dataBlobMask);
             var authorizedEntities = new List<Entity>();
@@ -366,7 +366,7 @@ namespace Pulsar4X.ECSLib
             return authorizedEntities;
         }
 
-        internal virtual List<Entity> GetAllEntitiesWithOUTDataBlobs( ComparableBitArray dataBlobMask) 
+        internal virtual List<Entity> GetAllEntitiesWithOUTDataBlobs([NotNull] ComparableBitArray dataBlobMask) 
         {
             if (dataBlobMask == null)
             {
@@ -403,7 +403,7 @@ namespace Pulsar4X.ECSLib
         /// Returns Entity.InvalidEntity if no entities have the specified DataBlobType.
         /// </summary>
         /// <exception cref="KeyNotFoundException">Thrown when T is not derived from BaseDataBlob.</exception>
-        
+        [NotNull]
         public Entity GetFirstEntityWithDataBlob<T>(AuthenticationToken authToken) where T : BaseDataBlob
         {
             return GetFirstEntityWithDataBlob(authToken, GetTypeIndex<T>());
@@ -415,7 +415,7 @@ namespace Pulsar4X.ECSLib
         /// Returns Entity.InvalidEntity if no entities have the specified DataBlobType.
         /// </summary>
         /// <exception cref="KeyNotFoundException">Thrown when T is not derived from BaseDataBlob.</exception>
-        
+        [NotNull]
         internal Entity GetFirstEntityWithDataBlob<T>() where T : BaseDataBlob
         {
             return GetFirstEntityWithDataBlob(GetTypeIndex<T>());
@@ -426,7 +426,7 @@ namespace Pulsar4X.ECSLib
         /// <para></para>
         /// Returns Entity.InvalidEntity if no entities have the specified DataBlobType.
         /// </summary>
-        
+        [NotNull]
         public Entity GetFirstEntityWithDataBlob(AuthenticationToken authToken, int typeIndex)
         {
             Entity entity = GetFirstEntityWithDataBlob(typeIndex);
@@ -443,7 +443,7 @@ namespace Pulsar4X.ECSLib
         /// <para></para>
         /// Returns Entity.InvalidEntity if no entities have the specified DataBlobType.
         /// </summary>
-        
+        [NotNull]
         internal Entity GetFirstEntityWithDataBlob(int typeIndex)
         {
             foreach (Entity entity in _entities)
@@ -459,8 +459,8 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Returns a blank DataBlob mask with the correct number of entries.
         /// </summary>
-        
-        
+        [NotNull]
+        [PublicAPI]
         public static ComparableBitArray BlankDataBlobMask()
         {
             return new ComparableBitArray(InternalDataBlobTypes.Count);
@@ -470,7 +470,7 @@ namespace Pulsar4X.ECSLib
         /// Returns a blank list used for storing datablobs by typeIndex.
         /// </summary>
         /// <returns></returns>
-        
+        [PublicAPI]
         public static List<BaseDataBlob> BlankDataBlobList()
         {
             var blankList = new List<BaseDataBlob>(InternalDataBlobTypes.Count);
@@ -486,7 +486,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <returns>True if entityID is found.</returns>
         /// <exception cref="GuidNotFoundException">Guid was found in Global list, but not locally. Should not be possible.</exception>
-        
+        [PublicAPI]
         public bool FindEntityByGuid(Guid entityGuid, out Entity entity)
         {
             if (_game == null)
@@ -526,7 +526,7 @@ namespace Pulsar4X.ECSLib
         /// <param name="entityGuid"></param>
         /// <returns>Entity if found</returns>
         /// <exception cref="GuidNotFoundException">Guid was not found</exception>
-        
+        [PublicAPI]
         public Entity GetGlobalEntityByGuid(Guid entityGuid)
         {
             Entity entity;
@@ -540,7 +540,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <returns>The Entity if found</returns>
         /// <exception cref="GuidNotFoundException">Guid was not found in Global list, orlocally</exception>
-        
+        [PublicAPI]
         public Entity GetLocalEntityByGuid(Guid entityGuid)
         {
             Entity entity;
@@ -557,7 +557,7 @@ namespace Pulsar4X.ECSLib
         /// Does not throw exceptions.
         /// </summary>
         /// <returns>True if entityID exists in this manager.</returns>
-        
+        [PublicAPI]
         public bool TryGetEntityByGuid(Guid entityGuid, out Entity entity)
         {
             if (_game != null)
@@ -592,7 +592,7 @@ namespace Pulsar4X.ECSLib
         /// typeIndex parameter is set to the typeIndex of the dataBlobType if found.
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when dataBlobType is null.</exception>
-        
+        [PublicAPI]
         public static bool TryGetTypeIndex(Type dataBlobType, out int typeIndex)
         {
             return InternalDataBlobTypes.TryGetValue(dataBlobType, out typeIndex);
@@ -602,7 +602,7 @@ namespace Pulsar4X.ECSLib
         /// Faster than TryGetDataBlobTypeIndex and uses generics for type safety.
         /// </summary>
         /// <exception cref="KeyNotFoundException">Thrown when T is not derived from BaseDataBlob, or is Abstract</exception>
-        
+        [PublicAPI]
         public static int GetTypeIndex<T>() where T : BaseDataBlob
         {
             return InternalDataBlobTypes[typeof(T)];

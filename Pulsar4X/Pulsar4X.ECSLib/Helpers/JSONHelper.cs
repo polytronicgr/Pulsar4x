@@ -68,7 +68,7 @@ namespace Pulsar4X.ECSLib
 
     public static class DictionaryExtension
     {
-        
+        [PublicAPI]
         public static void SafeValueAdd<TKey>(this Dictionary<TKey, int> jDict, TKey key, int toAdd)
         {
             if(!jDict.ContainsKey(key))
@@ -79,7 +79,7 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        
+        [PublicAPI]
         public static void SafeValueAdd<TKey>(this Dictionary<TKey, float> jDict, TKey key, float toAdd)
         {
             if (!jDict.ContainsKey(key))
@@ -90,7 +90,7 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        
+        [PublicAPI]
         public static void SafeValueAdd<TKey>(this Dictionary<TKey, double> jDict, TKey key, double toAdd)
         {
             if (!jDict.ContainsKey(key))
@@ -104,7 +104,7 @@ namespace Pulsar4X.ECSLib
 
     public static class ListExtension
     {
-        
+        [PublicAPI]
         public static List<Entity> GetEntititiesWithDataBlob<TDataBlob>(this List<Entity> list) where TDataBlob : BaseDataBlob
         {
             var retVal = new List<Entity>();

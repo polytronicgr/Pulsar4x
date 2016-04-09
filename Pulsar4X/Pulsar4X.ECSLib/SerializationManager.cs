@@ -663,7 +663,7 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Checks the stream for compression by looking for GZip header numbers.
         /// </summary>
-        
+        [PublicAPI]
         public static bool HasGZipHeader(BufferedStream inputStream)
         {
             var headerBytes = new byte[2];

@@ -10,7 +10,7 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         internal Dictionary<Entity, List<ComponentInstance>> specificInstances { get; set; } = new Dictionary<Entity, List<ComponentInstance>>();
 
-        
+        [PublicAPI]
         public IReadOnlyDictionary<Entity, IReadOnlyCollection<ComponentInstance>> SpecificInstances => specificInstances.ToDictionary(componentKVP => componentKVP.Key, componentKVP => (IReadOnlyCollection<ComponentInstance>)componentKVP.Value);
 
         public ComponentInstancesDB() { }

@@ -9,27 +9,27 @@ namespace Pulsar4X.ECSLib
     /// A ProtoEntity is an entity that is not stored in an EntityManager.
     /// It holds its own datablobs and provides all other functionality (but not performance) of the EntityManager.
     /// </summary>
-    
+    [PublicAPI]
     [JsonConverter(typeof(ProtoEntityConverter))]
     public class ProtoEntity
     {
-        
+        [PublicAPI]
         public List<BaseDataBlob> DataBlobs { get; set; } = EntityManager.BlankDataBlobList();
 
-        
+        [PublicAPI]
         public Guid Guid { get; protected internal set; }
 
-        
-        
+        [NotNull]
+        [PublicAPI]
         public ComparableBitArray DataBlobMask => _protectedDataBlobMask_;
         protected ComparableBitArray _protectedDataBlobMask_ = EntityManager.BlankDataBlobMask();
 
-        
+        [PublicAPI]
         public ComparableBitArray DirtyDataBlobs => new ComparableBitArray(InternalDirtyDataBlobs);
         internal ComparableBitArray InternalDirtyDataBlobs = EntityManager.BlankDataBlobMask();
 
 
-        
+        [PublicAPI]
         public static ProtoEntity Create(Guid guid, IEnumerable<BaseDataBlob> dataBlobs = null)
         {
             var protoEntity = new ProtoEntity
@@ -50,25 +50,25 @@ namespace Pulsar4X.ECSLib
             return protoEntity;
         }
 
-        
+        [PublicAPI]
         public static ProtoEntity Create(IEnumerable<BaseDataBlob> dataBlobs = null)
         {
             return Create(Guid.Empty, dataBlobs);
         }
 
-        
+        [PublicAPI]
         public virtual T GetDataBlob<T>() where T : BaseDataBlob
         {
             return (T)DataBlobs[EntityManager.GetTypeIndex<T>()];
         }
 
-        
+        [PublicAPI]
         public virtual T GetDataBlob<T>(int typeIndex) where T : BaseDataBlob
         {
             return (T)DataBlobs[typeIndex];
         }
 
-        
+        [PublicAPI]
         public virtual void SetDataBlob<T>(T dataBlob) where T : BaseDataBlob
         {
             int typeIndex;
@@ -78,7 +78,7 @@ namespace Pulsar4X.ECSLib
             InternalDirtyDataBlobs[typeIndex] = true;
         }
 
-        
+        [PublicAPI]
         public virtual void SetDataBlob<T>(T dataBlob, int typeIndex) where T : BaseDataBlob
         {
             DataBlobs[typeIndex] = dataBlob;
@@ -86,7 +86,7 @@ namespace Pulsar4X.ECSLib
             InternalDirtyDataBlobs[typeIndex] = true;
         }
 
-        
+        [PublicAPI]
         public virtual void RemoveDataBlob<T>() where T : BaseDataBlob
         {
             int typeIndex = EntityManager.GetTypeIndex<T>();
@@ -95,7 +95,7 @@ namespace Pulsar4X.ECSLib
             InternalDirtyDataBlobs[typeIndex] = true;
         }
 
-        
+        [PublicAPI]
         public virtual void RemoveDataBlob(int typeIndex)
         {
             DataBlobs[typeIndex] = null;

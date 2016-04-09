@@ -10,12 +10,12 @@ namespace Pulsar4X.ECSLib
         
         public string Message { get; internal set; }
         
-        
+        [CanBeNull]
         public Entity Faction { get; internal set; }
         
         public Guid SystemGuid { get; internal set; }
         
-        
+        [CanBeNull]
         public Entity Entity { get; internal set; }
 
         public EventType EventType { get; internal set; }

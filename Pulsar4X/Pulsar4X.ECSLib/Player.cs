@@ -74,11 +74,11 @@ namespace Pulsar4X.ECSLib
     public class Player : ISerializable
     {
         #region Properties
-        
+        [PublicAPI]
         [JsonProperty]
         public Guid ID { get; protected set; }
 
-        
+        [PublicAPI]
         [JsonProperty]
         public string Name { get; protected set; }
 
@@ -162,8 +162,8 @@ namespace Pulsar4X.ECSLib
         /// Changes the name of this player.
         /// </summary>
         /// <returns>True if operation is successful.</returns>
-        
-        public bool ChangeName( AuthenticationToken authToken,  string newName)
+        [PublicAPI]
+        public bool ChangeName([NotNull] AuthenticationToken authToken, [NotNull] string newName)
         {
             if (string.IsNullOrEmpty(newName))
             {
@@ -183,8 +183,8 @@ namespace Pulsar4X.ECSLib
         /// Changes the password of this player.
         /// </summary>
         /// <returns>True if operation is successful.</returns>
-        
-        public bool ChangePassword( AuthenticationToken authToken,  string newPassword)
+        [PublicAPI]
+        public bool ChangePassword([NotNull] AuthenticationToken authToken, [NotNull] string newPassword)
         {
             if (!IsTokenValid(authToken))
             {
@@ -200,8 +200,8 @@ namespace Pulsar4X.ECSLib
         /// Gets all the access roles of this player.
         /// </summary>
         /// <returns>ReadOnlyDictionary containing the access roles.</returns>
-        
-        
+        [PublicAPI]
+        [Pure]
         public ReadOnlyDictionary<Entity, AccessRole> GetAccessRoles(AuthenticationToken authToken)
         {
             return !IsTokenValid(authToken) ? new ReadOnlyDictionary<Entity, AccessRole>(new Dictionary<Entity, AccessRole>()) : AccessRoles;
@@ -210,7 +210,7 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Retrieves the AccessRole this player has over the specified faction.
         /// </summary>
-        
+        [PublicAPI]
         public AccessRole GetAccess(AuthenticationToken authToken, Entity faction)
         {
             var role = AccessRole.None;
@@ -291,7 +291,7 @@ namespace Pulsar4X.ECSLib
             return Convert.FromBase64String(PasswordHash).SequenceEqual(passwordHash);
         }
 
-        private static string GeneratePasswordHash( string password, string salt)
+        private static string GeneratePasswordHash([NotNull] string password, string salt)
         {
             return Convert.ToBase64String(Hash(password, salt));
         }

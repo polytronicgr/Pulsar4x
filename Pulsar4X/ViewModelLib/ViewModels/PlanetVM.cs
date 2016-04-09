@@ -558,7 +558,7 @@ namespace Pulsar4X.ViewModel
 
         #region Property Update Functions
 
-        private void UpdateProperties( PositionDB positionDB)
+        private void UpdateProperties([NotNull] PositionDB positionDB)
         {
             if (positionDB == null)
             {
@@ -571,7 +571,7 @@ namespace Pulsar4X.ViewModel
             }
         }
 
-        private void UpdateProperties( OrbitDB orbitDB)
+        private void UpdateProperties([NotNull] OrbitDB orbitDB)
         {
             if (orbitDB == null)
             {
@@ -615,7 +615,7 @@ namespace Pulsar4X.ViewModel
             OrbitalPeriod = orbitDB.OrbitalPeriod;
         }
 
-        private void UpdateProperties( NameDB nameDB)
+        private void UpdateProperties([NotNull] NameDB nameDB)
         {
             if (nameDB == null)
             {
@@ -625,7 +625,7 @@ namespace Pulsar4X.ViewModel
             //todo: Name = nameDB.GetName(App.Current.Faction);
         }
 
-        private void UpdateProperties( MassVolumeDB massVolumeDB)
+        private void UpdateProperties([NotNull] MassVolumeDB massVolumeDB)
         {
             if (massVolumeDB == null)
             {
@@ -639,7 +639,7 @@ namespace Pulsar4X.ViewModel
             SurfaceGravity = massVolumeDB.SurfaceGravity;
         }
 
-        private void UpdateProperties( SystemBodyDB systemBodyDB, bool partialRefresh)
+        private void UpdateProperties([NotNull] SystemBodyDB systemBodyDB, bool partialRefresh)
         {
             if (systemBodyDB == null)
             {
@@ -663,7 +663,7 @@ namespace Pulsar4X.ViewModel
             // Minerals = systemBodyDB.Minerals;
         }
 
-        private void UpdateProperties( AtmosphereDB atmosphereDB)
+        private void UpdateProperties([NotNull] AtmosphereDB atmosphereDB)
         {
             if (atmosphereDB == null)
             {
