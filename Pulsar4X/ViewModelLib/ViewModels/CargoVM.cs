@@ -142,7 +142,7 @@ namespace Pulsar4X.ViewModel
             foreach (var item in allCargoData)
             {
                 //TODO sorting
-                if (item._def.IndustryType == IndustryType.Mining && ShowMins)
+                if (item.IndustryType == IndustryType.Mining && ShowMins)
                 {
                     CargoData.Add(item);
                 }
@@ -199,9 +199,9 @@ namespace Pulsar4X.ViewModel
 
     public class CargoData : ViewModelBase
     {
-        internal CargoDefinition _def;
-        public string CargoType { get { return _def.Type.ToString(); }}
-        public string IndustryType { get { return _def.IndustryType.ToString(); }}
+        private CargoDefinition _def;
+        public CargoType CargoType { get { return _def.Type; }}
+        public IndustryType IndustryType { get { return _def.IndustryType; }}
 
         private double Weight { get { return _def.Weight; }}
 

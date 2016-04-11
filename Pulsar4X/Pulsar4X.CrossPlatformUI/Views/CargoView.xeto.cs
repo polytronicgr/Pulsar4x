@@ -4,6 +4,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.Serialization.Xaml;
 using Pulsar4X.ViewModel;
+using Pulsar4X.ECSLib;
 
 namespace Pulsar4X.CrossPlatformUI.Views
 {
@@ -29,8 +30,8 @@ namespace Pulsar4X.CrossPlatformUI.Views
             ComponentGridView.DataStore = vm.CargoData;
             ItemNameColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, string>(r => r.Name) };
 
-            ItemTypeColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, string>(r => r.IndustryType) };
-            ItemCargoTypeColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, string>(r => r.CargoType) };
+            ItemTypeColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, IndustryType>(r => r.IndustryType).Convert(r => r.ToString()) };
+            ItemCargoTypeColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, CargoType>(r => r.CargoType).Convert(r=> r.ToString()) };
             AmountStoredColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, double>(r => r.Amount).Convert(r => r.ToString()) };
             //WeightColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, string>(r => r.Weight.ToString()) };
             //SpaceRemainingColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, string>(r => r.SpaceLeft.ToString()) };

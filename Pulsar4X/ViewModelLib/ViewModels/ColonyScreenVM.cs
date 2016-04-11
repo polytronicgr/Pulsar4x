@@ -70,7 +70,7 @@ namespace Pulsar4X.ViewModel
             }
 
 
-            PlanetMineralDepositVM = new PlanetMineralDepositVM(staticData, _colonyEntity.GetDataBlob<ColonyDB>().PlanetEntity);
+            //PlanetMineralDepositVM = new PlanetMineralDepositVM(staticData, _colonyEntity.GetDataBlob<ColonyDB>().PlanetEntity);
 
             RawMineralStockpileVM = new RawMineralStockpileVM(staticData, _colonyEntity);
 
