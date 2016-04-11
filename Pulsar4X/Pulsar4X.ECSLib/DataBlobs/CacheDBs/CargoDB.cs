@@ -11,8 +11,8 @@ namespace Pulsar4X.ECSLib
     public class CargoDB : BaseDataBlob
     {
         [JsonProperty]
-        internal Dictionary<CargoDefinition, double> cargoCarried { get; set; } = new Dictionary<CargoDefinition, double>();
-        public IReadOnlyDictionary<CargoDefinition, double> CargoCarried => cargoCarried;
+        internal Dictionary<Guid, double> cargoCarried { get; set; } = new Dictionary<Guid, double>();
+        public IReadOnlyDictionary<Guid, double> CargoCarried => cargoCarried;
         
         [JsonProperty]
         internal Dictionary<CargoType, double> cargoCapacity { get; set; } = new Dictionary<CargoType, double>();

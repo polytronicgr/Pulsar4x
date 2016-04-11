@@ -49,6 +49,8 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         public StaticDataStore StaticData { get; internal set; } = new StaticDataStore();
 
+        internal Dictionary<Guid, CargoDefinition> CargoDefinitions { get; } = new Dictionary<Guid, CargoDefinition>();
+
         [CanBeNull]
         [PublicAPI]
         public PulseInterrupt CurrentInterrupt { get; private set; }

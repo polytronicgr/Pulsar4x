@@ -149,7 +149,7 @@ namespace Pulsar4X.ViewModel
             }
             if (CargoData.Count == 0)
             {
-                CargoData.Add(new ViewModel.CargoData("", new CargoDefinition(_staicData.Minerals[0]), 0));
+                CargoData.Add(new ViewModel.CargoData("", new CargoDefinition(_gameVM.Game, _staicData.Minerals[0]), 0));
             }
         }
 

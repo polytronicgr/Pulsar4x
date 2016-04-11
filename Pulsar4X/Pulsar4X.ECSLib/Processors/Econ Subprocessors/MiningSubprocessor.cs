@@ -24,7 +24,7 @@ namespace Pulsar4X.ECSLib
                 return;
             }
             
-            double remainingCapacity = CargoHelper.GetFreeCargoSpace(industrialEntity.CargoDB, CargoType.General);
+            double remainingCapacity = CargoHelper.GetFreeCargoSpace(_game, industrialEntity.CargoDB, CargoType.General);
             double totalProduction = 0;
 
             foreach (KeyValuePair<Guid, MineralDepositInfo> mineralDepositInfo in parentSystemBodyDB.Minerals)
@@ -77,10 +77,10 @@ namespace Pulsar4X.ECSLib
 
         private void MineResource(Guid mineralGuid, MineralDepositInfo depositInfo, CargoDB entityCargoDB, double amount)
         {
-            CargoDefinition mineralCargoDef = CargoHelper.GetCargoDefinition(_game, mineralGuid);
+            CargoDefinition mineralCargoDef = CargoHelper.FindOrCreateCargoDefinition(_game, mineralGuid);
 
             // Update the minging entity cargo.
-            entityCargoDB.cargoCarried.SafeValueAdd(mineralCargoDef, amount);
+            entityCargoDB.cargoCarried.SafeValueAdd(mineralCargoDef.ItemGuid, amount);
 
             // Update the deposit info.
             depositInfo.Amount -= (float)amount;

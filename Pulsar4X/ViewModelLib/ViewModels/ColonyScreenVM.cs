@@ -196,10 +196,10 @@ namespace Pulsar4X.ViewModel
     {
         private Entity _colonyEntity;
         private ColonyDB Colony { get { return _colonyEntity.GetDataBlob<ColonyDB>(); } }
-        private CargoDB _cargoDB; 
+        private CargoDB _cargoDB;
 
 
-        private Dictionary<CargoDefinition, double> MineralDictionary { get { return _cargoDB.CargoCarried.Where(kvp => _mineralGuids.Contains(kvp.Key.ItemGuid)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);  } }
+        private Dictionary<CargoDefinition, double> MineralDictionary { get; } = new Dictionary<CargoDefinition, double>(); //{ return _cargoDB.CargoCarried.Where(kvp => _mineralGuids.Contains(kvp.Key.ItemGuid)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value); } }
 
 
 
@@ -215,7 +215,7 @@ namespace Pulsar4X.ViewModel
         {
 
             _mineralGuids = staticData.Minerals.Select(mineralSD => mineralSD.ID).ToList();
-
+            
             _colonyEntity = colonyEntity;
             _cargoDB = colonyEntity.GetDataBlob<CargoDB>();
             Initialise();

@@ -198,7 +198,8 @@ namespace Pulsar4X.ECSLib
             foreach (KeyValuePair<CargoDefinition, float> materialRequirement in materialRequirements)
             {
                 double materialCarried;
-                if (!industrialEntity.CargoDB.cargoCarried.TryGetValue(materialRequirement.Key, out materialCarried))
+
+                if (!industrialEntity.CargoDB.cargoCarried.TryGetValue(materialRequirement.Key.ItemGuid, out materialCarried))
                 {
                     materialCarried = 0;
                 }
@@ -215,7 +216,7 @@ namespace Pulsar4X.ECSLib
                     Entity parent = industrialEntity.MatedToDB?.Parent;
                     var parentCargo = parent?.GetDataBlob<CargoDB>();
                     double parentMaterialCarried;
-                    if (parentCargo == null || !parentCargo.cargoCarried.TryGetValue(materialRequirement.Key, out parentMaterialCarried))
+                    if (parentCargo == null || !parentCargo.cargoCarried.TryGetValue(materialRequirement.Key.ItemGuid, out parentMaterialCarried))
                     {
                         parentMaterialCarried = 0;
                     }
@@ -238,8 +239,8 @@ namespace Pulsar4X.ECSLib
             }
 
             // Check if we have free cargospace to store the output.
-            CargoDefinition outputCargoDef = CargoHelper.GetCargoDefinition(_game, industryJob.ItemGuid);
-            double haveSpaceFor = Math.Floor(CargoHelper.GetFreeCargoSpace(industrialEntity.CargoDB, outputCargoDef.Type) / outputCargoDef.Weight);
+            CargoDefinition outputCargoDef = CargoHelper.FindOrCreateCargoDefinition(_game, industryJob.ItemGuid);
+            double haveSpaceFor = Math.Floor(CargoHelper.GetFreeCargoSpace(_game, industrialEntity.CargoDB, outputCargoDef.Type) / outputCargoDef.Weight);
 
             if (haveSpaceFor < Math.Ceiling(numberToProduce))
             {
@@ -256,12 +257,12 @@ namespace Pulsar4X.ECSLib
             // Remove the required materials from the entity.
             foreach (KeyValuePair<CargoDefinition, float> materialRequirement in materialRequirements)
             {
-                industrialEntity.CargoDB.cargoCarried[materialRequirement.Key] -= materialRequirement.Value * numberToProduce;
+                industrialEntity.CargoDB.cargoCarried[materialRequirement.Key.ItemGuid] -= materialRequirement.Value * numberToProduce;
 
-                if (industrialEntity.CargoDB.cargoCarried[materialRequirement.Key] < 0)
+                if (industrialEntity.CargoDB.cargoCarried[materialRequirement.Key.ItemGuid] < 0)
                 {
-                    industrialEntity.MatedToDB.Parent.GetDataBlob<CargoDB>().cargoCarried[materialRequirement.Key] += industrialEntity.CargoDB.cargoCarried[materialRequirement.Key];
-                    industrialEntity.CargoDB.cargoCarried[materialRequirement.Key] = 0;
+                    industrialEntity.MatedToDB.Parent.GetDataBlob<CargoDB>().cargoCarried[materialRequirement.Key.ItemGuid] += industrialEntity.CargoDB.cargoCarried[materialRequirement.Key.ItemGuid];
+                    industrialEntity.CargoDB.cargoCarried[materialRequirement.Key.ItemGuid] = 0;
                 }
 
             }
@@ -347,7 +348,7 @@ namespace Pulsar4X.ECSLib
                     else
                     {
                         // Throw it in the cargo.
-                        industrialEntity.CargoDB.cargoCarried.SafeValueAdd(outputCargoDefinition, numberCompleted);
+                        industrialEntity.CargoDB.cargoCarried.SafeValueAdd(outputCargoDefinition.ItemGuid, numberCompleted);
                     }
                     break;
                 case IndustryType.FighterConstruction:
@@ -362,7 +363,7 @@ namespace Pulsar4X.ECSLib
                     break;
                 default:
                     // Throw everything else in the cargo hold.
-                    industrialEntity.CargoDB.cargoCarried.SafeValueAdd(outputCargoDefinition, numberCompleted);
+                    industrialEntity.CargoDB.cargoCarried.SafeValueAdd(outputCargoDefinition.ItemGuid, numberCompleted);
                     break;
             }
         }
@@ -390,7 +391,7 @@ namespace Pulsar4X.ECSLib
                 var materialRequirements = new Dictionary<CargoDefinition, float>();
                 foreach (KeyValuePair<Guid, float> rawMineralCost in industryJob.materialsRequiredPerItem)
                 {
-                    materialRequirements.Add(CargoHelper.GetCargoDefinition(_game, rawMineralCost.Key), rawMineralCost.Value);
+                    materialRequirements.Add(CargoHelper.FindOrCreateCargoDefinition(_game, rawMineralCost.Key), rawMineralCost.Value);
                 }
 
                 percentUtilized += ProcessJob(industrialEntity, materialRequirements, industryJob);
