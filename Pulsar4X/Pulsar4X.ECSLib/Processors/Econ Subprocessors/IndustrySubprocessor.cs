@@ -154,7 +154,7 @@ namespace Pulsar4X.ECSLib
                         currentBonus = 1;
                     }
                     
-                    industialRates[industryType] = industialRate.Value * currentBonus;
+                    //industialRates[industryType] = industialRate.Value * currentBonus;
                 }
             }
 

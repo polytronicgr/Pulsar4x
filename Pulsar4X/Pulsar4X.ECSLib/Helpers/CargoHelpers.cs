@@ -106,15 +106,13 @@ namespace Pulsar4X.ECSLib
         {
             object cargo = game.StaticData.FindDataObjectUsingID(cargoGuid);
             cargoDef = null;
-            
-            if (cargo == null)
-            {
+
+            if (cargo is MineralSD)
+                cargoDef = new CargoDefinition((MineralSD)cargo);
+            else if (cargo is RefinedMaterialSD)
+                cargoDef = new CargoDefinition((RefinedMaterialSD)cargo);
+            else
                 return false;
-            }
-
-            dynamic cargoDynamic = cargo;
-
-            cargoDef = cargoDynamic.Cargo;
             return true;
         }
     }
