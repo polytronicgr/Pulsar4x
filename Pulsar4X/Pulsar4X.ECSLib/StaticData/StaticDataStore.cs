@@ -39,7 +39,7 @@ namespace Pulsar4X.ECSLib
         /// List which stores all the Minerals.
         /// </summary>
         [JsonIgnore]
-        public List<MineralSD> Minerals = new List<MineralSD>();
+        public Dictionary<Guid, MineralSD> Minerals = new Dictionary<Guid, MineralSD>();
 
         /// <summary>
         /// Dictionary which stores all the Technologies.
@@ -172,11 +172,8 @@ namespace Pulsar4X.ECSLib
         [CanBeNull]
         public object FindDataObjectUsingID(Guid id)
         {
-            foreach (var m in Minerals)
-            {
-                if (m.ID == id)
-                    return m;
-            }
+            if (Minerals.ContainsKey(id))
+                return Minerals[id];
 
             if (Techs.ContainsKey(id))
                 return Techs[id];
@@ -248,17 +245,13 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Stores Mineral Static Data. Will overwrite an existing mineral if the IDs match.
         /// </summary>
-        internal void Store(List<MineralSD> minerals)
+        internal void Store(Dictionary<Guid, MineralSD> minerals)
         {
             if (minerals != null)
             {
-                foreach (MineralSD min in minerals)
+                foreach (var mineral in minerals)
                 {
-                    int i = Minerals.FindIndex(x => x.ID == min.ID);
-                    if (i >= 0) // found existing element!
-                        Minerals[i] = min;
-                    else
-                        Minerals.Add(min);
+                    Minerals[mineral.Key] = mineral.Value; // replace existing value or insert a new one as required.
                 }
             }
         }
@@ -344,7 +337,7 @@ namespace Pulsar4X.ECSLib
                 CommanderNameThemes = new List<CommanderNameThemeSD>(CommanderNameThemes),
                 Components = new Dictionary<Guid, ComponentTemplateSD>(Components),
                 _loadedDataSets = new List<DataVersionInfo>(LoadedDataSets),
-                Minerals = new List<MineralSD>(Minerals),
+                Minerals = new Dictionary<Guid, MineralSD>(Minerals),
                 RefinedMaterials = new Dictionary<Guid, RefinedMaterialSD>(RefinedMaterials),
                 SystemGenSettings = SystemGenSettings, // Todo: Make this cloneable
                 Techs = new Dictionary<Guid, TechSD>(Techs)
