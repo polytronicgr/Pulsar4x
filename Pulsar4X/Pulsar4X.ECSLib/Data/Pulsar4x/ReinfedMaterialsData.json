@@ -20,7 +20,12 @@
           },
           "RefinaryPointCost": 10,
           "WealthCost": 0,
-          "OutputAmount": 1
+          "OutputAmount": 1,
+          "Cargo": {
+              "ItemGuid": "33e6ac88-0235-4917-a7ff-35c8886aad3a",
+              "Type": "General",
+              "Weight": 1
+          }
         }
       },
       {
@@ -49,7 +54,12 @@
           },
           "RefinaryPointCost": 20,
           "WealthCost": 0,
-          "OutputAmount": 6
+          "OutputAmount": 6,
+          "Cargo": {
+              "ItemGuid": "6da93677-ee08-4853-a8a5-0f46d93fe0eb",
+              "Type": "General",
+              "Weight": 1
+          }
         }
       }
     ]

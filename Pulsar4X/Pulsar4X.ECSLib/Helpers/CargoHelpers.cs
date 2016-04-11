@@ -1,5 +1,7 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
@@ -12,7 +14,7 @@ namespace Pulsar4X.ECSLib
         Colonists,
         Fuel,
     }
-
+    
     public class CargoDefinition
     {
         public Guid ItemGuid { get; internal set; }
@@ -102,14 +104,17 @@ namespace Pulsar4X.ECSLib
 
         private static bool TryGetSDCargoDefinition(Game game, Guid cargoGuid, out CargoDefinition cargoDef)
         {
-            dynamic cargo = game.StaticData.FindDataObjectUsingID(cargoGuid);
+            object cargo = game.StaticData.FindDataObjectUsingID(cargoGuid);
             cargoDef = null;
+            
             if (cargo == null)
             {
                 return false;
             }
 
-            cargoDef = cargo.Cargo;
+            dynamic cargoDynamic = cargo;
+
+            cargoDef = cargoDynamic.Cargo;
             return true;
         }
     }
