@@ -8,6 +8,8 @@
           "Name": "Sorium Fuel",
           "Description": "Fuel for SpaceShips",
           "ID": "33e6ac88-0235-4917-a7ff-35c8886aad3a",
+          "CargoType": "Fuel",
+          "Weight": 1.0,
           "RawMineralCosts": {
             "List": [
               {
@@ -27,6 +29,8 @@
           "Name": "Depleated Duranuim",
           "Description": "A mix of Duranium and refined fuel to teset refinarys",
           "ID": "6da93677-ee08-4853-a8a5-0f46d93fe0eb",
+          "CargoType": "General",
+          "Weight": 1.5,
           "RawMineralCosts": {
             "List": [
               {

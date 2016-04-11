@@ -16,7 +16,7 @@ namespace Pulsar4X.CrossPlatformUI.Views
         protected GridView MineralDeposits { get; set; }
         protected GridView MineralStockpile { get; set; }
         protected GridView RefinedMats { get; set; }
-
+        protected CargoView ColonyCargo { get; set; }
         // Awaiting redesign of TechProcessor, and ResearchVM's     
         // protected ResearchAbilityView ResearchAbilityView { get; set; }
 
@@ -56,24 +56,24 @@ namespace Pulsar4X.CrossPlatformUI.Views
                 //DataCell = new TextBoxCell { Binding = Binding.Property<PlanetMineralInfoVM, int>(r => r.Amount).Convert(r => r.ToString()) }
             });
 
-            MineralStockpile.Columns.Add(new GridColumn
-            {
-                DataCell = new TextBoxCell { Binding = Binding.Property<RawMineralInfoVM, string>(r => r.Mineral) }
-            });
-            MineralStockpile.Columns.Add(new GridColumn
-            {
-                DataCell = new TextBoxCell { Binding = Binding.Property<RawMineralInfoVM, int>(r => r.Amount).Convert(r => r.ToString()) }
-            });
+            //MineralStockpile.Columns.Add(new GridColumn
+            //{
+            //    DataCell = new TextBoxCell { Binding = Binding.Property<RawMineralInfoVM, string>(r => r.Mineral) }
+            //});
+            //MineralStockpile.Columns.Add(new GridColumn
+            //{
+            //    DataCell = new TextBoxCell { Binding = Binding.Property<RawMineralInfoVM, int>(r => r.Amount).Convert(r => r.ToString()) }
+            //});
 
 
-            RefinedMats.Columns.Add(new GridColumn
-            {
-                DataCell = new TextBoxCell { Binding = Binding.Property<RefinedMatInfoVM, string>(r => r.Material) }
-            });
-            RefinedMats.Columns.Add(new GridColumn
-            {
-                DataCell = new TextBoxCell { Binding = Binding.Property<RefinedMatInfoVM, int>(r => r.Amount).Convert(r => r.ToString()) }
-            });
+            //RefinedMats.Columns.Add(new GridColumn
+            //{
+            //    DataCell = new TextBoxCell { Binding = Binding.Property<RefinedMatInfoVM, string>(r => r.Material) }
+            //});
+            //RefinedMats.Columns.Add(new GridColumn
+            //{
+            //    DataCell = new TextBoxCell { Binding = Binding.Property<RefinedMatInfoVM, int>(r => r.Amount).Convert(r => r.ToString()) }
+            //});
 
         }
 
@@ -97,6 +97,7 @@ namespace Pulsar4X.CrossPlatformUI.Views
 
             PopDataGrid.DataStore = _colonyScreenVM.Species.Cast<object>();
 
+            ColonyCargo.Initialise(_colonyScreenVM.ColonyCargo);
             
             MineralDeposits.DataStore = _colonyScreenVM.PlanetMineralDepositVM.MineralDeposits.Values;
             gameVM.SelectedColonyScreenVM.PlanetMineralDepositVM.PropertyChanged += PlanetMineralDepositVM_PropertyChanged;

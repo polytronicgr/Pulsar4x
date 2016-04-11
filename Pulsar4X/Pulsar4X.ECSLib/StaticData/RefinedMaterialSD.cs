@@ -9,12 +9,13 @@ namespace Pulsar4X.ECSLib
         public string Name;
         public string Description;
         public Guid ID;
-        public CargoDefinition Cargo;
 
         public Dictionary<Guid, int> RawMineralCosts;
         public Dictionary<Guid, int> RefinedMateraialsCosts;
         public ushort RefinaryPointCost;
         public ushort WealthCost;
         public ushort OutputAmount;
+        public CargoType CargoType;
+        public float Weight;
     }
 }

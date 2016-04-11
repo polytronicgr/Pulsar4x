@@ -143,7 +143,8 @@ namespace Pulsar4X.ECSLib
             // Now that the BonusDB's have been assembled, loop through and apply their bonuses.
             foreach (BonusesDB BonusesDB in applicableBonuses)
             {
-                foreach (KeyValuePair<IndustryType, float> industialRate in industialRates)
+                
+                foreach (KeyValuePair<IndustryType, float> industialRate in industialRates )
                 {
                     IndustryType industryType = industialRate.Key;
                     
@@ -152,7 +153,7 @@ namespace Pulsar4X.ECSLib
                     {
                         currentBonus = 1;
                     }
-
+                    
                     industialRates[industryType] = industialRate.Value * currentBonus;
                 }
             }

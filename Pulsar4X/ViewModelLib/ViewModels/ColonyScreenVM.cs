@@ -28,6 +28,7 @@ namespace Pulsar4X.ViewModel
         public PlanetMineralDepositVM PlanetMineralDepositVM { get; set; }
         public RawMineralStockpileVM RawMineralStockpileVM { get; set; }
         public RefinedMatsStockpileVM RefinedMatsStockpileVM { get; set; }
+        public CargoVM ColonyCargo { get; set; }
 
         public string ColonyName
         {
@@ -46,6 +47,9 @@ namespace Pulsar4X.ViewModel
             gameVM.DateChangedEvent += GameVM_DateChangedEvent;
             _colonyEntity = colonyEntity;
             _facilities = new ObservableCollection<FacilityVM>();
+
+
+            ColonyCargo = new CargoVM(gameVM, colonyEntity);
             //foreach (var installation in colonyEntity.GetDataBlob<InstallationsDB>().Installations)
             {
                 //Facilities.Add(new FacilityVM(installation.Key, Colony));
@@ -66,7 +70,7 @@ namespace Pulsar4X.ViewModel
             }
 
 
-            //PlanetMineralDepositVM = new PlanetMineralDepositVM(staticData, _colonyEntity.GetDataBlob<ColonyDB>().PlanetEntity);
+            PlanetMineralDepositVM = new PlanetMineralDepositVM(staticData, _colonyEntity.GetDataBlob<ColonyDB>().PlanetEntity);
 
             RawMineralStockpileVM = new RawMineralStockpileVM(staticData, _colonyEntity);
 
@@ -231,9 +235,9 @@ namespace Pulsar4X.ViewModel
 
             foreach (var kvp in rawMinerals)
             {
-                MineralSD mineral = _mineralDictionary[kvp.Key];
-                if(!MineralStockpile.ContainsKey(kvp.Key))
-                    _mineralStockpile.Add(kvp.Key, new RawMineralInfoVM(kvp.Key, mineral.Name, Colony));             
+                //MineralSD mineral = _mineralDictionary[kvp.Key];
+                //if(!MineralStockpile.ContainsKey(kvp.Key))
+                //    _mineralStockpile.Add(kvp.Key, new RawMineralInfoVM(kvp.Key, mineral.Name, Colony));             
             }
             OnPropertyChanged(nameof(MineralStockpile));
             

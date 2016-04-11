@@ -18,6 +18,34 @@ namespace Pulsar4X.ECSLib
         public Guid ItemGuid { get; internal set; }
         public CargoType Type { get; internal set; }
         public float Weight { get; internal set; }
+        public IndustryType IndustryType { get; internal set;}
+        public CargoDefinition(Entity entity)
+        {
+            Type = CargoType.General;
+            if (entity.HasDataBlob<ComponentDB>())
+            {
+                var componentInfo = entity.GetDataBlob<ComponentDB>();
+                Weight = componentInfo.SizeInTons * 1000;
+                IndustryType = IndustryType.ComponentConstruction;
+            }
+            //TODO check if entity is figher, Installation, Ship etc.
+                  
+            
+        }
+        public CargoDefinition(MineralSD mineral)
+        {
+            ItemGuid = mineral.ID;
+            Weight = mineral.Weight;
+            Type = mineral.CargoType;
+            IndustryType = IndustryType.Mining;
+        }
+        public CargoDefinition(RefinedMaterialSD material)
+        {
+            ItemGuid = material.ID;
+            Weight = material.Weight;
+            Type = material.CargoType;
+            IndustryType = IndustryType.Refining;
+        }       
     }
 
     public static class CargoHelper
@@ -68,8 +96,7 @@ namespace Pulsar4X.ECSLib
             }
 
             // Cargo is a component.
-            var componentInfo = entity.GetDataBlob<ComponentDB>();
-            cargoDef = new CargoDefinition { Type = CargoType.General, Weight = componentInfo.SizeInTons * 1000 };
+            cargoDef = new CargoDefinition(entity);
             return false;
         }
 

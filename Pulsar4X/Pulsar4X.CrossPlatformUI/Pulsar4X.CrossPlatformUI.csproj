@@ -188,6 +188,9 @@
     <EmbeddedResource Include="Views\PlayerOptionsDialog.xeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\CargoView.xeto">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\PlayerOptionsCMD.cs" />
@@ -214,6 +217,9 @@
     <Compile Include="MainForm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Pulsar4XApplication.cs" />
+    <Compile Include="Views\CargoView.xeto.cs">
+      <DependentUpon>CargoView.xeto</DependentUpon>
+    </Compile>
     <Compile Include="Views\IndustryView.xeto.cs">
       <DependentUpon>IndustryView.xeto</DependentUpon>
     </Compile>

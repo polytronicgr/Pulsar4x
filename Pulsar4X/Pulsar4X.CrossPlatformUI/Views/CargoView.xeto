@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Panel
+  xmlns="http://schema.picoe.ca/eto.forms" 
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  >
+  <StackLayout>
+    <StackLayout Orientation="Horizontal">    
+      <CheckBox Text="Population " Enabled="{Binding StoresSpecies}" Checked="{Binding ShowSpecies}"/>
+      <CheckBox Text="Minerals " Enabled="{Binding StoresGeneral}" Checked="{Binding ShowMinerals}"/>
+      <CheckBox Text="Materials " Enabled="{Binding StoresGeneral}" Checked="{Binding ShowMats}"/>
+      <CheckBox Text="Fuel " Enabled="{Binding StoresFuel}" Checked="{Binding ShowFuels}"/>
+    </StackLayout>
+    <StackLayout Orientation="Horizontal">
+      <CheckBox Text="Ordnance " Enabled="{Binding StoresOrdnance}" Checked="{Binding ShowOrdnance}"/>
+      <CheckBox Text="Components " Enabled="{Binding StoresGeneral}" Checked="{Binding ShowComponents}"/>
+      <CheckBox Text="Fighters " Enabled="{Binding StoresFighters}" Checked="{Binding ShowFighters}"/>
+      <CheckBox Text="Troops " Enabled="{Binding StoresTroops}" Checked="{Binding ShowTroops}"/>
+    </StackLayout>    
+      <GridView x:Name="ComponentGridView" DataStore="{Binding CargoData}" >
+        <GridColumn HeaderText="Item Type" Editable="False" x:Name="ItemTypeColumn">
+         </GridColumn>
+        <GridColumn HeaderText="Cargo Type" Editable="False" x:Name="ItemCargoTypeColumn"/>        
+        <GridColumn HeaderText="Item Name" Editable="False" x:Name="ItemNameColumn"/>
+        <GridColumn HeaderText="Amount" Editable="False" x:Name="AmountStoredColumn"/>
+        <GridColumn HeaderText="Weight" Editable="False" x:Name="WeightColumn"/>
+        <GridColumn HeaderText="SpaceRemaining" Editable="False" x:Name="SpaceRemainingColumn"/>
+      </GridView>
+  </StackLayout>
+</Panel>
