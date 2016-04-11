@@ -36,7 +36,7 @@ namespace Pulsar4X.ECSLib
         public List<CommanderNameThemeSD> CommanderNameThemes = new List<CommanderNameThemeSD>();
 
         /// <summary>
-        /// List which stores all the Minerals.
+        /// Dictionary which stores all the Minerals.
         /// </summary>
         [JsonIgnore]
         public Dictionary<Guid, MineralSD> Minerals = new Dictionary<Guid, MineralSD>();
@@ -97,7 +97,7 @@ namespace Pulsar4X.ECSLib
                     "CommanderNameThemes", typeof(List<CommanderNameThemeSD>)
                 },
                 {
-                    "Minerals", typeof(List<MineralSD>)
+                    "Minerals", typeof(Dictionary<Guid, MineralSD>)
                 },
                 {
                     "Techs", typeof(Dictionary<Guid, TechSD>)
