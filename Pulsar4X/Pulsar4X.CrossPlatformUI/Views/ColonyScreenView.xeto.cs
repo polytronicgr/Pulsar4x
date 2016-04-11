@@ -98,13 +98,13 @@ namespace Pulsar4X.CrossPlatformUI.Views
             PopDataGrid.DataStore = _colonyScreenVM.Species.Cast<object>();
 
             ColonyCargo.Initialise(_colonyScreenVM.ColonyCargo);
-            
-            //MineralDeposits.DataStore = _colonyScreenVM.PlanetMineralDepositVM.MineralDeposits.Values;
-            //gameVM.SelectedColonyScreenVM.PlanetMineralDepositVM.PropertyChanged += PlanetMineralDepositVM_PropertyChanged;
+
+            MineralDeposits.DataStore = _colonyScreenVM.PlanetMineralDepositVM.MineralDeposits.Values;
+            gameVM.SelectedColonyScreenVM.PlanetMineralDepositVM.PropertyChanged += PlanetMineralDepositVM_PropertyChanged;
 
             //MineralStockpile.DataStore = _colonyScreenVM.RawMineralStockpileVM.MineralStockpile.Values;
             //gameVM.SelectedColonyScreenVM.RawMineralStockpileVM.PropertyChanged += RawMineralStockpileVM_PropertyChanged;
-            
+
             //RefinedMats.DataStore = _colonyScreenVM.RefinedMatsStockpileVM.MaterialStockpile.Values;
             //gameVM.SelectedColonyScreenVM.RefinedMatsStockpileVM.PropertyChanged += RefinedMatsStockpileVM_PropertyChanged;
         }

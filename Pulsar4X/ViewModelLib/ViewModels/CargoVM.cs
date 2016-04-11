@@ -69,7 +69,7 @@ namespace Pulsar4X.ViewModel
         {
             get {
                 bool stores = false;
-                if (_cargoDB.CargoCapacity.ContainsKey(CargoType.General) && _cargoDB.CargoCapacity[CargoType.General] > 0)
+                if (_cargoDB.CargoCapacity.ContainsKey(CargoType.General) && _cargoDB.CargoCapacity[CargoType.General] > 0 || _cargoDB.HasUnlimitedCapacity)
                     stores = true;
                 return stores; }      
         }
@@ -79,7 +79,7 @@ namespace Pulsar4X.ViewModel
             get
             {
                 bool stores = false;
-                if (_cargoDB.CargoCapacity.ContainsKey(CargoType.Colonists) && _cargoDB.CargoCapacity[CargoType.Colonists] > 0)
+                if (_cargoDB.CargoCapacity.ContainsKey(CargoType.Colonists) && _cargoDB.CargoCapacity[CargoType.Colonists] > 0 || _cargoDB.HasUnlimitedCapacity)
                     stores = true;
                 return stores;
             }
@@ -90,7 +90,7 @@ namespace Pulsar4X.ViewModel
             get
             {
                 bool stores = false;
-                if (_cargoDB.CargoCapacity.ContainsKey(CargoType.Fuel) && _cargoDB.CargoCapacity[CargoType.Fuel] > 0)
+                if (_cargoDB.CargoCapacity.ContainsKey(CargoType.Fuel) && _cargoDB.CargoCapacity[CargoType.Fuel] > 0 || _cargoDB.HasUnlimitedCapacity)
                     stores = true;
                 return stores;
             }
@@ -101,7 +101,7 @@ namespace Pulsar4X.ViewModel
             get
             {
                 bool stores = false;
-                if (_cargoDB.CargoCapacity.ContainsKey(CargoType.Ordnance) && _cargoDB.CargoCapacity[CargoType.Ordnance] > 0)
+                if (_cargoDB.CargoCapacity.ContainsKey(CargoType.Ordnance) && _cargoDB.CargoCapacity[CargoType.Ordnance] > 0 || _cargoDB.HasUnlimitedCapacity)
                     stores = true;
                 return stores;
             }
@@ -112,7 +112,7 @@ namespace Pulsar4X.ViewModel
             get
             {
                 bool stores = false;
-                if (_cargoDB.CargoCapacity.ContainsKey(CargoType.Troops) && _cargoDB.CargoCapacity[CargoType.Troops] > 0)
+                if (_cargoDB.CargoCapacity.ContainsKey(CargoType.Troops) && _cargoDB.CargoCapacity[CargoType.Troops] > 0 || _cargoDB.HasUnlimitedCapacity)
                     stores = true;
                 return stores;
             }
@@ -181,6 +181,12 @@ namespace Pulsar4X.ViewModel
                 CargoData cargodat = new CargoData(name, item.Key, item.Value);
                 allCargoData.Add(cargodat);
             }
+            OnPropertyChanged(nameof(StoresGeneral));
+            OnPropertyChanged(nameof(StoresSpecies));
+            OnPropertyChanged(nameof(StoresFuel));
+            OnPropertyChanged(nameof(StoresOrdnance));
+            OnPropertyChanged(nameof(StoresTroops));
+
             FilterAndSort();
             
         }

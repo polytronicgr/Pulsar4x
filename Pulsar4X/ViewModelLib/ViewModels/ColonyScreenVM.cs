@@ -70,7 +70,7 @@ namespace Pulsar4X.ViewModel
             }
 
 
-            //PlanetMineralDepositVM = new PlanetMineralDepositVM(staticData, _colonyEntity.GetDataBlob<ColonyDB>().PlanetEntity);
+            PlanetMineralDepositVM = new PlanetMineralDepositVM(staticData, _colonyEntity.GetDataBlob<MatedToDB>().Parent);
 
             RawMineralStockpileVM = new RawMineralStockpileVM(staticData, _colonyEntity);
 
@@ -94,7 +94,7 @@ namespace Pulsar4X.ViewModel
         }
         public void Refresh(bool partialRefresh = false)
         {
-            //PlanetMineralDepositVM.Refresh();
+            PlanetMineralDepositVM.Refresh();
             RawMineralStockpileVM.Refresh();
             RefinedMatsStockpileVM.Refresh();
             foreach (var facilityvm in Facilities)
@@ -112,11 +112,7 @@ namespace Pulsar4X.ViewModel
         private Dictionary<Guid, MineralSD> _mineralDictionary;
 
         private readonly ObservableDictionary<Guid, PlanetMineralInfoVM> _mineralDeposits = new ObservableDictionary<Guid, PlanetMineralInfoVM>();
-        public ObservableDictionary<Guid, PlanetMineralInfoVM> MineralDeposits
-        {
-            get { return _mineralDeposits; }
-        }
-
+        public ObservableDictionary<Guid, PlanetMineralInfoVM> MineralDeposits {get { return _mineralDeposits; }}
 
 
         public PlanetMineralDepositVM(StaticDataStore staticData, Entity planetEntity)
@@ -174,7 +170,7 @@ namespace Pulsar4X.ViewModel
         private MineralDepositInfo _mineralDepositInfo;
 
         public string Mineral { get; private set; }
-        //public int Amount { get { return _mineralDepositInfo.Amount; } }
+        public float Amount { get { return _mineralDepositInfo.Amount; } }
         public double Accessability { get { return _mineralDepositInfo.Accessibility; } }
 
         public PlanetMineralInfoVM(string name, MineralDepositInfo deposit)
@@ -188,7 +184,7 @@ namespace Pulsar4X.ViewModel
         {
             if (PropertyChanged != null)
             {
-                //PropertyChanged(this, new PropertyChangedEventArgs(nameof(Amount)));
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(Amount)));
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(Accessability)));
 
             }
