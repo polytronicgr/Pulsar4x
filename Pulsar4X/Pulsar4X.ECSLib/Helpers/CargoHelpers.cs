@@ -89,13 +89,31 @@ namespace Pulsar4X.ECSLib
             return game.CargoDefinitions[id];
         }
 
-        public static Dictionary<CargoDefinition, double> GetMineralCargoDefs(Game game, CargoDB cargo)
+
+        /// <summary>
+        /// Filters the cargo by a given cargoType and industryType
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="cargo"></param>
+        /// <param name="cargoType">type of cargo</param>
+        /// <param name="industryType">if null it won't filter by this</param>
+        /// <returns></returns>
+        public static Dictionary<CargoDefinition, double> GetComponentCargoDefs(Game game, CargoDB cargo, CargoType cargoType, IndustryType? industryType=null)
         {
+            Dictionary<CargoDefinition, double> dict = new Dictionary<CargoDefinition, double>();
             foreach (var item in cargo.cargoCarried)
             {
-                if(game.StaticData.Minerals.Contains)
+                CargoDefinition cargoDef = FindOrCreateCargoDefinition(game, item.Key);
+                if (cargoDef.Type == cargoType)
+                {
+                    if (industryType != null && cargoDef.IndustryType == industryType)
+                        dict.Add(FindOrCreateCargoDefinition(game, item.Key), item.Value);
+                }
             }
+            return dict;
         }
+
+
 
         /// <summary>
         /// returns the cargo def or creates a new one if the exsisting one does not exsist in the global dictionary. 

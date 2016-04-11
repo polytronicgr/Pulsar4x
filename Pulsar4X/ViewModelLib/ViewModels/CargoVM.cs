@@ -14,7 +14,7 @@ namespace Pulsar4X.ViewModel
         private CargoDB _cargoDB;
         private GameVM _gameVM;
         private StaticDataStore _staicData;
-        private Dictionary<Guid, MineralSD> _mineralDictionary = new Dictionary<Guid, MineralSD>();
+
         private ObservableDictionary<CargoDefinition, double> allEntitysCargo { get; } = new ObservableDictionary<CargoDefinition, double>();
 
         public ObservableDictionary<CargoType, double> CargoCapacity { get; } = new ObservableDictionary<CargoType, double>();
@@ -125,10 +125,6 @@ namespace Pulsar4X.ViewModel
             _staicData = gameVM.Game.StaticData;
             _cargoDB = entity.GetDataBlob<CargoDB>();
             
-            foreach (var mineral in _staicData.Minerals)
-            {
-                _mineralDictionary.Add(mineral.ID, mineral);
-            }
             _SortOrder.Add(SortEnum.ItemType);
             _SortOrder.Add(SortEnum.CargoType);
             _SortOrder.Add(SortEnum.ItemName);
@@ -147,10 +143,7 @@ namespace Pulsar4X.ViewModel
                     CargoData.Add(item);
                 }
             }
-            if (CargoData.Count == 0)
-            {
-                CargoData.Add(new ViewModel.CargoData("", new CargoDefinition(_gameVM.Game, _staicData.Minerals[0]), 0));
-            }
+
         }
 
         private void OnReOrder(SortEnum toTop)
@@ -169,7 +162,7 @@ namespace Pulsar4X.ViewModel
                 switch (item.Key.IndustryType)
                 {
                     case IndustryType.Mining:
-                        name = _mineralDictionary[item.Key.ItemGuid].Name;
+                        name = _staicData.Minerals[item.Key.ItemGuid].Name;
                         break;
                     case IndustryType.Refining:
                         name = _staicData.RefinedMaterials[item.Key.ItemGuid].Name;

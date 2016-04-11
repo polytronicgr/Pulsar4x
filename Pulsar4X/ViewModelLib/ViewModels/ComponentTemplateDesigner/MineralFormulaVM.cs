@@ -49,7 +49,7 @@ namespace Pulsar4X.ViewModel
         {
             _dataStore = staticDataStore;
             Minerals = new DictionaryVM<Guid, string>(DisplayMode.Value);
-            foreach (var item in staticDataStore.Minerals)
+            foreach (var item in staticDataStore.Minerals.Values)
             {
                 Minerals.Add(item.ID, item.Name);
             }

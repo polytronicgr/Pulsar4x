@@ -323,6 +323,7 @@ namespace Pulsar4X.Tests
         }
 
         [Test]
+        //TODO!!!! is this test still valid now that minerals are a dictionary? I'm not 100% sure what this test is doing. 
         public void TestOverwriteDefaultData()
         {
             Game game = new Game(new NewGameSettings { GameName = "Unit Test Game", StartDateTime = DateTime.Now, MaxSystems = 0 });
@@ -331,17 +332,18 @@ namespace Pulsar4X.Tests
 
             // store counts for later:
             int mineralsNum = staticDataStore.Minerals.Count;
-            string soriumName = staticDataStore.Minerals[0].Name;
-            Guid soriumGuid = staticDataStore.Minerals[0].ID;
+            Guid someGuid = staticDataStore.Minerals.FirstOrDefault().Key;
+            string someName = staticDataStore.Minerals[someGuid].Name;
+            
             StaticDataManager.LoadData("Other", game);
             staticDataStore = game.StaticData;
 
             // check the test is still valid, should be the first mineral item (sorium) 
-            Assert.AreEqual(soriumGuid, staticDataStore.Minerals[0].ID);
+            //Assert.AreEqual(someGuid, staticDataStore.Minerals[0].ID); no longer need to check this
             // now check that overwriting occured and that there were no duplicates:
             Assert.AreEqual(mineralsNum, staticDataStore.Minerals.Count);
             //check the name has been overwritten
-            Assert.AreNotEqual(soriumName, staticDataStore.Minerals[0].Name);
+            Assert.AreNotEqual(someName, staticDataStore.Minerals[someGuid].Name);
         }
 
         [Test]
@@ -363,7 +365,7 @@ namespace Pulsar4X.Tests
             Assert.IsNull(testObj);
 
             // now lets test for values that are in the store:
-            Guid testID = staticDataStore.Minerals[0].ID;
+            Guid testID = staticDataStore.Minerals.FirstOrDefault().Key;
             testObj = staticDataStore.FindDataObjectUsingID(testID);
             Assert.IsNotNull(testObj);
             Assert.AreEqual(testID, ((MineralSD)testObj).ID);

@@ -14,7 +14,6 @@ namespace Pulsar4X.ViewModel
         private Entity _colonyEntity;
         private ColonyDB Colony { get { return _colonyEntity.GetDataBlob<ColonyDB>(); } }
         private Entity FactionEntity { get { return _colonyEntity.GetDataBlob<OwnedDB>().ObjectOwner; } }
-        private Dictionary<Guid, MineralSD> _mineralDictionary;
 
         private ObservableCollection<FacilityVM> _facilities;
         public ObservableCollection<FacilityVM> Facilities
@@ -63,18 +62,13 @@ namespace Pulsar4X.ViewModel
                 _species.Add(name, kvp.Value);
             }
 
-            _mineralDictionary = new Dictionary<Guid, MineralSD>();
-            foreach (var mineral in staticData.Minerals)
-            {
-                _mineralDictionary.Add(mineral.ID, mineral);
-            }
 
 
             PlanetMineralDepositVM = new PlanetMineralDepositVM(staticData, _colonyEntity.GetDataBlob<MatedToDB>().Parent);
 
-            RawMineralStockpileVM = new RawMineralStockpileVM(staticData, _colonyEntity);
+            //RawMineralStockpileVM = new RawMineralStockpileVM(staticData, _colonyEntity);
 
-            RefinedMatsStockpileVM = new RefinedMatsStockpileVM(staticData, _colonyEntity);
+            //RefinedMatsStockpileVM = new RefinedMatsStockpileVM(staticData, _colonyEntity);
         }
 
         private void GameVM_DateChangedEvent(DateTime oldDate, DateTime newDate)
@@ -117,11 +111,6 @@ namespace Pulsar4X.ViewModel
 
         public PlanetMineralDepositVM(StaticDataStore staticData, Entity planetEntity)
         {
-            _mineralDictionary = new Dictionary<Guid, MineralSD>();
-            foreach (var mineral in staticData.Minerals)
-            {
-                _mineralDictionary.Add(mineral.ID, mineral);
-            }
             _planetEntity = planetEntity;
             Initialise();
         }
@@ -197,24 +186,23 @@ namespace Pulsar4X.ViewModel
         private Entity _colonyEntity;
         private ColonyDB Colony { get { return _colonyEntity.GetDataBlob<ColonyDB>(); } }
         private CargoDB _cargoDB;
-
+        private GameVM _gameVM;
 
         private Dictionary<CargoDefinition, double> MineralDictionary { get; } = new Dictionary<CargoDefinition, double>(); //{ return _cargoDB.CargoCarried.Where(kvp => _mineralGuids.Contains(kvp.Key.ItemGuid)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value); } }
 
 
 
         private StaticDataStore _staticData;
-        List<Guid> _mineralGuids; 
+
         private readonly ObservableDictionary<Guid, RawMineralInfoVM> _mineralStockpile = new ObservableDictionary<Guid, RawMineralInfoVM>();
         public ObservableDictionary<Guid, RawMineralInfoVM> MineralStockpile
         {
             get { return _mineralStockpile; }
         }
 
-        public RawMineralStockpileVM(StaticDataStore staticData, Entity colonyEntity)
+        public RawMineralStockpileVM(GameVM gameVM, StaticDataStore staticData, Entity colonyEntity)
         {
 
-            _mineralGuids = staticData.Minerals.Select(mineralSD => mineralSD.ID).ToList();
             
             _colonyEntity = colonyEntity;
             _cargoDB = colonyEntity.GetDataBlob<CargoDB>();
@@ -224,25 +212,16 @@ namespace Pulsar4X.ViewModel
         private void Initialise()
         {
 
-            //var rawMinerals = Colony.MineralStockpile;
             var entityCargo = _colonyEntity.GetDataBlob<CargoDB>().CargoCarried;
-            var rawMinerals = entityCargo.Where(kvp => _mineralGuids.Contains(kvp.Key.ItemGuid)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            _mineralStockpile.Clear();
+            var rawMinerals = CargoHelper.GetComponentCargoDefs(_gameVM.Game, _cargoDB, CargoType.General, IndustryType.Mining);
+            //_mineralStockpile.Clear();
 
-            foreach (var kvp in rawMinerals)
-            {
-                //MineralSD mineral = _mineralDictionary[kvp.Key];
-                //if(!MineralStockpile.ContainsKey(kvp.Key))
-                //    _mineralStockpile.Add(kvp.Key, new RawMineralInfoVM(kvp.Key, mineral.Name, Colony));             
-            }
+            //foreach (var kvp in rawMinerals)
+            //{
+            //    if (!MineralStockpile.ContainsKey(kvp.Key))
+            //        _mineralStockpile.Add(kvp.Key, new RawMineralInfoVM(kvp.Key, mineral.Name, Colony));
+            //}
             OnPropertyChanged(nameof(MineralStockpile));
-            
-            
-
-            
-
-            
-           
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -137,7 +137,7 @@ namespace Pulsar4X.ECSLib
                 {
                     componentCosts.Add(kvp.Key, kvp.Value);
                 }
-                else if (staticData.Minerals.Any(item => item.ID == kvp.Key))
+                else if (staticData.Minerals.ContainsKey(kvp.Key))
                 {
                     mineralCosts.Add(kvp.Key, kvp.Value);
                 }
