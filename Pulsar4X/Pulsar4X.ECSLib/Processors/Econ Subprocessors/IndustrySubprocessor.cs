@@ -144,17 +144,15 @@ namespace Pulsar4X.ECSLib
             foreach (BonusesDB BonusesDB in applicableBonuses)
             {
                 
-                foreach (KeyValuePair<IndustryType, float> industialRate in industialRates )
+                foreach (var industryType in industialRates.Keys.ToArray() )
                 {
-                    IndustryType industryType = industialRate.Key;
-                    
                     float currentBonus;
                     if (!BonusesDB.industrialBonuses.TryGetValue(industryType, out currentBonus))
                     {
                         currentBonus = 1;
                     }
                     
-                    //industialRates[industryType] = industialRate.Value * currentBonus;
+                    industialRates[industryType] *= currentBonus;
                 }
             }
 
