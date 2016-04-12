@@ -15,8 +15,6 @@ namespace Pulsar4X.ViewModel
         private GameVM _gameVM;
         private StaticDataStore _staicData;
 
-        //private ObservableDictionary<CargoDefinition, double> allEntitysCargo { get; } = new ObservableDictionary<CargoDefinition, double>();
-
         public ObservableDictionary<CargoType, double> CargoCapacity { get; } = new ObservableDictionary<CargoType, double>();
 
         public ObservableCollection<CargoData> CargoData { get; } = new ObservableCollection<CargoData>();
@@ -25,42 +23,42 @@ namespace Pulsar4X.ViewModel
         public bool ShowMins
         {
             get { return _showMinerals; }
-            set { _showMinerals = value; OnPropertyChanged(); }
+            set { _showMinerals = value; OnPropertyChanged(); FilterAndSort(); }
         }
         private bool _showMinerals = true;
 
         public bool ShowMats
         {
             get { return _showMats; }
-            set { _showMats = value; OnPropertyChanged(); }
+            set { _showMats = value; OnPropertyChanged(); FilterAndSort(); }
         }
         private bool _showMats = true;
 
         public bool ShowSpecies
         {
             get { return _showSpecies; }
-            set { _showSpecies = value; OnPropertyChanged(); }
+            set { _showSpecies = value; OnPropertyChanged(); FilterAndSort(); }
         }
         private bool _showSpecies = true;
 
         public bool ShowComponents
         {
             get { return _showComponents; }
-            set { _showComponents = value; OnPropertyChanged(); }
+            set { _showComponents = value; OnPropertyChanged(); FilterAndSort(); }
         }
         private bool _showComponents = true;
 
         public bool ShowFighters
         {
             get { return _showFighters; }
-            set { _showFighters = value; OnPropertyChanged(); }
+            set { _showFighters = value; OnPropertyChanged(); FilterAndSort(); }
         }
         private bool _showFighters = true;
 
         public bool ShowOrdnance
         {
             get { return _showOrdnance; }
-            set { _showOrdnance = value; OnPropertyChanged(); }
+            set { _showOrdnance = value; OnPropertyChanged(); FilterAndSort(); }
         }
         private bool _showOrdnance = true;
 
@@ -137,7 +135,7 @@ namespace Pulsar4X.ViewModel
             CargoData.Clear();
             foreach (var item in allCargoData)
             {
-                //TODO sorting
+                //TODO sorting and filtering. 
                 if (item.IndustryType == IndustryType.Mining && ShowMins)
                 {
                     CargoData.Add(item);

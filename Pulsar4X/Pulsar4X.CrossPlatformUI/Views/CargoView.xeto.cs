@@ -86,7 +86,7 @@ namespace Pulsar4X.CrossPlatformUI.Views
         {
             _vm = vm;
             DataContext = vm;
-            ComponentGridView.DataStore = vm.CargoData;
+            //ComponentGridView.DataStore = vm.CargoData;
         }
 
     }
