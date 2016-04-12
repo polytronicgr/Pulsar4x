@@ -22,20 +22,41 @@ namespace Pulsar4X.CrossPlatformUI.Views
         public CargoView()
         {
             XamlReader.Load(this);
+            ComponentGridView.Columns.Clear();
+            ComponentGridView.Columns.Add(new GridColumn
+            {
+                HeaderText = "Name",
+                DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, string>(r => r.Name)  }
+            });
+            ComponentGridView.Columns.Add(new GridColumn
+            {
+                HeaderText = "Item Type",
+                DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, IndustryType>(r => r.IndustryType).Convert(r => r.ToString()) }
+            });
+            ComponentGridView.Columns.Add(new GridColumn
+            {
+                HeaderText = "Cargo Type",
+                DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, CargoType>(r => r.CargoType).Convert(r => r.ToString()) }            
+            });
+            ComponentGridView.Columns.Add(new GridColumn
+            {
+                HeaderText = "Amount",
+                DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, double>(r => r.Amount).Convert(r => r.ToString()) }
+            });
+
+            //ItemNameColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, string>(r => r.Name) };
+
+            //ItemTypeColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, IndustryType>(r => r.IndustryType).Convert(r => r.ToString()) };
+            //ItemCargoTypeColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, CargoType>(r => r.CargoType).Convert(r=> r.ToString()) };
+            //AmountStoredColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, double>(r => r.Amount).Convert(r => r.ToString()) };
+            //WeightColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, string>(r => r.Weight.ToString()) };
+            //SpaceRemainingColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, string>(r => r.SpaceLeft.ToString()) };
 
         }
         public void Initialise(CargoVM vm) 
         {
             DataContext = vm;
             ComponentGridView.DataStore = vm.CargoData;
-            ItemNameColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, string>(r => r.Name) };
-
-            ItemTypeColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, IndustryType>(r => r.IndustryType).Convert(r => r.ToString()) };
-            ItemCargoTypeColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, CargoType>(r => r.CargoType).Convert(r=> r.ToString()) };
-            AmountStoredColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, double>(r => r.Amount).Convert(r => r.ToString()) };
-            //WeightColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, string>(r => r.Weight.ToString()) };
-            //SpaceRemainingColumn.DataCell = new TextBoxCell { Binding = Binding.Property<CargoData, string>(r => r.SpaceLeft.ToString()) };
-
         }
 
     }
