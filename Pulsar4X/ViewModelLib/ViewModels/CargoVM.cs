@@ -146,7 +146,7 @@ namespace Pulsar4X.ViewModel
 
         }
 
-        private void OnReOrder(SortEnum toTop)
+        public void OnReOrder(SortEnum toTop)
         {
             _SortOrder.Remove(toTop);
             _SortOrder.Insert(0, toTop);                
@@ -185,6 +185,7 @@ namespace Pulsar4X.ViewModel
 
     public enum SortEnum
     {
+        None,
         ItemType,
         CargoType,
         ItemName,
