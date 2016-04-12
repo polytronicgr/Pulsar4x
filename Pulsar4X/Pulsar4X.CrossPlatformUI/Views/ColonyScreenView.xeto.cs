@@ -109,15 +109,15 @@ namespace Pulsar4X.CrossPlatformUI.Views
             //gameVM.SelectedColonyScreenVM.RefinedMatsStockpileVM.PropertyChanged += RefinedMatsStockpileVM_PropertyChanged;
         }
 
-        private void RefinedMatsStockpileVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            RefinedMats.DataStore = _colonyScreenVM.RefinedMatsStockpileVM.MaterialStockpile.Values;
-        }
+        //private void RefinedMatsStockpileVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        //{
+        //    RefinedMats.DataStore = _colonyScreenVM.RefinedMatsStockpileVM.MaterialStockpile.Values;
+        //}
 
-        private void RawMineralStockpileVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            MineralStockpile.DataStore = _colonyScreenVM.RawMineralStockpileVM.MineralStockpile.Values;
-        }
+        //private void RawMineralStockpileVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        //{
+        //    MineralStockpile.DataStore = _colonyScreenVM.RawMineralStockpileVM.MineralStockpile.Values;
+        //}
 
         private void PlanetMineralDepositVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {

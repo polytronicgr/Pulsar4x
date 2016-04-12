@@ -6,7 +6,7 @@
   <StackLayout>
     <StackLayout Orientation="Horizontal">    
       <CheckBox Text="Population " Enabled="{Binding StoresSpecies}" Checked="{Binding ShowSpecies}"/>
-      <CheckBox Text="Minerals " Enabled="{Binding StoresGeneral}" Checked="{Binding ShowMinerals}"/>
+      <CheckBox Text="Minerals " Enabled="{Binding StoresGeneral}" Checked="{Binding ShowMins}"/>
       <CheckBox Text="Materials " Enabled="{Binding StoresGeneral}" Checked="{Binding ShowMats}"/>
       <CheckBox Text="Fuel " Enabled="{Binding StoresFuel}" Checked="{Binding ShowFuels}"/>
     </StackLayout>

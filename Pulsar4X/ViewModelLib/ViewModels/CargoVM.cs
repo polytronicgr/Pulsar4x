@@ -15,7 +15,7 @@ namespace Pulsar4X.ViewModel
         private GameVM _gameVM;
         private StaticDataStore _staicData;
 
-        private ObservableDictionary<CargoDefinition, double> allEntitysCargo { get; } = new ObservableDictionary<CargoDefinition, double>();
+        //private ObservableDictionary<CargoDefinition, double> allEntitysCargo { get; } = new ObservableDictionary<CargoDefinition, double>();
 
         public ObservableDictionary<CargoType, double> CargoCapacity { get; } = new ObservableDictionary<CargoType, double>();
 
@@ -27,42 +27,42 @@ namespace Pulsar4X.ViewModel
             get { return _showMinerals; }
             set { _showMinerals = value; OnPropertyChanged(); }
         }
-        private bool _showMinerals;
+        private bool _showMinerals = true;
 
         public bool ShowMats
         {
             get { return _showMats; }
             set { _showMats = value; OnPropertyChanged(); }
         }
-        private bool _showMats;
+        private bool _showMats = true;
 
         public bool ShowSpecies
         {
             get { return _showSpecies; }
             set { _showSpecies = value; OnPropertyChanged(); }
         }
-        private bool _showSpecies;
+        private bool _showSpecies = true;
 
         public bool ShowComponents
         {
             get { return _showComponents; }
             set { _showComponents = value; OnPropertyChanged(); }
         }
-        private bool _showComponents;
+        private bool _showComponents = true;
 
         public bool ShowFighters
         {
             get { return _showFighters; }
             set { _showFighters = value; OnPropertyChanged(); }
         }
-        private bool _showFighters;
+        private bool _showFighters = true;
 
         public bool ShowOrdnance
         {
             get { return _showOrdnance; }
             set { _showOrdnance = value; OnPropertyChanged(); }
         }
-        private bool _showOrdnance;
+        private bool _showOrdnance = true;
 
 
         public bool StoresGeneral
@@ -124,7 +124,7 @@ namespace Pulsar4X.ViewModel
         {
             _staicData = gameVM.Game.StaticData;
             _cargoDB = entity.GetDataBlob<CargoDB>();
-            
+            _gameVM = gameVM;
             _SortOrder.Add(SortEnum.ItemType);
             _SortOrder.Add(SortEnum.CargoType);
             _SortOrder.Add(SortEnum.ItemName);
@@ -152,12 +152,11 @@ namespace Pulsar4X.ViewModel
             _SortOrder.Insert(0, toTop);                
         }
 
-        private void OnRefresh()
+        public void OnRefresh()
         {
             allCargoData.Clear();
-            foreach (var item in allEntitysCargo)
+            foreach (var item in CargoHelper.GetComponentCargoDefs(_gameVM.Game, _cargoDB))
             {
-
                 string name;
                 switch (item.Key.IndustryType)
                 {
@@ -180,11 +179,8 @@ namespace Pulsar4X.ViewModel
             OnPropertyChanged(nameof(StoresOrdnance));
             OnPropertyChanged(nameof(StoresTroops));
 
-            FilterAndSort();
-            
+            FilterAndSort();            
         }
-
-
     }
 
     public enum SortEnum
@@ -213,6 +209,8 @@ namespace Pulsar4X.ViewModel
             _def = def;
             Amount = amount;
             Name = name;            
-         }       
+         }
+        
+               
     }
 }

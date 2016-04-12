@@ -25,8 +25,8 @@ namespace Pulsar4X.ViewModel
         public Dictionary<string, long> Species { get { return _species; } }
 
         public PlanetMineralDepositVM PlanetMineralDepositVM { get; set; }
-        public RawMineralStockpileVM RawMineralStockpileVM { get; set; }
-        public RefinedMatsStockpileVM RefinedMatsStockpileVM { get; set; }
+        //public RawMineralStockpileVM RawMineralStockpileVM { get; set; }
+        //public RefinedMatsStockpileVM RefinedMatsStockpileVM { get; set; }
         public CargoVM ColonyCargo { get; set; }
 
         public string ColonyName
@@ -74,6 +74,7 @@ namespace Pulsar4X.ViewModel
         private void GameVM_DateChangedEvent(DateTime oldDate, DateTime newDate)
         {
             Refresh();
+            ColonyCargo.OnRefresh();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -89,8 +90,7 @@ namespace Pulsar4X.ViewModel
         public void Refresh(bool partialRefresh = false)
         {
             PlanetMineralDepositVM.Refresh();
-            RawMineralStockpileVM.Refresh();
-            RefinedMatsStockpileVM.Refresh();
+            
             foreach (var facilityvm in Facilities)
             {
                 facilityvm.Refresh();
@@ -103,8 +103,7 @@ namespace Pulsar4X.ViewModel
     {
         private Entity _planetEntity;
         private SystemBodyDB systemBodyInfo { get { return _planetEntity.GetDataBlob<SystemBodyDB>(); } }
-        private Dictionary<Guid, MineralSD> _mineralDictionary;
-
+        private StaticDataStore _staticData;
         private readonly ObservableDictionary<Guid, PlanetMineralInfoVM> _mineralDeposits = new ObservableDictionary<Guid, PlanetMineralInfoVM>();
         public ObservableDictionary<Guid, PlanetMineralInfoVM> MineralDeposits {get { return _mineralDeposits; }}
 
@@ -112,6 +111,7 @@ namespace Pulsar4X.ViewModel
         public PlanetMineralDepositVM(StaticDataStore staticData, Entity planetEntity)
         {
             _planetEntity = planetEntity;
+            _staticData = staticData;
             Initialise();
         }
 
@@ -121,7 +121,7 @@ namespace Pulsar4X.ViewModel
             _mineralDeposits.Clear();
             foreach (var kvp in minerals)
             {
-                MineralSD mineral = _mineralDictionary[kvp.Key];
+                MineralSD mineral = _staticData.Minerals[kvp.Key];
                 if(!_mineralDeposits.ContainsKey(kvp.Key))
                     _mineralDeposits.Add(kvp.Key, new PlanetMineralInfoVM(mineral.Name, kvp.Value));
             }
@@ -180,7 +180,7 @@ namespace Pulsar4X.ViewModel
         }
     }
 
-
+/*
     public class RawMineralStockpileVM : IViewModel
     {
         private Entity _colonyEntity;
@@ -305,7 +305,7 @@ namespace Pulsar4X.ViewModel
                     _materialStockpile.Add(kvp.Key, new RefinedMatInfoVM(kvp.Key, mat.Name, Colony));
                 OnPropertyChanged();
             }
-           */
+           
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -328,7 +328,7 @@ namespace Pulsar4X.ViewModel
                     item.Value.Refresh();
                 }
             OnPropertyChanged();
-            */
+            
         }
     }
     public class RefinedMatInfoVM : IViewModel
@@ -356,6 +356,7 @@ namespace Pulsar4X.ViewModel
         }
     }
 
+*/
 
     public class FacilityVM : IViewModel
     {

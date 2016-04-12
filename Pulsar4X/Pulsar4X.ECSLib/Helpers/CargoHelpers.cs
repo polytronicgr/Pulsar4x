@@ -95,18 +95,18 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <param name="game"></param>
         /// <param name="cargo"></param>
-        /// <param name="cargoType">type of cargo</param>
-        /// <param name="industryType">if null it won't filter by this</param>
+        /// <param name="cargoType">cargotype filter. wont filter if null</param>
+        /// <param name="industryType">industryType filter, wont filter if null</param>
         /// <returns></returns>
-        public static Dictionary<CargoDefinition, double> GetComponentCargoDefs(Game game, CargoDB cargo, CargoType cargoType, IndustryType? industryType=null)
+        public static Dictionary<CargoDefinition, double> GetComponentCargoDefs(Game game, CargoDB cargo, CargoType? cargoType=null, IndustryType? industryType=null)
         {
             Dictionary<CargoDefinition, double> dict = new Dictionary<CargoDefinition, double>();
             foreach (var item in cargo.cargoCarried)
             {
                 CargoDefinition cargoDef = FindOrCreateCargoDefinition(game, item.Key);
-                if (cargoDef.Type == cargoType)
+                if (cargoType == null || cargoDef.Type == cargoType)
                 {
-                    if (industryType != null && cargoDef.IndustryType == industryType)
+                    if (industryType == null || cargoDef.IndustryType == industryType)
                         dict.Add(FindOrCreateCargoDefinition(game, item.Key), item.Value);
                 }
             }
