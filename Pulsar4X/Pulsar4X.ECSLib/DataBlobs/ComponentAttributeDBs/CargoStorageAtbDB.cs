@@ -4,8 +4,13 @@ using System.Runtime.Serialization;
 
 namespace Pulsar4X.ECSLib
 {
-    public class CargoStorageAtbDB : BaseDataBlob
+    public class CargoStorageAtbDB : BaseDataBlob, AttributeDescription
     {
+
+        public string Name { get; } = "Cargo Storage";
+        public string Description { get; } = "Storage";
+        public double Value { get { return StorageCapacity; } }
+
         /// <summary>
         /// Storage Capacity of this module.
         /// </summary>

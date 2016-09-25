@@ -146,6 +146,7 @@
   <ItemGroup>
     <Compile Include="DataBlobs\AsteroidDamageDB.cs" />
     <Compile Include="DataBlobs\CargoTypeDB.cs" />
+    <Compile Include="DataBlobs\ComponentAttributeDBs\AttributeDescription.cs" />
     <Compile Include="DataBlobs\ComponentAttributeDBs\BeamFireControlAtbDB.cs" />
     <Compile Include="DataBlobs\ComponentAttributeDBs\BeamWeaponAtbDB.cs" />
     <Compile Include="DataBlobs\ComponentAttributeDBs\CargoStorageAtbDB.cs" />

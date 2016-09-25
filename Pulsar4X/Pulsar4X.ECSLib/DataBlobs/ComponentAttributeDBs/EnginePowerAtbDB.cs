@@ -1,11 +1,18 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
-    public class EnginePowerAtbDB : BaseDataBlob
+    public class EnginePowerAtbDB : BaseDataBlob, AttributeDescription
     {
         [JsonProperty]
         public int EnginePower { get; internal set; }
+
+        public string Name { get; } = "Engine Power";        
+
+        public string Description { get; } = "Engine Power";
+
+        public double Value { get { return EnginePower; } } 
 
         public EnginePowerAtbDB()
         {

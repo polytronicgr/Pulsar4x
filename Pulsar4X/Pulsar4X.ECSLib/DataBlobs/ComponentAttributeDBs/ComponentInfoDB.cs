@@ -21,6 +21,7 @@ namespace Pulsar4X.ECSLib
         public Guid DesignGuid { get; internal set; }
 
         [JsonProperty]
+        [Obsolete] //use MassVolumeDB instead
         public float SizeInTons { get; internal set; }
 
         [JsonProperty]

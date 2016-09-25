@@ -48,6 +48,8 @@ namespace Pulsar4X.ViewModel
         }
     }
 
+
+
     public class ComponentSpecificDesignVM : ViewModelBase
     {
         private Entity _designEntity;
