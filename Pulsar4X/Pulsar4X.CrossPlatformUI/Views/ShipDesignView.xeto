@@ -6,9 +6,8 @@
   >
   <TableLayout>
     <TableRow>
-      <StackLayout ID="ComponentListStack">
-        
-      </StackLayout>      
+      <c:GenericStackControl ID="ComponentListStack" DataContext="{Binding ComponentsDesignedLists}" />
+      
       <TableLayout>
         
       </TableLayout>

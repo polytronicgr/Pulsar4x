@@ -7,16 +7,21 @@ namespace Pulsar4X.CrossPlatformUI.Views
 {
     public class ShipDesignView : Panel
     {
-        protected StackLayout ComponentListStack { get; set; }
+        protected GenericStackControl ComponentListStack; 
 
         public ShipDesignView()
         {
             XamlReader.Load(this);
+            DataContextChanged += ShipDesignView_DataContextChanged;
+
         }
 
-        public ShipDesignView(ShipDesignVM viewModel) :this()
+        private void ShipDesignView_DataContextChanged(object sender, System.EventArgs e)
         {
-            ComponentListStack.Items.Add(new ComponentsListView(viewModel.ComponentsDesignedLists));
+            if (DataContext is ShipDesignVM)
+            {
+            }
         }
+
     }
 }

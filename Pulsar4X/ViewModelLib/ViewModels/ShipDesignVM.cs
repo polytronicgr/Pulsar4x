@@ -32,7 +32,7 @@ namespace Pulsar4X.ViewModel
         /// </summary>
         public List<Entity> ComponentsDesigned { get { return _factionEntity.GetDataBlob<FactionInfoDB>().ComponentDesigns.Values.ToList(); } }
         //public List<ComponentListVM> ComponentsDesignedLists { get; set; }
-        public ComponentListVM ComponentsDesignedLists { get; set; }
+        public FactionComponentListVM ComponentsDesignedLists { get; }
 
         /// <summary>
         /// a list of componentDesign Entities installed on teh ship, and how many of that type. 
@@ -43,12 +43,8 @@ namespace Pulsar4X.ViewModel
         public ShipDesignVM(Entity factionEntity)
         {
             _factionEntity = factionEntity;
-            ComponentsDesignedLists = new ComponentListVM(_factionEntity);
-            //ComponentsDesignedLists = new List<ComponentListVM>();
-            //foreach (var item in ComponentsDesigned)
-            //{
-            //    ComponentsDesignedLists.Add(new Compon)
-            //}
+            ComponentsDesignedLists = new FactionComponentListVM(_factionEntity);
+
 
         }
 
