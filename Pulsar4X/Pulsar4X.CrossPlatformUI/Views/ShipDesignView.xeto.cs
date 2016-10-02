@@ -2,7 +2,6 @@
 using Eto.Serialization.Xaml;
 using Pulsar4X.ViewModel;
 
-
 namespace Pulsar4X.CrossPlatformUI.Views
 {
     public class ShipDesignView : Panel
@@ -12,6 +11,7 @@ namespace Pulsar4X.CrossPlatformUI.Views
         public ShipDesignView()
         {
             XamlReader.Load(this);
+            ComponentListStack.ControlType = typeof(ComponentListView.ComponentsByAtbView);
             DataContextChanged += ShipDesignView_DataContextChanged;
 
         }
@@ -20,6 +20,9 @@ namespace Pulsar4X.CrossPlatformUI.Views
         {
             if (DataContext is ShipDesignVM)
             {
+                var dc = (ShipDesignVM)DataContext;
+        
+                //ComponentListStack.DataContext = dc.ComponentsList;
             }
         }
 

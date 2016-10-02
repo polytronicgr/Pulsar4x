@@ -143,7 +143,9 @@
     <EmbeddedResource Include="Views\ScientistResearchView.xeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\ShipDesignView.xeto" />
+    <EmbeddedResource Include="Views\ShipDesignView.xeto">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\ComponentsListView.xeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -250,6 +252,15 @@
     <EmbeddedResource Include="Views\GenericStackControl.xeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\ComponentListView\FactionComponentsView.xeto">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ComponentListView\ComponentDesignDetialView.xeto">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ComponentListView\ComponentDesignAttributeView.xeto">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\LogViewCMD.cs" />
@@ -294,6 +305,12 @@
     <Compile Include="Views\ColonyScreenView.xeto.cs">
       <DependentUpon>ColonyScreenView.xeto</DependentUpon>
     </Compile>
+    <Compile Include="Views\ComponentListView\ComponentDesignAttributeView.xeto.cs">
+      <DependentUpon>ComponentDesignAttributeView.xeto</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ComponentListView\ComponentDesignDetialView.xeto.cs">
+      <DependentUpon>ComponentDesignDetialView.xeto</DependentUpon>
+    </Compile>
     <Compile Include="Views\ComponentListView\ComponentDesignsListView.xeto.cs">
       <DependentUpon>ComponentDesignsListView.xeto</DependentUpon>
     </Compile>
@@ -305,6 +322,9 @@
     </Compile>
     <Compile Include="Views\ComponentListView\ComponentSpecificInstanceView.xeto.cs">
       <DependentUpon>ComponentSpecificInstanceView.xeto</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ComponentListView\FactionComponentsView.xeto.cs">
+      <DependentUpon>FactionComponentsView.xeto</DependentUpon>
     </Compile>
     <Compile Include="Views\ComponentTemplateDesigner\ComponentTemplateAbilityPropertiesView.xeto.cs">
       <DependentUpon>ComponentTemplateAbilityPropertiesView.xeto</DependentUpon>

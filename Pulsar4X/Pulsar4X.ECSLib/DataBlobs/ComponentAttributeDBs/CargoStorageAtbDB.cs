@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 
 namespace Pulsar4X.ECSLib
 {
-    public class CargoStorageAtbDB : BaseDataBlob, AttributeDescription
+    public class CargoStorageAtbDB : BaseDataBlob, IAttributeDescription
     {
 
         public string Name { get; } = "Cargo Storage";

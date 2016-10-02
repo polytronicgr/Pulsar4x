@@ -11,42 +11,52 @@ namespace Pulsar4X.ViewModel
     public class FactionComponentListVM
     {
         private Entity _factionEntity;
-        public ObservableDictionary<Type, ComponentsByAtbListVM> ComponentsList { get; } = new ObservableDictionary<Type, ComponentsByAtbListVM>();
+        public ObservableDictionary<Type, ComponentAtbsListVM> ComponentsDict { get; } = new ObservableDictionary<Type, ComponentAtbsListVM>();
+        public ObservableCollection<ComponentAtbsListVM> ComponentsList { get; } = new ObservableCollection<ComponentAtbsListVM>();// { return ComponentsDict.Values.ToList(); } }
         public FactionComponentListVM(Entity factionEntity)
         {
+            _factionEntity = factionEntity;
             FactionInfoDB factionInfo = factionEntity.GetDataBlob<FactionInfoDB>();
             foreach (var design in factionInfo.ComponentDesigns.Values)
             {
-                foreach (var item in design.DataBlobs.Where(db => db is AttributeDescription))
+                foreach (var item in design.DataBlobs.Where(db => db is IAttributeDescription))
                 {
 
                     Type type = item.GetType();
-                    if (!ComponentsList.ContainsKey(type))
+                    if (!ComponentsDict.ContainsKey(type))
                     {
-                        ComponentsList.Add(type, new ComponentsByAtbListVM(design));
+                        ComponentsDict.Add(type, new ComponentAtbsListVM(item));
+                        var newitem = new ComponentAtbsListVM(item);
+                        ComponentsList.Add(newitem);
+                        newitem.AddDesign(design);
                     }
-                    else      
-                        ComponentsList[type].AddDesign(design);
+                    ComponentsDict[type].AddDesign(design);
+                   
                 }
             }
         }
     }
 
 
-    public class ComponentsByAtbListVM 
+    public class ComponentAtbsListVM 
     {
-        public string AtributeString { get; private set; }
-        public ObservableCollection<ComponentSpecificDesignVM> DesignsList { get; } = new ObservableCollection<ComponentSpecificDesignVM>();
+        internal Type AtbType { get; }
+        public string AtbName { get; private set; }
+        public string AtbDescription { get; private set; }
+        public ObservableCollection<ComponentDesignDetailVM> DesignsList { get; } = new ObservableCollection<ComponentDesignDetailVM>();
 
-        public ComponentsByAtbListVM(Entity design)
+        public ComponentAtbsListVM(BaseDataBlob atbType) 
         {
-
+            AtbType = atbType.GetType();
+            IAttributeDescription atbDesc = (IAttributeDescription)atbType;
+            AtbName = atbDesc.Name;
+            AtbDescription = atbDesc.Description;
 
         }
 
         public void AddDesign(Entity design)
         {
-            
+            DesignsList.Add(new ComponentDesignDetailVM(design));
         }
     }
 
@@ -54,18 +64,19 @@ namespace Pulsar4X.ViewModel
     {
         public string DesignName { get; private set; }
         public string DesignDescription { get; private set; }
-        public List<AttributeDescription> AttributeList { get; } = new List<AttributeDescription>();
+        public List<IAttributeDescription> AttributeList { get; } = new List<IAttributeDescription>();
 
         private Entity _designEntity;        
         public Guid EntityID { get { return _designEntity.Guid; } }
         
         public ComponentDesignDetailVM(Entity design)
         {
-            DesignName = design.GetDataBlob<NameDB>().DefaultName;
+            _designEntity = design;
+            DesignName = _designEntity.GetDataBlob<NameDB>().DefaultName;
 
-            foreach (var item in design.DataBlobs.Where(db => db is AttributeDescription))
+            foreach (var item in design.DataBlobs.Where(db => db is IAttributeDescription))
             {
-                AttributeList.Add((AttributeDescription)item);
+                AttributeList.Add((IAttributeDescription)item);
             }
         }
 

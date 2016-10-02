@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
-    public class EnginePowerAtbDB : BaseDataBlob, AttributeDescription
+    public class EnginePowerAtbDB : BaseDataBlob, IAttributeDescription
     {
         [JsonProperty]
         public int EnginePower { get; internal set; }

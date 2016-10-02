@@ -30,10 +30,10 @@ namespace Pulsar4X.ViewModel
         /// this is a list of all components designed and availible to this empire. it should probibly include components designed but not yet researched. 
         /// these are what get generated from the DesignToEntity factory.
         /// </summary>
-        public List<Entity> ComponentsDesigned { get { return _factionEntity.GetDataBlob<FactionInfoDB>().ComponentDesigns.Values.ToList(); } }
+        //public List<Entity> ComponentsDesigned { get { return _factionEntity.GetDataBlob<FactionInfoDB>().ComponentDesigns.Values.ToList(); } }
         //public List<ComponentListVM> ComponentsDesignedLists { get; set; }
         public FactionComponentListVM ComponentsDesignedLists { get; }
-
+        public ObservableCollection<ComponentAtbsListVM> ComponentsList { get { return ComponentsDesignedLists.ComponentsList; } }
         /// <summary>
         /// a list of componentDesign Entities installed on teh ship, and how many of that type. 
         /// </summary>
@@ -44,7 +44,7 @@ namespace Pulsar4X.ViewModel
         {
             _factionEntity = factionEntity;
             ComponentsDesignedLists = new FactionComponentListVM(_factionEntity);
-
+            OnPropertyChanged(nameof(ComponentsList));
 
         }
 

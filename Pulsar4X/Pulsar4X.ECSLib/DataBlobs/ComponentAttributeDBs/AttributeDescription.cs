@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Pulsar4X.ECSLib
 {
-    public interface AttributeDescription
+    public interface IAttributeDescription
     {
         string Name { get; }
         string Description { get; }

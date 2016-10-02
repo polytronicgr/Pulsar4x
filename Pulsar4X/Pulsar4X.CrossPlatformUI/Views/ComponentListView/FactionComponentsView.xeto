@@ -1,16 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<Panel
+<Scrollable
   xmlns="http://schema.picoe.ca/eto.forms" 
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:c="clr-namespace:Pulsar4X.CrossPlatformUI.Views;assembly=Pulsar4X.CrossPlatformUI"
   >
-  <TableLayout>
-    <TableRow>
-      <c:GenericStackControl x:Name="ComponentListStack" DataContext="{Binding ComponentsList}" />
-      
-      <TableLayout>
-        
-      </TableLayout>
-    </TableRow>
-  </TableLayout>
-</Panel>
+  <c:GenericStackControl x:Name="components" DataContext="{Binding foo}" />
+</Scrollable>

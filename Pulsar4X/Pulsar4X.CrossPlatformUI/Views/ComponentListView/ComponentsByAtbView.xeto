@@ -1,7 +1,12 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<Scrollable
+<Panel
   xmlns="http://schema.picoe.ca/eto.forms" 
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:Pulsar4X.CrossPlatformUI.Views;assembly=Pulsar4X.CrossPlatformUI"
   >
-  <StackLayout x:Name="AtbStack" Orientation="Vertical"/>
-</Scrollable>
+  <StackLayout>
+    <Label Text ="{Binding AtbName}" />
+    <Label Text ="{Binding AtbDescription}"/>
+    <c:GenericStackControl x:Name="ComponentDesignsListStack" DataContext="{Binding DesignsList}" />
+  </StackLayout>
+</Panel>

@@ -4,13 +4,9 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:c="clr-namespace:Pulsar4X.CrossPlatformUI.Views;assembly=Pulsar4X.CrossPlatformUI"
   >
-  <TableLayout>
-    <TableRow>
-      <c:GenericStackControl x:Name="ComponentListStack" DataContext="{Binding ComponentsList}" />
-      
-      <TableLayout>
-        
-      </TableLayout>
-    </TableRow>
-  </TableLayout>
+  <StackLayout >
+    <Label Text ="{Binding DesignName}" />
+    <Label Text ="{Binding DesignDescription}"/>
+    <c:GenericStackControl x:Name="ComponentAttributesStack" DataContext="{Binding AttributeList}" />
+  </StackLayout>
 </Panel>

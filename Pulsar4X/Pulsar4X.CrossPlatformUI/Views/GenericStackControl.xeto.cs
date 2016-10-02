@@ -20,7 +20,7 @@ namespace Pulsar4X.CrossPlatformUI.Views
 
         private void GenericStackControl_DataContextChanged(object sender, EventArgs e)
         {
-            Type dcType = DataContext.GetType();
+            //Type dcType = DataContext.GetType();
             if (DataContext is ICollection)
             {                
                 Stack.Items.Clear();
