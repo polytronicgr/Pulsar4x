@@ -9,6 +9,7 @@ namespace Pulsar4X.ECSLib
     public class PropulsionDB : BaseDataBlob
     {
         public int MaximumSpeed { get; set; }
+        public double RequestedSpeed { get; set; } = 0;
         public Vector4 CurrentSpeed { get; set; }
         public int TotalEnginePower { get; set; }
         public Dictionary<Guid, double> FuelUsePerKM { get; internal set; } = new Dictionary<Guid, double>();
@@ -20,6 +21,7 @@ namespace Pulsar4X.ECSLib
         public PropulsionDB(PropulsionDB propulsionDB)
         {
             MaximumSpeed = propulsionDB.MaximumSpeed;
+            RequestedSpeed = propulsionDB.RequestedSpeed;
             CurrentSpeed = propulsionDB.CurrentSpeed;
             TotalEnginePower = propulsionDB.TotalEnginePower;
             FuelUsePerKM = new Dictionary<Guid, double>(propulsionDB.FuelUsePerKM);

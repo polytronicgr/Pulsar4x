@@ -147,6 +147,25 @@ namespace Pulsar4X.ECSLib
             }           
         }
 
+
+        internal static void CalcTargetTimePos(Entity shipEntity, Entity targetEntity, double atSpeed)
+        {
+            Vector4 targetPosition;
+            DateTime targetTime;
+
+            PositionDB shipPosDB = shipEntity.GetDataBlob<PositionDB>();
+            PositionDB targetPosDB = targetEntity.GetDataBlob<PositionDB>();
+
+            if (targetEntity.HasDataBlob<OrbitDB>())
+            { }
+            else
+            {
+                double distanceTo = shipPosDB.GetDistanceTo(targetPosDB);
+
+            }
+        }
+
+
         public static int CalcMaxFuelDistance(Entity shipEntity)
         {
             CargoStorageDB storedResources = shipEntity.GetDataBlob<CargoStorageDB>();
