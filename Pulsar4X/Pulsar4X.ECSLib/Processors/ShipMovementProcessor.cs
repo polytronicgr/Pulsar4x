@@ -147,7 +147,12 @@ namespace Pulsar4X.ECSLib
             }           
         }
 
-
+        /// <summary>
+        /// returns the time and position of a target for a given entity at a given speed. 
+        /// </summary>
+        /// <param name="shipEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="atSpeed"></param>
         internal static void CalcTargetTimePos(Entity shipEntity, Entity targetEntity, double atSpeed)
         {
             Vector4 targetPosition;
@@ -157,15 +162,25 @@ namespace Pulsar4X.ECSLib
             PositionDB targetPosDB = targetEntity.GetDataBlob<PositionDB>();
 
             if (targetEntity.HasDataBlob<OrbitDB>())
-            { }
+            {
+                OrbitDB orbitdb = targetEntity.GetDataBlob<OrbitDB>();
+                Entity parentBodyEntity = orbitdb.ParentDB.Parent;
+                PositionDB parentBodyPosition = parentBodyEntity.GetDataBlob<PositionDB>();
+
+                double distanceToParentBody = PositionDB.GetDistanceBetween(shipPosDB, parentBodyPosition);
+
+
+            }
             else
             {
                 double distanceTo = shipPosDB.GetDistanceTo(targetPosDB);
-
             }
         }
 
-
+        /// <summary>
+        /// </summary>
+        /// <param name="shipEntity"></param>
+        /// <returns>the distance for the amount of fuel currently carried</returns>
         public static int CalcMaxFuelDistance(Entity shipEntity)
         {
             CargoStorageDB storedResources = shipEntity.GetDataBlob<CargoStorageDB>();
