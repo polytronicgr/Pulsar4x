@@ -1,18 +1,14 @@
-﻿<Properties StartupItem="Pulsar4X.CrossPlatformUI.Gtk2\Pulsar4X.CrossPlatformUI.Gtk2.csproj">
+﻿<Properties StartupItem="Pulsar4X.CrossPlatformUI.Gtk2/Pulsar4X.CrossPlatformUI.Gtk2.csproj">
   <DisabledProjects>
     <String>ModdingTools.JsonDataEditor/ModdingTools.JsonDataEditor.csproj</String>
     <String>ModdingTools.JsonDataEditor2/ModdingTools.JsonDataEditor2.csproj</String>
     <String>Pulsar4X.WPFUI/Pulsar4X.WPFUI.csproj</String>
     <String>Pulsar4X.CrossPlatformUI.Mac\Pulsar4X.CrossPlatformUI.Mac.csproj</String>
     <String>Pulsar4X.CrossPlatformUI.Wpf\Pulsar4X.CrossPlatformUI.Wpf.csproj</String>
+    <String>Pulsar4X.CrossPlatformUI.Mac/Pulsar4X.CrossPlatformUI.Mac.csproj</String>
   </DisabledProjects>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Pulsar4X.CrossPlatformUI\Views\ComponentsListView.xeto">
-    <Files>
-      <File FileName="Pulsar4X.CrossPlatformUI\Views\JobAbilityView.xeto" Line="1" Column="1" />
-      <File FileName="Pulsar4X.CrossPlatformUI\Views\ComponentsListView.xeto" Line="1" Column="1" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
