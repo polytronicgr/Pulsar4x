@@ -9,7 +9,7 @@ namespace Pulsar4X.CrossPlatformUI.Views
 {
     public class SysInfo1dMap : Drawable
     {
-        private IconCollection _iconCollection = new IconCollection();
+		private IconCollection _iconCollection;// = new IconCollection();
         Camera2dv2 _cam;
         private SystemInfoVM _vm;
         private List<int> _widths;
