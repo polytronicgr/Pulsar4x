@@ -69,7 +69,7 @@ namespace Pulsar4X.CrossPlatformUI.Views
                 int yIndex = 1;
                 var icon = _iconCollection.IconDict[_vm.EBTreePair.Entity.Guid];
 
-                icon.DrawMe(e.Graphics, new PointF(8 * xIndex, 8 * yIndex));
+                //icon.DrawMe(e.Graphics, new PointF(8 * xIndex, 8 * yIndex));
 
                 foreach (var item in _vm.EBTreePair.Blob.ChildrenDBs)
                 {
@@ -85,7 +85,7 @@ namespace Pulsar4X.CrossPlatformUI.Views
 
                 xIndex += 1;
                 var icon = _iconCollection.IconDict[dblob.OwningEntity.Guid];
-                icon.DrawMe(g, new PointF(16 * xIndex, 16 * yIndex));
+                //icon.DrawMe(g, new PointF(16 * xIndex, 16 * yIndex));
                 foreach (var Yitem in dblob.ChildrenDBs)
                 {
                     yIndex += 1;
