@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
@@ -58,29 +59,11 @@ namespace Pulsar4X.ECSLib
         void ProcessAction(DateTime toDate, BaseAction action);
     }
 
-   
-    /// <summary>
-    /// This will enable a component/facility. ie turn on a mine, active sensor etc, 
-    /// it is non blocking and shouldn't normaly be blocked by other actions. 
-    /// keeping enable/disable seperate instead of just a single toggle should help with laggy network race conditions.
-    /// </summary>
-    public class EnableComponent : BaseAction
+    public class DoNothingAction:IActionableProcessor
     {
-        public EnableComponent(BaseOrder order, Entity orderEntity, Entity factionEntity) : base(3, false, order, orderEntity, factionEntity)
-        {
-        }
+        public void ProcessAction(DateTime toDate, BaseAction action) {  }
     }
-    
-    /// <summary>
-    /// This will disable a component/facility. ie turn off a mine, disable an active sensor etc, 
-    /// it is non blocking and shouldn't normaly be blocked by other actions. 
-    /// keeping enable/disable seperate instead of just a single toggle should help with laggy network race conditions.
-    /// </summary>
-    public class DisableComponent : BaseAction
-    {
-        public DisableComponent(BaseOrder order, Entity orderEntity, Entity factionEntity) : base(3, false, order, orderEntity, factionEntity)
-        {
-        }
-    }
+
+
 }
 
