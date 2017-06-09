@@ -34,7 +34,7 @@ namespace Pulsar4X.ECSLib
         public ManagerSubPulse ManagerSubpulses { get; private set; }
 
         [JsonProperty]
-        internal ConcurrentQueue<BaseOrder> OrderQueue = new ConcurrentQueue<BaseOrder>();
+        internal readonly ConcurrentQueue<BaseOrder> OrderQueue = new ConcurrentQueue<BaseOrder>();
 
         /// <summary>
         /// Static reference to an invalid manager.

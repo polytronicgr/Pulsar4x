@@ -12,8 +12,10 @@ namespace Pulsar4X.ECSLib
                 
                 Entity entity;
                 if (game.GlobalManager.FindEntityByGuid(order.EntityGuid, out entity))
-                    entity.Manager.OrderQueue.Enqueue(order);                   
-                return true;
+                {
+                    entity.Manager.OrderQueue.Enqueue(order);
+                    return true;
+                }
             }
             return false;
         }

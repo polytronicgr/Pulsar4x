@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Pulsar4X.ECSLib;
@@ -102,18 +103,21 @@ namespace Pulsar4X.Tests
         [Test]
         public void TestOrderViaMessagePump()
         {
+            _testGame.GameSettings.EnableMultiThreading = false;
             string sOrder = OrderSerializer.SerializeOrder(_cargoOrder);
             AuthenticationToken auth = new AuthenticationToken(_testGame.Game.SpaceMaster, "");
             _testGame.Game.MessagePump.EnqueueMessage(IncomingMessageType.EntityOrdersWrite, auth, sOrder);
 
             bool itemFound = false;
             _testGame.Game.GameLoop.Ticklength = TimeSpan.FromSeconds(10);
-            _testGame.Game.GameLoop.TimeStep();
-            if (_testGame.EarthColony.Manager.OrderQueue.Count > 0 || _testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue.Count > 0)
-                itemFound = true;
-            
-            Assert.True(itemFound, "order or action is lost");
-            
+            _testGame.Game.GameLoop.TickFrequency = TimeSpan.FromTicks(1);
+            _testGame.Game.MessagePump.EnqueueMessage(IncomingMessageType.ExecutePulse, auth, "");
+            Thread.Sleep(TimeSpan.FromSeconds(20));
+            Assert.True(_testGame.DefaultShip.Manager.OrderQueue.Count > 0);
+            _testGame.Game.MessagePump.EnqueueMessage(IncomingMessageType.ExecutePulse, auth, "");
+            Thread.Sleep(TimeSpan.FromSeconds(20));
+            Assert.True(_testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue.Count > 0);
+
         }
     }
 }
