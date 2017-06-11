@@ -7,13 +7,10 @@ using System.Text.RegularExpressions;
 
 namespace Pulsar4X.ECSLib
 {
-    /// <summary>
-    /// 2-Way message pump utilizing two message queues, Incoming and Outgoing
-    /// </summary>
-    public class MessagePump
+
+    public class IncommingMessageQueue
     {
         private readonly ConcurrentQueue<string> _incomingMessages = new ConcurrentQueue<string>();
-        private readonly ConcurrentQueue<string> _outgoingMessages = new ConcurrentQueue<string>();
         #region Queue Management
 
         /// <summary>
@@ -44,6 +41,14 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         internal bool TryDequeueIncomingMessage(out string message) => _incomingMessages.TryDequeue(out message);
 
+
+        #endregion Queue Management
+    }
+
+    public class OutGoingMessageQueue
+    {        
+        private readonly ConcurrentQueue<string> _outgoingMessages = new ConcurrentQueue<string>();
+        
         /// <summary>
         /// Enqueues a message to the ECSLib's Outgoing Message Queue.
         /// </summary>
@@ -71,6 +76,5 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [PublicAPI]
         public bool TryDequeueOutgoingMessage(out string message) => _outgoingMessages.TryDequeue(out message);
-        #endregion Queue Management
     }
 }

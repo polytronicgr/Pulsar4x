@@ -10,12 +10,12 @@ namespace Pulsar4X.Tests
     [NUnit.Framework.Description("Message Tests")]
     internal class MessageTests
     {
-        private static MessagePump _messagePump;
+        private static IncommingMessageQueue _messagePump;
 
         [Test]
         public void MessagePumpQueueOperations()
         {
-            _messagePump = new MessagePump();
+            _messagePump = new IncommingMessageQueue();
             string outString;
 
             // Attempt to read empty queues.
@@ -63,7 +63,7 @@ namespace Pulsar4X.Tests
         [Test]
         public void ValidHeaderManipulation()
         {
-            _messagePump = new MessagePump();
+            _messagePump = new IncommingMessageQueue();
 
             // Retrieve a header for a message.
             var messageType = IncomingMessageType.Echo;
@@ -91,7 +91,7 @@ namespace Pulsar4X.Tests
         [Test]
         public void InvalidHeaderManipulation()
         {
-            _messagePump = new MessagePump();
+            _messagePump = new IncommingMessageQueue();
 
             // Attempt to get a header for a message with an invalid IncomingMessageType
             var messageType = (IncomingMessageType)(-1);

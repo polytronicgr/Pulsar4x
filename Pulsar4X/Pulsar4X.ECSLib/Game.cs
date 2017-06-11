@@ -74,7 +74,7 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         private readonly EconProcessor _econProcessor = new EconProcessor();
 
-        public readonly MessagePump MessagePump = new MessagePump();
+        public readonly IncommingMessageQueue MessagePump = new IncommingMessageQueue();
 
         internal bool ExitRequested;
 
