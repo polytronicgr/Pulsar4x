@@ -153,6 +153,7 @@
     <Compile Include="StaticDataTests.cs" />
     <Compile Include="SystemGenTests.cs" />
     <Compile Include="TestingUtilities.cs" />
+    <Compile Include="UIConnectionTests.cs" />
     <Compile Include="UnitHelperTests.cs" />
     <Compile Include="Vector4Tests.cs" />
     <Compile Include="ViewModelTests.cs" />

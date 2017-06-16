@@ -66,5 +66,7 @@ namespace Pulsar4X.ECSLib
         /// Request a list of all Entities within a solarSystem.
         /// </summary>
         SolarSystemQuery, // message format: "systemGuid"
+        
+        UIConnect,
     }
 }

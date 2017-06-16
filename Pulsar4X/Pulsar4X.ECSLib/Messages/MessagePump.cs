@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
+using Pulsar4X.ECSLib.DataSubscription;
 
 namespace Pulsar4X.ECSLib
 {
@@ -11,6 +12,9 @@ namespace Pulsar4X.ECSLib
     public class IncommingMessageQueue
     {
         private readonly ConcurrentQueue<string> _incomingMessages = new ConcurrentQueue<string>();
+        public UIConnections UIConnections { get; } = new UIConnections();
+        public OutGoingMessageQueue LocalOutgoingQueue => UIConnections.Connections[Guid.Empty].OutGoingMessageQueue;
+
         #region Queue Management
 
         /// <summary>

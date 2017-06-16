@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using Newtonsoft.Json;
+using Pulsar4X.ECSLib.DataSubscription;
 
 
 namespace Pulsar4X.ECSLib
@@ -378,11 +379,12 @@ namespace Pulsar4X.ECSLib
         {
             action.Status = "In Progress ";
             TimeSpan deltaTime = toDate - action.ThisStorage.LastRunDate;
-
+            
 
             CargoStorageDB cargoFrom = action.CargoFrom;
             CargoStorageDB cargoTo = action.CargoTo;
-
+            UIConnections connections = action.ThisEntity.Manager.Game.MessagePump.UIConnections;
+            
             double tonsThisDeltaT = action.ThisStorage.OrderTransferRate * deltaTime.TotalSeconds / 3600;
             tonsThisDeltaT += action.ThisStorage.PartAmount;
             action.ThisStorage.PartAmount = tonsThisDeltaT - Math.Floor(tonsThisDeltaT);
@@ -404,6 +406,10 @@ namespace Pulsar4X.ECSLib
                     OrderProcessor.SetNextInterupt(EstDateTime(action, action.ThisStorage), action);
                 }
             }
+            
+            connections.NotifyConnectionsOfDatablobChanges<CargoStorageDB>(cargoFrom.OwningEntity.Guid);
+            connections.NotifyConnectionsOfDatablobChanges<CargoStorageDB>(cargoTo.OwningEntity.Guid);
+            connections.NotifyConnectionsOfDatablobChanges<OrderableDB>(action.ThisEntity.Guid);
         }
 
         /// <summary>

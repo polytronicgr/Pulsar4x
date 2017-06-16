@@ -20,20 +20,20 @@ namespace Pulsar4X.Tests
 
             // Attempt to read empty queues.
             Assert.IsFalse(_messagePump.TryPeekIncomingMessage(out outString));
-            Assert.IsFalse(_messagePump.TryPeekOutgoingMessage(out outString));
+            Assert.IsFalse(_messagePump.LocalOutgoingQueue.TryPeekOutgoingMessage(out outString));
             Assert.IsFalse(_messagePump.TryDequeueIncomingMessage(out outString));
-            Assert.IsFalse(_messagePump.TryDequeueOutgoingMessage(out outString));
+            Assert.IsFalse(_messagePump.LocalOutgoingQueue.TryDequeueOutgoingMessage(out outString));
 
             // Verify Queue operations
             string incomingMessage = "TestIncomingMessage";
             _messagePump.EnqueueMessage(incomingMessage);
             string outgoingMessage = "TestOutgoingMessage";
-            _messagePump.EnqueueOutgoingMessage(OutgoingMessageType.Invalid, outgoingMessage);
+            _messagePump.LocalOutgoingQueue.EnqueueOutgoingMessage(OutgoingMessageType.Invalid, outgoingMessage);
 
             // Verify Dequeue operations
             Assert.IsTrue(_messagePump.TryDequeueIncomingMessage(out outString));
             Assert.AreEqual(outString, incomingMessage);
-            Assert.IsTrue(_messagePump.TryDequeueOutgoingMessage(out outString));
+            Assert.IsTrue(_messagePump.LocalOutgoingQueue.TryDequeueOutgoingMessage(out outString));
             OutgoingMessageType outMessageTypeTest;
             Assert.IsTrue(MessageFormatter.TryGetOutgoingMessageType(ref outString, out outMessageTypeTest));
             Assert.AreEqual(outMessageTypeTest, OutgoingMessageType.Invalid);
@@ -41,9 +41,9 @@ namespace Pulsar4X.Tests
 
             // Verify Queues are now empty.
             Assert.IsFalse(_messagePump.TryPeekIncomingMessage(out outString));
-            Assert.IsFalse(_messagePump.TryPeekOutgoingMessage(out outString));
+            Assert.IsFalse(_messagePump.LocalOutgoingQueue.TryPeekOutgoingMessage(out outString));
             Assert.IsFalse(_messagePump.TryDequeueIncomingMessage(out outString));
-            Assert.IsFalse(_messagePump.TryDequeueOutgoingMessage(out outString));
+            Assert.IsFalse(_messagePump.LocalOutgoingQueue.TryDequeueOutgoingMessage(out outString));
 
             // Verify extended public enqueue.
             var authToken = new AuthenticationToken(Guid.NewGuid(), "hunter2");
@@ -79,10 +79,10 @@ namespace Pulsar4X.Tests
             Assert.AreEqual(authToken, testAuthToken);
 
             // Ensure outgoingMessages get proper headers, and are proeprly decoded.
-            _messagePump.EnqueueOutgoingMessage(OutgoingMessageType.Echo, "EchoTest");
+            _messagePump.LocalOutgoingQueue.EnqueueOutgoingMessage(OutgoingMessageType.Echo, "EchoTest");
             OutgoingMessageType outMessageTypeTest;
 
-            Assert.True(_messagePump.TryPeekOutgoingMessage(out message));
+            Assert.True(_messagePump.LocalOutgoingQueue.TryPeekOutgoingMessage(out message));
             Assert.IsTrue(MessageFormatter.TryGetOutgoingMessageType(ref message, out outMessageTypeTest));
             Assert.AreEqual(message, "EchoTest");
             Assert.AreEqual(OutgoingMessageType.Echo, outMessageTypeTest);
