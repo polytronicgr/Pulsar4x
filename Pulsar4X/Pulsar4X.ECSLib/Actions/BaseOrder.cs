@@ -8,8 +8,8 @@ namespace Pulsar4X.ECSLib
     {        
         [JsonProperty]
         public Guid EntityGuid { get; set; }
-        [JsonProperty]
-        public Guid FactionGuiD { get; set; }
+        //[JsonProperty]
+        //public Guid FactionGuid { get; set; }
         [JsonProperty]
         public Guid TargetEntityGuid { get; internal set; }
         [JsonProperty]
@@ -19,7 +19,7 @@ namespace Pulsar4X.ECSLib
 
         protected BaseOrder(Guid orderEntity, Guid faction)
         {
-            FactionGuiD = faction;
+            FactionGuid = faction;
             EntityGuid = orderEntity;
         }
 
@@ -37,6 +37,16 @@ namespace Pulsar4X.ECSLib
         /// <param name="order"></param>
         internal abstract BaseAction CreateAction(Game game, BaseOrder order);
 
+        internal override void HandleMessage(Game game)
+        {
+            
+            Entity entity;
+            if (game.GlobalManager.FindEntityByGuid(EntityGuid, out entity))
+            {
+                entity.Manager.OrderQueue.Enqueue(this);
+            }   
+        }
+
         /// <summary>
         /// returns true if the required entites are found and the orderedEntity is owned by the factionEntity
         /// I realy dislike this style of function however, and I may rewrite it. (bool with out)
@@ -52,7 +62,7 @@ namespace Pulsar4X.ECSLib
                 return false;
             if (!orderEntities.ThisEntity.HasDataBlob<OrderableDB>())
                 return false;
-            if (!game.GlobalManager.FindEntityByGuid(order.FactionGuiD, out orderEntities.FactionEntity))
+            if (!game.GlobalManager.FindEntityByGuid(order.FactionGuid, out orderEntities.FactionEntity))
                 return false;
             if (order.HasTargetEntity)
             {

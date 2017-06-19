@@ -187,13 +187,7 @@
     <Compile Include="Helpers\ObjectSerializer.cs" />
     <Compile Include="Helpers\ObserviableConcurrentDictionary.cs" />
     <Compile Include="ManagerSubPulse.cs" />
-    <Compile Include="Messages\MessageFormatter.cs" />
-    <Compile Include="Messages\MessageHandlers\EntityOrderMessageHandler.cs" />
-    <Compile Include="Messages\MessageHandlers\GameMessageHandler.cs" />
-    <Compile Include="Messages\MessageHandlers\IMessageHandler.cs" />
     <Compile Include="Messages\IncomingMessageType.cs" />
-    <Compile Include="Messages\MessageDispatcher.cs" />
-    <Compile Include="Messages\MessagePump.cs" />
     <Compile Include="Messages\OutgoingMessageType.cs" />
     <Compile Include="Factories\ShipComponents\ComponentDesign.cs" />
     <Compile Include="DataBlobs\ComponentAttributeDBs\ConstructionAtbDB.cs" />
@@ -335,6 +329,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DataBlobs\ShipDBs\ShipAbilityDBs\" />
+    <Folder Include="Messages\MessageHandlers" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

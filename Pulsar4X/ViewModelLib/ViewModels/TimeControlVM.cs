@@ -64,12 +64,14 @@ namespace Pulsar4X.ViewModel
                 return;
             if (IsPaused)
             {
-                _gameVM.Game.MessagePump.EnqueueMessage(IncomingMessageType.StartRealTime, _gameVM.CurrentAuthToken, "");
+                GameOrder newmessage = new GameOrder(IncomingMessageType.StartRealTime);
+                _gameVM.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(newmessage));
                 IsPaused = false;
             }
             else
             {
-                _gameVM.Game.MessagePump.EnqueueMessage(IncomingMessageType.StopRealTime, _gameVM.CurrentAuthToken, "");
+                GameOrder newmessage = new GameOrder(IncomingMessageType.StopRealTime);
+                _gameVM.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(newmessage));
                 IsPaused = true;
             }
             OnPropertyChanged(nameof(IsPaused));
@@ -82,7 +84,8 @@ namespace Pulsar4X.ViewModel
         {
             if (_timeloop == null)
                 return;
-            _gameVM.Game.MessagePump.EnqueueMessage(IncomingMessageType.ExecutePulse, _gameVM.CurrentAuthToken, "");
+            GameOrder newmessage = new GameOrder(IncomingMessageType.ExecutePulse);
+            _gameVM.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(newmessage));
         }
 
         private void OnTimeDateChange(DateTime newDate)

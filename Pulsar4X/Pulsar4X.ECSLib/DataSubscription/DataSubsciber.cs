@@ -11,8 +11,7 @@ namespace Pulsar4X.ECSLib.DataSubscription
     /// </summary>
     public class DataSubsciber
     {
-        private Entity _factionEntity;
-        private Guid _connectionID;
+        private readonly Guid _connectionID;
         private readonly Game _game;
 
         private Dictionary<Guid, HashSet<string>> SubscribedDatablobs { get; } = new Dictionary<Guid, HashSet<string>>();
@@ -45,8 +44,9 @@ namespace Pulsar4X.ECSLib.DataSubscription
                 Entity entity;
                 _game.GlobalManager.FindEntityByGuid(entityGuid, out entity);
                 T datablob = entity.GetDataBlob<T>();
-                string stringblob = SerializeDataBlob(datablob);
-                _game.MessagePump.UIConnections.Connections[_connectionID].OutGoingMessageQueue.EnqueueOutgoingMessage(OutgoingMessageType.EntityDataBlobs, stringblob);
+                //string stringblob = SerializeDataBlob(datablob);
+                UIDataBlobUpdateMessage message = new UIDataBlobUpdateMessage(datablob, "");
+                _game.MessagePump.EnqueueOutgoingMessage(_connectionID, message);
             }
         }
 
@@ -66,41 +66,6 @@ namespace Pulsar4X.ECSLib.DataSubscription
         public static BaseDataBlob DeserializeDataBlob(string jsonString) { return JsonConvert.DeserializeObject<BaseDataBlob>(jsonString, Settings); }
     }
 
-
-    public class UIConnections
-    {
-        public Dictionary<Guid, UIConnection> Connections = new Dictionary<Guid, UIConnection>();
-
-        public UIConnections(Game game)
-        {
-            CreateConnection(game, Guid.Empty); //default localUI connection
-        }
-
-        public void CreateConnection(Game game, Guid connectionID)
-        {
-            var newConnection = new UIConnection(game, connectionID);
-        }
-
-        public void NotifyConnectionsOfDatablobChanges<T>(Guid entityGuid)
-            where T : BaseDataBlob
-        {
-            foreach (var item in Connections.Values)
-            {
-                item.DataSubsciber.TriggerIfSubscribed<T>(entityGuid);
-            }
-        }
-
-
-        public class UIConnection
-        {
-
-            internal Guid FactionID { get; set; }
-            internal DataSubsciber DataSubsciber { get; }
-            public OutGoingMessageQueue OutGoingMessageQueue { get; } = new OutGoingMessageQueue();
-
-            public UIConnection(Game game, Guid connectionID) { DataSubsciber = new DataSubsciber(game, connectionID); }
-        }
-    }
 }
 
 

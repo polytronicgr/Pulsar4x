@@ -96,7 +96,7 @@ namespace Pulsar4X.Tests
         public void TestOrderSeralisation()
         {            
             string seralisedOrder = ObjectSerializer.SerializeObject(_cargoOrder);
-            BaseOrder deserailisedOrder = ObjectSerializer.DeserializeObject(seralisedOrder);
+            BaseOrder deserailisedOrder = ObjectSerializer.DeserializeObject<BaseOrder>(seralisedOrder);
             Assert.True(deserailisedOrder is CargoOrder);
         }
 
@@ -106,15 +106,16 @@ namespace Pulsar4X.Tests
             _testGame.GameSettings.EnableMultiThreading = false;
             string sOrder = ObjectSerializer.SerializeObject(_cargoOrder);
             AuthenticationToken auth = new AuthenticationToken(_testGame.Game.SpaceMaster, "");
-            _testGame.Game.MessagePump.EnqueueMessage(IncomingMessageType.EntityOrdersWrite, auth, sOrder);
+            _testGame.Game.MessagePump.EnqueueMessage(sOrder);
 
             bool itemFound = false;
             _testGame.Game.GameLoop.Ticklength = TimeSpan.FromSeconds(10);
             _testGame.Game.GameLoop.TickFrequency = TimeSpan.FromTicks(1);
-            _testGame.Game.MessagePump.EnqueueMessage(IncomingMessageType.ExecutePulse, auth, "");
+            GameOrder gameOrder = new GameOrder(IncomingMessageType.ExecutePulse);
+            _testGame.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(gameOrder));
             Thread.Sleep(TimeSpan.FromSeconds(20));
             Assert.True(_testGame.DefaultShip.Manager.OrderQueue.Count > 0);
-            _testGame.Game.MessagePump.EnqueueMessage(IncomingMessageType.ExecutePulse, auth, "");
+            _testGame.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(gameOrder));
             Thread.Sleep(TimeSpan.FromSeconds(20));
             Assert.True(_testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue.Count > 0);
 

@@ -41,7 +41,7 @@ namespace Pulsar4X.Tests
             Guid conectionID = new Guid();
             AuthenticationToken auth = new AuthenticationToken(_testGame.Game.SpaceMaster, "");
             
-            _testGame.Game.MessagePump.UIConnections.Connections[Guid.Empty].DataSubsciber.Subscribe<CargoStorageDB>(_testGame.DefaultShip.Guid);
+           _testGame.Game.MessagePump.DataSubscibers[Guid.Empty].Subscribe<CargoStorageDB>(_testGame.DefaultShip.Guid);
 
 
             BaseAction action = _cargoOrder.CreateAction(_testGame.Game, _cargoOrder);
@@ -49,10 +49,12 @@ namespace Pulsar4X.Tests
 
             _testGame.EarthColony.Manager.OrderQueue.Enqueue(_cargoOrder);
             OrderProcessor.ProcessManagerOrders(_testGame.EarthColony.Manager);
-            Assert.True(_testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue[0] is CargoAction);
-
-            string message;
-            Assert.True(_testGame.Game.MessagePump.LocalOutgoingQueue.TryPeekOutgoingMessage(out message));
+            Assert.True(_testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue[0] is CargoAction, "No action in ship orders");
+            _testGame.Game.GameLoop.Ticklength = TimeSpan.FromSeconds(10);
+            _testGame.Game.GameLoop.TimeStep();
+            _testGame.Game.GameLoop.TimeStep();
+            BaseMessage message;
+            Assert.True(_testGame.Game.MessagePump.TryPeekOutgoingMessage(Guid.Empty, out message), "No message in pump");
             
         }
 
