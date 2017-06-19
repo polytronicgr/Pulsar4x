@@ -113,11 +113,11 @@ namespace Pulsar4X.Tests
             _testGame.Game.GameLoop.TickFrequency = TimeSpan.FromTicks(1);
             GameOrder gameOrder = new GameOrder(IncomingMessageType.ExecutePulse);
             _testGame.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(gameOrder));
-            Thread.Sleep(TimeSpan.FromSeconds(20));
-            Assert.True(_testGame.DefaultShip.Manager.OrderQueue.Count > 0);
+            Thread.Sleep(20);
+            Assert.True(_testGame.DefaultShip.Manager.OrderQueue.Count > 0, "no orders in queue");
             _testGame.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(gameOrder));
-            Thread.Sleep(TimeSpan.FromSeconds(20));
-            Assert.True(_testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue.Count > 0);
+            OrderProcessor.ProcessActionList(_testGame.Game.CurrentDateTime, _testGame.EarthColony.Manager);
+            Assert.True(_testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue.Count > 0, "no actions in queue");
 
         }
     }

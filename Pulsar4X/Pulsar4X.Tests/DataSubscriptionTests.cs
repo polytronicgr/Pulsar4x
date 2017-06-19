@@ -8,7 +8,7 @@ using Pulsar4X.ECSLib.DataSubscription;
 namespace Pulsar4X.Tests
 {
     [TestFixture]
-    public class UIConnectionTests
+    public class DataSubscriptionTests
     {
 
         TestGame _testGame;
@@ -51,8 +51,8 @@ namespace Pulsar4X.Tests
             OrderProcessor.ProcessManagerOrders(_testGame.EarthColony.Manager);
             Assert.True(_testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue[0] is CargoAction, "No action in ship orders");
             _testGame.Game.GameLoop.Ticklength = TimeSpan.FromSeconds(10);
-            _testGame.Game.GameLoop.TimeStep();
-            _testGame.Game.GameLoop.TimeStep();
+            _testGame.Game.GameLoop.TimeStep();            
+            OrderProcessor.ProcessActionList(_testGame.Game.CurrentDateTime, _testGame.EarthColony.Manager);
             BaseMessage message;
             Assert.True(_testGame.Game.MessagePump.TryPeekOutgoingMessage(Guid.Empty, out message), "No message in pump");
             
