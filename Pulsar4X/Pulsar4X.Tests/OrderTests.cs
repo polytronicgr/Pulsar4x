@@ -95,8 +95,8 @@ namespace Pulsar4X.Tests
         [Test]
         public void TestOrderSeralisation()
         {            
-            string seralisedOrder = OrderSerializer.SerializeOrder(_cargoOrder);
-            BaseOrder deserailisedOrder = OrderSerializer.DeserializeOrder(seralisedOrder);
+            string seralisedOrder = ObjectSerializer.SerializeObject(_cargoOrder);
+            BaseOrder deserailisedOrder = ObjectSerializer.DeserializeObject(seralisedOrder);
             Assert.True(deserailisedOrder is CargoOrder);
         }
 
@@ -104,7 +104,7 @@ namespace Pulsar4X.Tests
         public void TestOrderViaMessagePump()
         {
             _testGame.GameSettings.EnableMultiThreading = false;
-            string sOrder = OrderSerializer.SerializeOrder(_cargoOrder);
+            string sOrder = ObjectSerializer.SerializeObject(_cargoOrder);
             AuthenticationToken auth = new AuthenticationToken(_testGame.Game.SpaceMaster, "");
             _testGame.Game.MessagePump.EnqueueMessage(IncomingMessageType.EntityOrdersWrite, auth, sOrder);
 

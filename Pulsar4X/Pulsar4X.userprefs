@@ -1,13 +1,19 @@
 ﻿<Properties StartupConfiguration="{30509646-A52E-4563-AE27-706882D7F8C3}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Pulsar4X.ECSLib/Player.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Pulsar4X.ECSLib/Actions/BaseOrder.cs">
     <Files>
-      <File FileName="Pulsar4X.ECSLib/Player.cs" Line="1" Column="9" />
+      <File FileName="Pulsar4X.ECSLib/DataSubscription/DataSubsciber.cs" Line="92" Column="9" />
+      <File FileName="Pulsar4X.Tests/UIConnectionTests.cs" Line="37" Column="15" />
+      <File FileName="Pulsar4X.Tests/OrderTests.cs" Line="42" Column="1" />
+      <File FileName="Pulsar4X.ECSLib/Messages/MessagePump2.cs" Line="19" Column="33" />
+      <File FileName="Pulsar4X.ECSLib/Actions/BaseOrder.cs" Line="80" Column="25" />
+      <File FileName="Pulsar4X.ECSLib/Game.cs" Line="184" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Breakpoint file="/mnt/98448323-4372-4c8a-904a-30b587cc3685/Pulsar4x/Pulsar4X/Pulsar4X.CrossPlatformUI/Views/SystemView/EntityIcon.cs" line="30" column="1" />
+      <Breakpoint file="/mnt/98448323-4372-4c8a-904a-30b587cc3685/Programing/Pulsar4x/Pulsar4X/Pulsar4X.ECSLib/Messages/MessagePump.cs" relfile="Pulsar4X.ECSLib/Messages/MessagePump.cs" line="15" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

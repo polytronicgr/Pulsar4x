@@ -8,7 +8,7 @@ namespace Pulsar4X.ECSLib
         {
             if (messageType == IncomingMessageType.EntityOrdersWrite)
             {
-                BaseOrder order = OrderSerializer.DeserializeOrder(message);
+                BaseOrder order = ObjectSerializer.DeserializeObject<BaseOrder>(message);
                 
                 Entity entity;
                 if (game.GlobalManager.FindEntityByGuid(order.EntityGuid, out entity))

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace Pulsar4X.ECSLib
 {
     [JsonObject(MemberSerialization.OptIn)]
-    public abstract class BaseOrder
+    public abstract class BaseOrder : BaseMessage
     {        
         [JsonProperty]
         public Guid EntityGuid { get; set; }
@@ -71,25 +71,5 @@ namespace Pulsar4X.ECSLib
         internal Entity ThisEntity;
         internal Entity FactionEntity;
         internal Entity TargetEntity;
-    }  
-    
-    /// <summary>
-    /// This static helper class is used for seralizing BaseOrder derived concreations,
-    /// so they can be sent via the messagepump, then deserialized into the correct derived type. 
-    /// </summary>
-    public static class OrderSerializer
-    {
-        private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
-        
-        public static string SerializeOrder(BaseOrder order)
-        {
-            return JsonConvert.SerializeObject(order, Settings);
-        }
-
-        public static BaseOrder DeserializeOrder(string jsonString)
-        {
-            return JsonConvert.DeserializeObject<BaseOrder>(jsonString, Settings);
-        }
     }
-
 }

@@ -42,8 +42,17 @@ namespace Pulsar4X.Tests
             AuthenticationToken auth = new AuthenticationToken(_testGame.Game.SpaceMaster, "");
             
             _testGame.Game.MessagePump.UIConnections.Connections[Guid.Empty].DataSubsciber.Subscribe<CargoStorageDB>(_testGame.DefaultShip.Guid);
-            
-            
+
+
+            BaseAction action = _cargoOrder.CreateAction(_testGame.Game, _cargoOrder);
+            Assert.NotNull(action.OrderableProcessor);
+
+            _testGame.EarthColony.Manager.OrderQueue.Enqueue(_cargoOrder);
+            OrderProcessor.ProcessManagerOrders(_testGame.EarthColony.Manager);
+            Assert.True(_testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue[0] is CargoAction);
+
+            string message;
+            Assert.True(_testGame.Game.MessagePump.LocalOutgoingQueue.TryPeekOutgoingMessage(out message));
             
         }
 
