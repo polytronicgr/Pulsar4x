@@ -179,12 +179,17 @@
     <Compile Include="DataSubscription\DataSubsciber.cs" />
     <Compile Include="Factories\AsteroidFactory.cs" />
     <Compile Include="Factories\ShipComponents\ComponentInstanceFactory.cs" />
-    <Compile Include="FeatureSet\CargoStorage\CargoAction.cs" />
-    <Compile Include="FeatureSet\CargoStorage\CargoOrder.cs" />
-    <Compile Include="FeatureSet\CargoStorage\CargoStorageAtbDB.cs" />
-    <Compile Include="FeatureSet\CargoStorage\CargoStorageDB.cs" />
-    <Compile Include="FeatureSet\CargoStorage\CargoStorageUIData.cs" />
-    <Compile Include="FeatureSet\CargoStorage\StorageSpaceProcessor.cs" />
+    <Compile Include="FeatureSets\CargoStorage\CargoAction.cs" />
+    <Compile Include="FeatureSets\CargoStorage\CargoOrder.cs" />
+    <Compile Include="FeatureSets\CargoStorage\CargoStorageAtbDB.cs" />
+    <Compile Include="FeatureSets\CargoStorage\CargoStorageDB.cs" />
+    <Compile Include="FeatureSets\CargoStorage\CargoStorageUIData.cs" />
+    <Compile Include="FeatureSets\CargoStorage\StorageSpaceProcessor.cs" />
+    <Compile Include="FeatureSets\TranslationMove\EnginePowerAtbDB.cs" />
+    <Compile Include="FeatureSets\TranslationMove\PropulsionDB.cs" />
+    <Compile Include="FeatureSets\TranslationMove\TranslationAction.cs" />
+    <Compile Include="FeatureSets\TranslationMove\TranslationMoveProcessor.cs" />
+    <Compile Include="FeatureSets\TranslationMove\TranslationOrder.cs" />
     <Compile Include="Helpers\CargoDictionary.cs" />
     <Compile Include="Helpers\EntityManipulation.cs" />
     <Compile Include="Helpers\CollectionChangedHelpers.cs" />
@@ -196,7 +201,6 @@
     <Compile Include="Messages\OutgoingMessageType.cs" />
     <Compile Include="Factories\ShipComponents\ComponentDesign.cs" />
     <Compile Include="DataBlobs\ComponentAttributeDBs\ConstructionAtbDB.cs" />
-    <Compile Include="DataBlobs\ComponentAttributeDBs\EnginePowerAtbDB.cs" />
     <Compile Include="DataBlobs\ComponentAttributeDBs\ResourcelConsumptionAtbDB.cs" />
     <Compile Include="DataBlobs\ComponentAttributeDBs\MineResourcesAtbDB.cs" />
     <Compile Include="DataBlobs\ComponentAttributeDBs\MissileLauncherAtbDB.cs" />
@@ -266,7 +270,6 @@
     <Compile Include="Processors\ResourceConsumptionProcesor.cs" />
     <Compile Include="Processors\Econ Subprocessors\TechProcessor.cs" />
     <Compile Include="Processors\ShipAndColonyInfoProcessor.cs" />
-    <Compile Include="Processors\TranslationMoveProcessor.cs" />
     <Compile Include="Processors\WeaponProcessor.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="StaticDataManager.cs" />
@@ -295,7 +298,6 @@
     <Compile Include="DataBlobs\ShipDBs\MaintenanceDB.cs" />
     <Compile Include="DataBlobs\ShipDBs\MissileWeaponsDB.cs" />
     <Compile Include="DataBlobs\ShipDBs\PowerDB.cs" />
-    <Compile Include="DataBlobs\ShipDBs\PropulsionDB.cs" />
     <Compile Include="DataBlobs\ShipDBs\SensorProfileDB.cs" />
     <Compile Include="DataBlobs\ShipDBs\SensorsDB.cs" />
     <Compile Include="DataBlobs\ShipDBs\ShieldsDB.cs" />
