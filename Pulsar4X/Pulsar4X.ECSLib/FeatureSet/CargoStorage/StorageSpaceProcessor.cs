@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using Newtonsoft.Json;
 using Pulsar4X.ECSLib.DataSubscription;
 
 
@@ -422,94 +421,6 @@ namespace Pulsar4X.ECSLib
             cargoStorageDB.OrderTransferRate = (int)(action.CargoFrom.TransferRate + action.CargoTo.TransferRate * 0.5);
             TimeSpan timeToComplete = TimeSpan.FromHours((float)cargoStorageDB.AmountToTransfer / cargoStorageDB.OrderTransferRate);
             return action.ThisEntity.Manager.ManagerSubpulses.SystemLocalDateTime + timeToComplete;
-        }
-    }
-     
-    public enum CargoOrderTypes
-    {
-            LoadCargo,
-            UnloadCargo,
-    }
-    public class CargoOrder : BaseOrder
-    {       
-        [JsonProperty]
-        public CargoOrderTypes CargoOrderType;
-        [JsonProperty]
-        public Guid CargoItemGuid;
-        [JsonProperty]
-        public int Amount;
-
-        public CargoOrder(Guid entity, Guid faction, Guid target, CargoOrderTypes orderType, Guid cargoItemID, int amount) 
-            : base(entity, faction, target)
-        {
-            CargoOrderType = orderType;
-            CargoItemGuid = cargoItemID;
-            Amount = amount;       
-        }
-
-        /// <summary>
-        /// Creates a new CargoAction and sets it to the orderableEntity. 
-        /// </summary>
-        /// <param name="game"></param>
-        /// <param name="cargoOrder"></param>
-        internal CargoAction CreateAction(Game game, CargoOrder cargoOrder)
-        {
-            OrderEntities orderEntities;
-            if (GetOrderEntities(game, cargoOrder, out orderEntities))
-            {
-                return new CargoAction(this, orderEntities, cargoOrder.Amount);                         
-            }
-            //TODO: log don't throw, it's possible an entity could be destroyed by the time this happens.
-            throw new Exception("couldn't find all required entites to create cargoAction from cargoOrder");
-        }
-
-        internal override BaseAction CreateAction(Game game, BaseOrder order)
-        {
-            return CreateAction(game, (CargoOrder)order);
-        }
-    }
-
-    //TODO this needs to be serailisable.
-    internal class CargoAction : BaseAction
-    {
-        internal CargoStorageDB CargoFrom { get; set; }
-        internal CargoStorageDB CargoTo { get; set; }
-        internal CargoStorageDB ThisStorage { get; set; }
-        public CargoAction(CargoOrder order, OrderEntities orderEntities, int amount) : 
-            base(1, true, order, orderEntities.ThisEntity, orderEntities.FactionEntity, orderEntities.TargetEntity)
-        {
-            //set the orderableProcessor for cargoAction. 
-            OrderableProcessor = new CargoOrderProcessor();
-
-            if (order.CargoOrderType == CargoOrderTypes.LoadCargo)
-                Name = "Cargo Transfer: Load from ";
-            else
-                Name = "Cargo Transfer: Unload To ";                       
-            Name += TargetEntity.GetDataBlob<NameDB>().DefaultName;
-
-            Status = "Waiting";
-            //set local variables for cargoAction
-
-            ThisStorage = ThisEntity.GetDataBlob<CargoStorageDB>();            
-            switch (order.CargoOrderType)
-            {
-                case CargoOrderTypes.LoadCargo:
-                    CargoFrom = this.TargetEntity.GetDataBlob<CargoStorageDB>();
-                    CargoTo = this.ThisEntity.GetDataBlob<CargoStorageDB>();
-                    break;
-                case CargoOrderTypes.UnloadCargo:
-                    CargoTo = this.TargetEntity.GetDataBlob<CargoStorageDB>();
-                    CargoFrom = this.ThisEntity.GetDataBlob<CargoStorageDB>();
-                    break;
-            }
-            
-            ThisStorage.CurrentAction = this;
-            ThisStorage.LastRunDate = ThisEntity.Manager.ManagerSubpulses.SystemLocalDateTime;
-            
-            ThisStorage.AmountToTransfer = amount;
-
-            ThisStorage.OrderTransferItemGuid = order.CargoItemGuid;      
-            OrderProcessor.SetNextInterupt(CargoOrderProcessor.EstDateTime(this, ThisStorage), this);
         }
     }
 }

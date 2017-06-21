@@ -42,6 +42,7 @@ namespace Pulsar4X.Tests
             AuthenticationToken auth = new AuthenticationToken(_testGame.Game.SpaceMaster, "");
             
            _testGame.Game.MessagePump.DataSubscibers[Guid.Empty].Subscribe<CargoStorageDB>(_testGame.DefaultShip.Guid);
+            _testGame.Game.MessagePump.DataSubscibers[Guid.Empty].Subscribe<OrderableDB>(_testGame.DefaultShip.Guid);
 
 
             BaseAction action = _cargoOrder.CreateAction(_testGame.Game, _cargoOrder);
@@ -54,8 +55,19 @@ namespace Pulsar4X.Tests
             _testGame.Game.GameLoop.TimeStep();            
             OrderProcessor.ProcessActionList(_testGame.Game.CurrentDateTime, _testGame.EarthColony.Manager);
             BaseMessage message;
-            Assert.True(_testGame.Game.MessagePump.TryPeekOutgoingMessage(Guid.Empty, out message), "No message in pump");
+            Assert.True(_testGame.Game.MessagePump.TryDequeueOutgoingMessage(Guid.Empty, out message), "1st message not in pump");
+            Assert.True(message is UIDataBlobUpdateMessage);
+            Assert.True(_testGame.Game.MessagePump.TryDequeueOutgoingMessage(Guid.Empty, out message), "2nd message not in pump");
+            Assert.True(message is UIDataBlobUpdateMessage);
+
+            string strMessage = ObjectSerializer.SerializeObject(message);
+            BaseMessage deseralisedMessage = ObjectSerializer.DeserializeObject<BaseMessage>(strMessage);
             
+            Assert.True(deseralisedMessage is UIDataBlobUpdateMessage, "incorrect deseralization" );
+            UIDataBlobUpdateMessage updateMessage = (UIDataBlobUpdateMessage)deseralisedMessage;
+            Assert.True(updateMessage.DataBlob is OrderableDB, "wrong datablob type");
+
+
         }
 
 

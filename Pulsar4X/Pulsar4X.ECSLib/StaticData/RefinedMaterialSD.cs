@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
@@ -9,7 +10,8 @@ namespace Pulsar4X.ECSLib
         public string Name { get; set; }
         public string Description;
         public Guid ID { get; set; }
-
+        [JsonIgnore]
+        public string ItemName => "Refined Materials";
         public Dictionary<Guid, int> RawMineralCosts;
         public Dictionary<Guid, int> RefinedMateraialsCosts;
         public ushort RefineryPointCost;

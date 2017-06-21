@@ -6,25 +6,34 @@ namespace Pulsar4X.ECSLib
 {
     public abstract class BaseAction
     {
+        [JsonProperty]
         public string Name { get; set; }
+        [JsonProperty]
         public string Status { get; set; }
         /// <summary>
         /// bitmask
         /// </summary>
+         [JsonProperty]
         internal int Lanes { get; set; } 
-
+        [JsonProperty]
         internal bool IsBlocking { get; set; }
+        [JsonProperty]
         internal bool IsFinished { get; set; }
+        [JsonProperty]
         internal DateTime LastRunTime { get; set; }
-
+        [JsonProperty]
         internal IActionableProcessor OrderableProcessor { get; set; }
-    
+        [JsonProperty]
         internal Entity ThisEntity { get; private set; }
+        [JsonProperty]
         internal Entity FactionEntity { get; private set; }
+        [JsonProperty]
         internal Entity TargetEntity { get; private set; }
+        [JsonProperty]
         public DateTime EstTimeComplete { get; internal set; }
-        
+        [JsonProperty]
         public BaseOrder Order { get; private set; }
+        [JsonProperty]
         public bool HasTargetEntity { get; internal set; }
 
         /// <summary>

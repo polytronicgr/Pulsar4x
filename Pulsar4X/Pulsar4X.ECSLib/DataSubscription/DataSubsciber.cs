@@ -66,6 +66,15 @@ namespace Pulsar4X.ECSLib.DataSubscription
         public static BaseDataBlob DeserializeDataBlob(string jsonString) { return JsonConvert.DeserializeObject<BaseDataBlob>(jsonString, Settings); }
     }
 
+    public abstract class UIData
+    {
+        
+    }
+    
+    
+    
+    
+
 }
 
 

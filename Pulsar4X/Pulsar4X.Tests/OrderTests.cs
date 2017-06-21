@@ -93,13 +93,22 @@ namespace Pulsar4X.Tests
         }
 
         [Test]
+        public void TestActionSeralisation()
+        {
+            BaseAction cargoAction = _cargoOrder.CreateAction(_testGame.Game, _cargoOrder);
+            string seralisedAction = ObjectSerializer.SerializeObject(cargoAction);
+            BaseAction deserailisedOrder = ObjectSerializer.DeserializeObject<BaseAction>(seralisedAction);
+            Assert.True(deserailisedOrder is CargoAction);
+        }
+
+        [Test]
         public void TestOrderSeralisation()
         {            
             string seralisedOrder = ObjectSerializer.SerializeObject(_cargoOrder);
             BaseOrder deserailisedOrder = ObjectSerializer.DeserializeObject<BaseOrder>(seralisedOrder);
             Assert.True(deserailisedOrder is CargoOrder);
         }
-
+        
         [Test]
         public void TestOrderViaMessagePump()
         {
@@ -115,7 +124,9 @@ namespace Pulsar4X.Tests
             _testGame.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(gameOrder));
             Thread.Sleep(20);
             Assert.True(_testGame.DefaultShip.Manager.OrderQueue.Count > 0, "no orders in queue");
-            _testGame.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(gameOrder));
+            _testGame.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(gameOrder));            
+            OrderProcessor.ProcessManagerOrders(_testGame.EarthColony.Manager);
+
             OrderProcessor.ProcessActionList(_testGame.Game.CurrentDateTime, _testGame.EarthColony.Manager);
             Assert.True(_testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue.Count > 0, "no actions in queue");
 

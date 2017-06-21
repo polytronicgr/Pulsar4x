@@ -151,7 +151,6 @@
     <Compile Include="DataBlobs\CargoTypeDB.cs" />
     <Compile Include="DataBlobs\ComponentAttributeDBs\BeamFireControlAtbDB.cs" />
     <Compile Include="DataBlobs\ComponentAttributeDBs\BeamWeaponAtbDB.cs" />
-    <Compile Include="DataBlobs\ComponentAttributeDBs\CargoStorageAtbDB.cs" />
     <Compile Include="DataBlobs\ComponentAttributeDBs\CloakAtbDB.cs" />
     <Compile Include="DataBlobs\ComponentAttributeDBs\CommandAtbDB.cs" />
     <Compile Include="DataBlobs\ComponentAttributeDBs\DamageControlAtbDB.cs" />
@@ -180,6 +179,12 @@
     <Compile Include="DataSubscription\DataSubsciber.cs" />
     <Compile Include="Factories\AsteroidFactory.cs" />
     <Compile Include="Factories\ShipComponents\ComponentInstanceFactory.cs" />
+    <Compile Include="FeatureSet\CargoStorage\CargoAction.cs" />
+    <Compile Include="FeatureSet\CargoStorage\CargoOrder.cs" />
+    <Compile Include="FeatureSet\CargoStorage\CargoStorageAtbDB.cs" />
+    <Compile Include="FeatureSet\CargoStorage\CargoStorageDB.cs" />
+    <Compile Include="FeatureSet\CargoStorage\CargoStorageUIData.cs" />
+    <Compile Include="FeatureSet\CargoStorage\StorageSpaceProcessor.cs" />
     <Compile Include="Helpers\CargoDictionary.cs" />
     <Compile Include="Helpers\EntityManipulation.cs" />
     <Compile Include="Helpers\CollectionChangedHelpers.cs" />
@@ -261,7 +266,6 @@
     <Compile Include="Processors\ResourceConsumptionProcesor.cs" />
     <Compile Include="Processors\Econ Subprocessors\TechProcessor.cs" />
     <Compile Include="Processors\ShipAndColonyInfoProcessor.cs" />
-    <Compile Include="Processors\StorageSpaceProcessor.cs" />
     <Compile Include="Processors\TranslationMoveProcessor.cs" />
     <Compile Include="Processors\WeaponProcessor.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -284,7 +288,6 @@
     <Compile Include="DataBlobs\RuinsDB.cs" />
     <Compile Include="DataBlobs\ShipDBs\BeamWeaponsDB.cs" />
     <Compile Include="DataBlobs\ShipDBs\BuildCostDB.cs" />
-    <Compile Include="DataBlobs\ShipDBs\CargoStorageDB.cs" />
     <Compile Include="DataBlobs\ShipDBs\CrewDB.cs" />
     <Compile Include="DataBlobs\ShipDBs\DamageDB.cs" />
     <Compile Include="DataBlobs\ShipDBs\HangerDB.cs" />

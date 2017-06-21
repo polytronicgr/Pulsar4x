@@ -10,9 +10,9 @@ namespace Pulsar4X.ECSLib
     {
         private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
         
-        public static string SerializeObject(object order)
+        public static string SerializeObject(object objToSerilize)
         {
-            return JsonConvert.SerializeObject(order, Settings);
+            return JsonConvert.SerializeObject(objToSerilize, Settings);
         }
 
         

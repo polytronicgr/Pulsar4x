@@ -46,6 +46,11 @@ namespace Pulsar4X.ECSLib
             return _outGoingQueus[connction].TryPeek(out message);
         }
 
+        public bool TryDequeueOutgoingMessage(Guid connection, out BaseMessage message)
+        {
+            return _outGoingQueus[connection].TryDequeue(out message);
+        }
+
         internal void NotifyConnectionsOfDatablobChanges<T>(Guid entityGuid) where T : BaseDataBlob
         {
             foreach (var item in DataSubscibers.Values)
