@@ -30,7 +30,7 @@ namespace Pulsar4X.Tests
             StorageSpaceProcessor.AddItemToCargo(_testGame.EarthColony.GetDataBlob<CargoStorageDB>(), _duraniumSD, 10000); 
             
             _cargoOrder = new CargoOrder(_testGame.DefaultShip.Guid, _testGame.HumanFaction.Guid, 
-                                                   _testGame.EarthColony.Guid, CargoOrderTypes.LoadCargo, 
+                                                   _testGame.EarthColony.Guid, CargoOrder.CargoOrderTypes.LoadCargo, 
                                                    _duraniumSD.ID, 100);
         }
 
@@ -90,15 +90,6 @@ namespace Pulsar4X.Tests
 
             Assert.AreEqual(0, _testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue.Count, "action should have been removed from queue");
 
-        }
-
-        [Test]
-        public void TestActionSeralisation()
-        {
-            BaseAction cargoAction = _cargoOrder.CreateAction(_testGame.Game, _cargoOrder);
-            string seralisedAction = ObjectSerializer.SerializeObject(cargoAction);
-            BaseAction deserailisedOrder = ObjectSerializer.DeserializeObject<BaseAction>(seralisedAction);
-            Assert.True(deserailisedOrder is CargoAction);
         }
 
         [Test]

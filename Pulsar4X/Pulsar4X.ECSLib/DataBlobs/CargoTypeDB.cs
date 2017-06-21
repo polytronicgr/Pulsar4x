@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Pulsar4X.ECSLib
 {
@@ -10,6 +11,9 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class CargoAbleTypeDB : BaseDataBlob , ICargoable
     {
+        [JsonIgnore]
+        public string ItemName { get; private set; }
+
         [JsonProperty]
         public Guid CargoTypeID { get; internal set; }
 
@@ -46,6 +50,14 @@ namespace Pulsar4X.ECSLib
         public override object Clone()
         {
             return new CargoAbleTypeDB(this);
+        }
+        
+        // JSON deserialization callback.
+        [OnDeserialized]
+        private void Deserialized(StreamingContext context)
+        {
+            //set item name to the design name if it exsists. 
+            ItemName = OwningEntity.GetDataBlob<DesignInfoDB>()?.DesignEntity.GetDataBlob<NameDB>()?.DefaultName ?? Name;
         }
     }
 }

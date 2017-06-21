@@ -29,7 +29,7 @@ namespace Pulsar4X.Tests
             StorageSpaceProcessor.AddItemToCargo(_testGame.EarthColony.GetDataBlob<CargoStorageDB>(), _duraniumSD, 10000); 
             
             _cargoOrder = new CargoOrder(_testGame.DefaultShip.Guid, _testGame.HumanFaction.Guid, 
-                                         _testGame.EarthColony.Guid, CargoOrderTypes.LoadCargo, 
+                                         _testGame.EarthColony.Guid, CargoOrder.CargoOrderTypes.LoadCargo, 
                                          _duraniumSD.ID, 100);
         }
         
