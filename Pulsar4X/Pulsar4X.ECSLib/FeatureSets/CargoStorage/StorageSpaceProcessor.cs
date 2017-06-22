@@ -405,10 +405,18 @@ namespace Pulsar4X.ECSLib
                     OrderProcessor.SetNextInterupt(EstDateTime(action, action.ThisStorage), action);
                 }
             }
+
+            if (messagePump.AreAnySubscribers<CargoStorageUIData>(cargoTo.OwningEntity.Guid))
+            {
+                CargoStorageUIData toData = new CargoStorageUIData(cargoTo.OwningEntity.Manager.Game.StaticData, cargoTo);
+                messagePump.NotifyConnectionsOfDatablobChanges<CargoStorageUIData>(cargoTo.OwningEntity.Guid, toData);
+            }
             
-            messagePump.NotifyConnectionsOfDatablobChanges<CargoStorageDB>(cargoFrom.OwningEntity.Guid);
-            messagePump.NotifyConnectionsOfDatablobChanges<CargoStorageDB>(cargoTo.OwningEntity.Guid);
-            messagePump.NotifyConnectionsOfDatablobChanges<OrderableDB>(action.ThisEntity.Guid);
+            if (messagePump.AreAnySubscribers<CargoStorageUIData>(cargoFrom.OwningEntity.Guid))
+            {
+                CargoStorageUIData fromData = new CargoStorageUIData(cargoFrom.OwningEntity.Manager.Game.StaticData, cargoFrom);
+                messagePump.NotifyConnectionsOfDatablobChanges<CargoStorageUIData>(cargoFrom.OwningEntity.Guid, fromData);
+            }
         }
 
         /// <summary>

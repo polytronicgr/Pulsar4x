@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace Pulsar4X.ECSLib
 {
     [JsonObject(MemberSerialization.OptIn)]
-    public abstract class BaseOrder : BaseMessage
+    public abstract class BaseOrder : BaseToServerMessage
     {        
         [JsonProperty]
         public Guid EntityGuid { get; set; }

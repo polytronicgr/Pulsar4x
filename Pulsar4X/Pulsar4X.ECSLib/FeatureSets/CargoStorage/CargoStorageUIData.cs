@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Pulsar4X.ECSLib.DataSubscription;
 
 namespace Pulsar4X.ECSLib
 {
     public class CargoStorageUIData : UIData
     {
+        [JsonProperty]
         public List<CargoTypeAmount> Capacities = new List<CargoTypeAmount>();
 
+        [JsonConstructor]
+        public CargoStorageUIData() { }
 
         public CargoStorageUIData(StaticDataStore staticData, CargoStorageDB db)
         {

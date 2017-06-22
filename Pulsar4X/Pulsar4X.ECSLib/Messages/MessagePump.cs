@@ -11,7 +11,7 @@ namespace Pulsar4X.ECSLib
     {
         private readonly Game _game;
         private readonly ConcurrentQueue<string> _incommingMessages = new ConcurrentQueue<string>();
-        private readonly ConcurrentDictionary<Guid, ConcurrentQueue<BaseMessage>> _outGoingQueus = new ConcurrentDictionary<Guid, ConcurrentQueue<BaseMessage>>();
+        private readonly ConcurrentDictionary<Guid, ConcurrentQueue<string>> _outGoingQueus = new ConcurrentDictionary<Guid, ConcurrentQueue<string>>();
         internal readonly Dictionary<Guid, DataSubsciber> DataSubscibers = new Dictionary<Guid, DataSubsciber>();
         public MessagePumpServer(Game game)
         {
@@ -22,7 +22,7 @@ namespace Pulsar4X.ECSLib
 
         public void AddNewConnection(Guid connectionID)
         {
-            _outGoingQueus.TryAdd(connectionID, new ConcurrentQueue<BaseMessage>());
+            _outGoingQueus.TryAdd(connectionID, new ConcurrentQueue<string>());
             DataSubscibers.Add(connectionID, new DataSubsciber(_game, Guid.Empty));
         }
 
@@ -31,47 +31,58 @@ namespace Pulsar4X.ECSLib
             _incommingMessages.Enqueue(message);
         }
 
-        public void EnqueueOutgoingMessage(Guid toConnection, BaseMessage message)
+        public void EnqueueOutgoingMessage(Guid toConnection, BaseToClientMessage message)
         {
             if(_outGoingQueus.ContainsKey(toConnection))
-                _outGoingQueus[toConnection].Enqueue(message);
+                _outGoingQueus[toConnection].Enqueue(ObjectSerializer.SerializeObject(message));
             else
             {
                 //TODO: log NoConnection message.
             }
         }
 
-        public bool TryPeekOutgoingMessage(Guid connction, out BaseMessage message)
+        public bool TryPeekOutgoingMessage(Guid connction, out string message)
         {
             return _outGoingQueus[connction].TryPeek(out message);
         }
 
-        public bool TryDequeueOutgoingMessage(Guid connection, out BaseMessage message)
+        public bool TryDequeueOutgoingMessage(Guid connection, out string message)
         {
             return _outGoingQueus[connection].TryDequeue(out message);
         }
 
-        internal void NotifyConnectionsOfDatablobChanges<T>(Guid entityGuid) where T : BaseDataBlob
+        
+        internal void NotifyConnectionsOfDatablobChanges<T>(Guid entityGuid, UIData data ) where T : UIData
         {
             foreach (var item in DataSubscibers.Values)
             {
-                item.TriggerIfSubscribed<T>(entityGuid);
+                item.TriggerIfSubscribed<T>(entityGuid, data);
             }
         }
-        
+
+        internal bool AreAnySubscribers<T>(Guid entityGuid) where T : UIData
+        {
+            foreach (var item in DataSubscibers.Values)
+            {
+                if (item.IsSubscribedTo<T>(entityGuid))
+                    return true;
+            }
+            return false;
+        }
+
         public void ReadIncommingMessages(Game game)
         {
             string messageStr;
             while(_incommingMessages.TryDequeue(out messageStr))
             {
-                BaseMessage messageObj = ObjectSerializer.DeserializeObject<BaseMessage>(messageStr);
+                BaseToServerMessage messageObj = ObjectSerializer.DeserializeObject<BaseToServerMessage>(messageStr);
                 messageObj.HandleMessage(game);
             }
         }
     }
 
 
-    public abstract class BaseMessage
+    public abstract class BaseToServerMessage
     {
         [JsonProperty]
         public Guid FactionGuid { get; set; }
@@ -81,29 +92,20 @@ namespace Pulsar4X.ECSLib
         internal abstract void HandleMessage(Game game);
     }
 
-    public class UIInfoMessage : BaseMessage
-    {        
-        public UIInfoMessage(string message) { Message = message; }
-        [JsonProperty]
-        public string Message;
-        internal override void HandleMessage(Game game) { throw new NotImplementedException(); }
-    }
-
-    public class UIDataBlobUpdateMessage : BaseMessage
+    public abstract class BaseToClientMessage
     {
-        public BaseDataBlob DataBlob { get; }
-        public string UpdatedProperties { get; }
-
-        public UIDataBlobUpdateMessage(BaseDataBlob dataBlob, string updatedProperties)
-        {
-            DataBlob = dataBlob;
-            UpdatedProperties = updatedProperties;
-        }
-
-        internal override void HandleMessage(Game game) { throw new NotImplementedException(); }
     }
 
-    public class GameOrder : BaseMessage
+    public class UIInfoMessage : BaseToClientMessage
+    {   
+        [JsonProperty]
+        public string Message;     
+        public UIInfoMessage(string message) { Message = message; }   
+    }
+
+
+
+    public class GameOrder : BaseToServerMessage
     {
         [JsonProperty]
         public IncomingMessageType MessageType { get; set; }

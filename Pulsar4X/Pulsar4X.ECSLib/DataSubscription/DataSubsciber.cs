@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using Newtonsoft.Json;
 using Pulsar4X.ECSLib;
 using Pulsar4X.ECSLib.DataSubscription;
@@ -24,36 +25,38 @@ namespace Pulsar4X.ECSLib.DataSubscription
         }
 
         internal void Subscribe<T>(Guid entityGuid)
-            where T : BaseDataBlob
+            where T : UIData
         {
             Entity entity;
             if (_game.GlobalManager.FindEntityByGuid(entityGuid, out entity))
             {
                 if (!SubscribedDatablobs.ContainsKey(entityGuid))
-                    SubscribedDatablobs.Add(entityGuid, new HashSet<string>());
-                SubscribedDatablobs[entityGuid].Add(nameof(T));
+                    SubscribedDatablobs.Add(entityGuid, new HashSet<string>()); 
+                SubscribedDatablobs[entityGuid].Add(typeof(T).ToString());
             }
         }
 
 
-        internal void TriggerIfSubscribed<T>(Guid entityGuid)
-            where T : BaseDataBlob
+        internal void TriggerIfSubscribed<T>(Guid entityGuid, UIData uiData)
+            where T : UIData
         {
             if (IsSubscribedTo<T>(entityGuid))
             {
-                Entity entity;
-                _game.GlobalManager.FindEntityByGuid(entityGuid, out entity);
-                T datablob = entity.GetDataBlob<T>();
+                
+
+                //T datablob = entity.GetDataBlob<T>();
                 //string stringblob = SerializeDataBlob(datablob);
-                UIDataBlobUpdateMessage message = new UIDataBlobUpdateMessage(datablob, "");
-                _game.MessagePump.EnqueueOutgoingMessage(_connectionID, message);
+                //T uiData = UIData.CreateNew(_game, entity);
+                //UIDataBlobUpdateMessage message = new UIDataBlobUpdateMessage(uiData);
+                //_game.MessagePump.EnqueueOutgoingMessage(_connectionID, message);
+                _game.MessagePump.EnqueueOutgoingMessage(_connectionID, uiData);
             }
         }
 
-        private bool IsSubscribedTo<T>(Guid entityGuid)
-            where T : BaseDataBlob
+        internal bool IsSubscribedTo<T>(Guid entityGuid)
+            where T : UIData
         {
-            if (SubscribedDatablobs.ContainsKey(entityGuid) && SubscribedDatablobs[entityGuid].Contains(nameof(T)))
+            if (SubscribedDatablobs.ContainsKey(entityGuid) && SubscribedDatablobs[entityGuid].Contains(typeof(T).ToString()))
                 return true;
             else
                 return false;
@@ -66,9 +69,10 @@ namespace Pulsar4X.ECSLib.DataSubscription
         public static BaseDataBlob DeserializeDataBlob(string jsonString) { return JsonConvert.DeserializeObject<BaseDataBlob>(jsonString, Settings); }
     }
 
-    public abstract class UIData
+ 
+
+    public abstract class UIData : BaseToClientMessage
     {
-        
     }
     
     
