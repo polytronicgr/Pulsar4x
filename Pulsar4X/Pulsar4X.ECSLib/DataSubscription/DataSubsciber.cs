@@ -70,6 +70,27 @@ namespace Pulsar4X.ECSLib.DataSubscription
     }
 
  
+    public class SubscriptionRequestMessage<T> : BaseToServerMessage where T : UIData
+    {
+        public Guid EntityGuid { get; set; }
+
+        public SubscriptionRequestMessage() { }
+
+        public static SubscriptionRequestMessage<T> newMessage(Guid connectionID, Guid factionID, Guid entityGuid)
+        {
+            return new SubscriptionRequestMessage<T>()
+            {
+                ConnectionID = connectionID,
+                FactionGuid = factionID,
+                EntityGuid = entityGuid                
+            };
+        }
+
+        internal override void HandleMessage(Game game)
+        {            
+            game.MessagePump.DataSubscibers[ConnectionID].Subscribe<T>(EntityGuid);
+        }
+    }
 
     public abstract class UIData : BaseToClientMessage
     {

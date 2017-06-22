@@ -52,7 +52,7 @@ namespace Pulsar4X.ECSLib
         }
 
         
-        internal void NotifyConnectionsOfDatablobChanges<T>(Guid entityGuid, UIData data ) where T : UIData
+        internal void NotifyConnectionsOfDataChanges<T>(Guid entityGuid, UIData data ) where T : UIData
         {
             foreach (var item in DataSubscibers.Values)
             {

@@ -409,13 +409,13 @@ namespace Pulsar4X.ECSLib
             if (messagePump.AreAnySubscribers<CargoStorageUIData>(cargoTo.OwningEntity.Guid))
             {
                 CargoStorageUIData toData = new CargoStorageUIData(cargoTo.OwningEntity.Manager.Game.StaticData, cargoTo);
-                messagePump.NotifyConnectionsOfDatablobChanges<CargoStorageUIData>(cargoTo.OwningEntity.Guid, toData);
+                messagePump.NotifyConnectionsOfDataChanges<CargoStorageUIData>(cargoTo.OwningEntity.Guid, toData);
             }
             
             if (messagePump.AreAnySubscribers<CargoStorageUIData>(cargoFrom.OwningEntity.Guid))
             {
                 CargoStorageUIData fromData = new CargoStorageUIData(cargoFrom.OwningEntity.Manager.Game.StaticData, cargoFrom);
-                messagePump.NotifyConnectionsOfDatablobChanges<CargoStorageUIData>(cargoFrom.OwningEntity.Guid, fromData);
+                messagePump.NotifyConnectionsOfDataChanges<CargoStorageUIData>(cargoFrom.OwningEntity.Guid, fromData);
             }
         }
 
