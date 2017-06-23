@@ -10,8 +10,8 @@ namespace Pulsar4X.ECSLib
     public class MessagePumpServer
     {
         private readonly Game _game;
-        private readonly ConcurrentQueue<string> _incommingMessages = new ConcurrentQueue<string>();
-        private readonly ConcurrentDictionary<Guid, ConcurrentQueue<string>> _outGoingQueus = new ConcurrentDictionary<Guid, ConcurrentQueue<string>>();
+        private readonly ConcurrentQueue<BaseToServerMessage> _incommingMessages = new ConcurrentQueue<BaseToServerMessage>();
+        private readonly ConcurrentDictionary<Guid, ConcurrentQueue<BaseToClientMessage>> _outGoingQueus = new ConcurrentDictionary<Guid, ConcurrentQueue<BaseToClientMessage>>();
         internal readonly Dictionary<Guid, DataSubsciber> DataSubscibers = new Dictionary<Guid, DataSubsciber>();
         public MessagePumpServer(Game game)
         {
@@ -22,11 +22,23 @@ namespace Pulsar4X.ECSLib
 
         public void AddNewConnection(Guid connectionID)
         {
-            _outGoingQueus.TryAdd(connectionID, new ConcurrentQueue<string>());
+            _outGoingQueus.TryAdd(connectionID, new ConcurrentQueue<BaseToClientMessage>());
             DataSubscibers.Add(connectionID, new DataSubsciber(_game, Guid.Empty));
         }
 
-        public void EnqueueMessage(string message)
+        /// <summary>
+        /// takes a seralised (derived type of)BaseToServerMessage as a string, deserialises it and enqueues it.
+        /// </summary>
+        /// <param name="message"></param>
+        public void EnqueueIncomingMessage(string message)
+        {
+            EnqueueIncomingMessage(ObjectSerializer.DeserializeObject<BaseToServerMessage>(message));
+        }
+        /// <summary>
+        /// Enqueus an message object
+        /// </summary>
+        /// <param name="message"></param>
+        public void EnqueueIncomingMessage(BaseToServerMessage message)
         {
             _incommingMessages.Enqueue(message);
         }
@@ -34,19 +46,19 @@ namespace Pulsar4X.ECSLib
         public void EnqueueOutgoingMessage(Guid toConnection, BaseToClientMessage message)
         {
             if(_outGoingQueus.ContainsKey(toConnection))
-                _outGoingQueus[toConnection].Enqueue(ObjectSerializer.SerializeObject(message));
+                _outGoingQueus[toConnection].Enqueue(message);
             else
             {
                 //TODO: log NoConnection message.
             }
         }
 
-        public bool TryPeekOutgoingMessage(Guid connction, out string message)
+        public bool TryPeekOutgoingMessage(Guid connction, out BaseToClientMessage message)
         {
             return _outGoingQueus[connction].TryPeek(out message);
         }
 
-        public bool TryDequeueOutgoingMessage(Guid connection, out string message)
+        public bool TryDequeueOutgoingMessage(Guid connection, out BaseToClientMessage message)
         {
             return _outGoingQueus[connection].TryDequeue(out message);
         }
@@ -72,11 +84,10 @@ namespace Pulsar4X.ECSLib
 
         public void ReadIncommingMessages(Game game)
         {
-            string messageStr;
-            while(_incommingMessages.TryDequeue(out messageStr))
-            {
-                BaseToServerMessage messageObj = ObjectSerializer.DeserializeObject<BaseToServerMessage>(messageStr);
-                messageObj.HandleMessage(game);
+            BaseToServerMessage message;
+            while(_incommingMessages.TryDequeue(out message))
+            {             
+                message.HandleMessage(game);
             }
         }
     }

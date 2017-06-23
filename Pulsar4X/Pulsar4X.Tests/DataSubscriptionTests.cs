@@ -58,10 +58,9 @@ namespace Pulsar4X.Tests
 
             
             
-            string strClientMessage;
-            Assert.True(_testGame.Game.MessagePump.TryDequeueOutgoingMessage(Guid.Empty, out strClientMessage), "1st message not in pump");
-            BaseToClientMessage objClientMessage = ObjectSerializer.DeserializeObject<BaseToClientMessage>(strClientMessage);
-            Assert.True(objClientMessage is CargoStorageUIData);   
+            BaseToClientMessage clientMessage;
+            Assert.True(_testGame.Game.MessagePump.TryDequeueOutgoingMessage(Guid.Empty, out clientMessage), "1st message not in pump");
+            Assert.True(clientMessage is CargoStorageUIData);   
         }
         
         [Test]
@@ -73,7 +72,7 @@ namespace Pulsar4X.Tests
                 FactionGuid = _testGame.HumanFaction.Guid,
                 EntityGuid = _testGame.DefaultShip.Guid,
             };
-            _testGame.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(subscriptionReq));           
+            _testGame.Game.MessagePump.EnqueueIncomingMessage(ObjectSerializer.SerializeObject(subscriptionReq));           
             _testGame.Game.GameLoop.TimeStep(); 
             Assert.True(_testGame.Game.MessagePump.AreAnySubscribers<CargoStorageUIData>(_testGame.DefaultShip.Guid));
             

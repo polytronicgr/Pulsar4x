@@ -65,13 +65,13 @@ namespace Pulsar4X.ViewModel
             if (IsPaused)
             {
                 GameOrder newmessage = new GameOrder(IncomingMessageType.StartRealTime);
-                _gameVM.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(newmessage));
+                _gameVM.Game.MessagePump.EnqueueIncomingMessage(ObjectSerializer.SerializeObject(newmessage));
                 IsPaused = false;
             }
             else
             {
                 GameOrder newmessage = new GameOrder(IncomingMessageType.StopRealTime);
-                _gameVM.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(newmessage));
+                _gameVM.Game.MessagePump.EnqueueIncomingMessage(ObjectSerializer.SerializeObject(newmessage));
                 IsPaused = true;
             }
             OnPropertyChanged(nameof(IsPaused));
@@ -85,7 +85,7 @@ namespace Pulsar4X.ViewModel
             if (_timeloop == null)
                 return;
             GameOrder newmessage = new GameOrder(IncomingMessageType.ExecutePulse);
-            _gameVM.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(newmessage));
+            _gameVM.Game.MessagePump.EnqueueIncomingMessage(ObjectSerializer.SerializeObject(newmessage));
         }
 
         private void OnTimeDateChange(DateTime newDate)

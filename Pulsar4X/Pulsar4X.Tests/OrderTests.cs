@@ -106,16 +106,16 @@ namespace Pulsar4X.Tests
             _testGame.GameSettings.EnableMultiThreading = false;
             string sOrder = ObjectSerializer.SerializeObject(_cargoOrder);
             AuthenticationToken auth = new AuthenticationToken(_testGame.Game.SpaceMaster, "");
-            _testGame.Game.MessagePump.EnqueueMessage(sOrder);
+            _testGame.Game.MessagePump.EnqueueIncomingMessage(sOrder);
 
             bool itemFound = false;
             _testGame.Game.GameLoop.Ticklength = TimeSpan.FromSeconds(10);
             _testGame.Game.GameLoop.TickFrequency = TimeSpan.FromTicks(1);
             GameOrder gameOrder = new GameOrder(IncomingMessageType.ExecutePulse);
-            _testGame.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(gameOrder));
+            _testGame.Game.MessagePump.EnqueueIncomingMessage(ObjectSerializer.SerializeObject(gameOrder));
             Thread.Sleep(20);
             Assert.True(_testGame.DefaultShip.Manager.OrderQueue.Count > 0, "no orders in queue");
-            _testGame.Game.MessagePump.EnqueueMessage(ObjectSerializer.SerializeObject(gameOrder));            
+            _testGame.Game.MessagePump.EnqueueIncomingMessage(ObjectSerializer.SerializeObject(gameOrder));            
             OrderProcessor.ProcessManagerOrders(_testGame.EarthColony.Manager);
 
             OrderProcessor.ProcessActionList(_testGame.Game.CurrentDateTime, _testGame.EarthColony.Manager);
