@@ -119,6 +119,7 @@
     <Compile Include="ViewModels\ComponentListVM.cs" />
     <Compile Include="ViewModels\GenericEntityVM.cs" />
     <Compile Include="ViewModels\LogViewerVM.cs" />
+    <Compile Include="ViewModels\MessageHandler.cs" />
     <Compile Include="ViewModels\NewSpeciesVM.cs" />
     <Compile Include="ViewModels\SystemInfoVM.cs" />
     <Compile Include="ViewModels\PlayerOptionsVM.cs" />

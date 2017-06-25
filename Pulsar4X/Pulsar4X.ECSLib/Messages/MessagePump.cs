@@ -64,19 +64,19 @@ namespace Pulsar4X.ECSLib
         }
 
         
-        internal void NotifyConnectionsOfDataChanges<T>(Guid entityGuid, UIData data ) where T : UIData
+        internal void NotifyConnectionsOfDataChanges(Guid entityGuid, UIData data )
         {
             foreach (var item in DataSubscibers.Values)
             {
-                item.TriggerIfSubscribed<T>(entityGuid, data);
+                item.TriggerIfSubscribed(entityGuid, data);
             }
         }
 
-        internal bool AreAnySubscribers<T>(Guid entityGuid) where T : UIData
+        internal bool AreAnySubscribers(Guid entityGuid, string datacode) 
         {
             foreach (var item in DataSubscibers.Values)
             {
-                if (item.IsSubscribedTo<T>(entityGuid))
+                if (item.IsSubscribedTo(entityGuid, datacode))
                     return true;
             }
             return false;
@@ -105,13 +105,15 @@ namespace Pulsar4X.ECSLib
 
     public abstract class BaseToClientMessage
     {
+        public abstract string GetDataCode { get; }
     }
 
     public class UIInfoMessage : BaseToClientMessage
     {   
         [JsonProperty]
         public string Message;     
-        public UIInfoMessage(string message) { Message = message; }   
+        public UIInfoMessage(string message) { Message = message; }
+        public override string GetDataCode { get; } = "InfoMessage";
     }
 
 

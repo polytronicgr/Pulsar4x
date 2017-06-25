@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Collections.Specialized;
 using System.Collections.ObjectModel;
+using Pulsar4X.ECSLib.DataSubscription;
 
 namespace Pulsar4X.ViewModel
 {
@@ -25,6 +26,10 @@ namespace Pulsar4X.ViewModel
         }
         public void Initialise(Entity entity)
         {
+            SubscriptionRequestMessage subscriptionReq = new CargoStorageUIData().CreateRequest(Guid.Empty, entity.Guid);
+            _gameVM.Game.MessagePump.EnqueueIncomingMessage(subscriptionReq);
+            
+            
             _storageDB = entity.GetDataBlob<CargoStorageDB>();
             foreach (var item in _storageDB.CargoCapicity)
             {
@@ -53,6 +58,14 @@ namespace Pulsar4X.ViewModel
         }
 
 
+    }
+
+    public class CargoStorageUIDataUpdateMethod: CargoStorageUIData
+    {
+        public void Update(CargoStorageVM vm)
+        {
+            
+        }
     }
 
     public class CargoStorageByTypeVM : INotifyPropertyChanged

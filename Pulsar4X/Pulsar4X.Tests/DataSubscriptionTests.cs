@@ -41,11 +41,13 @@ namespace Pulsar4X.Tests
             Guid conectionID = new Guid();
             AuthenticationToken auth = new AuthenticationToken(_testGame.Game.SpaceMaster, "");
             
-           _testGame.Game.MessagePump.DataSubscibers[Guid.Empty].Subscribe<CargoStorageUIData>(_testGame.DefaultShip.Guid);
+            
+            
+           _testGame.Game.MessagePump.DataSubscibers[Guid.Empty].Subscribe(_testGame.DefaultShip.Guid, CargoStorageUIData.DataCode);
             //_testGame.Game.MessagePump.DataSubscibers[Guid.Empty].Subscribe<OrderableDB>(_testGame.DefaultShip.Guid);
-
-            Assert.True(_testGame.Game.MessagePump.DataSubscibers[Guid.Empty].IsSubscribedTo<CargoStorageUIData>(_testGame.DefaultShip.Guid), "not subscribed");
-            Assert.True(_testGame.Game.MessagePump.AreAnySubscribers<CargoStorageUIData>(_testGame.DefaultShip.Guid), "No subscribers");
+ 
+            Assert.True(_testGame.Game.MessagePump.DataSubscibers[Guid.Empty].IsSubscribedTo(_testGame.DefaultShip.Guid, CargoStorageUIData.DataCode), "not subscribed");
+            Assert.True(_testGame.Game.MessagePump.AreAnySubscribers(_testGame.DefaultShip.Guid, CargoStorageUIData.DataCode), "No subscribers");
             BaseAction action = _cargoOrder.CreateAction(_testGame.Game, _cargoOrder);
             Assert.NotNull(action.OrderableProcessor);
 
@@ -66,15 +68,12 @@ namespace Pulsar4X.Tests
         [Test]
         public void SubscribeViaMessage()
         {
-            SubscriptionRequestMessage<CargoStorageUIData> subscriptionReq = new SubscriptionRequestMessage<CargoStorageUIData>()
-            {
-                ConnectionID = Guid.Empty,
-                FactionGuid = _testGame.HumanFaction.Guid,
-                EntityGuid = _testGame.DefaultShip.Guid,
-            };
+            
+            SubscriptionRequestMessage subscriptionReq = new CargoStorageUIData().CreateRequest(Guid.Empty, _testGame.DefaultShip.Guid);
+
             _testGame.Game.MessagePump.EnqueueIncomingMessage(ObjectSerializer.SerializeObject(subscriptionReq));           
             _testGame.Game.GameLoop.TimeStep(); 
-            Assert.True(_testGame.Game.MessagePump.AreAnySubscribers<CargoStorageUIData>(_testGame.DefaultShip.Guid));
+            Assert.True(_testGame.Game.MessagePump.AreAnySubscribers(_testGame.DefaultShip.Guid, CargoStorageUIData.DataCode));
             
             
         }

@@ -2,10 +2,8 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="Pulsar4X.ECSLib/Actions/BaseOrder.cs">
     <Files>
       <File FileName="Pulsar4X.ECSLib/DataSubscription/DataSubsciber.cs" Line="92" Column="9" />
-      <File FileName="Pulsar4X.Tests/UIConnectionTests.cs" Line="37" Column="15" />
       <File FileName="Pulsar4X.Tests/OrderTests.cs" Line="42" Column="1" />
-      <File FileName="Pulsar4X.ECSLib/Messages/MessagePump2.cs" Line="19" Column="33" />
-      <File FileName="Pulsar4X.ECSLib/Actions/BaseOrder.cs" Line="80" Column="25" />
+      <File FileName="Pulsar4X.ECSLib/Actions/BaseOrder.cs" Line="75" Column="25" />
       <File FileName="Pulsar4X.ECSLib/Game.cs" Line="184" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>

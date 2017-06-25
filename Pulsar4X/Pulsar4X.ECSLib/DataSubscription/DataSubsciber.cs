@@ -15,7 +15,7 @@ namespace Pulsar4X.ECSLib.DataSubscription
         private readonly Guid _connectionID;
         private readonly Game _game;
 
-        private Dictionary<Guid, HashSet<string>> SubscribedDatablobs { get; } = new Dictionary<Guid, HashSet<string>>();
+        private Dictionary<Guid, HashSet<string>> SubscribedDataCodes { get; } = new Dictionary<Guid, HashSet<string>>();
 
         public DataSubsciber(Game game, Guid connectionID)
         {
@@ -24,41 +24,31 @@ namespace Pulsar4X.ECSLib.DataSubscription
             _connectionID = connectionID;
         }
 
-        internal void Subscribe<T>(Guid entityGuid)
-            where T : UIData
+        internal void Subscribe(Guid entityGuid, string dataCode)
         {
             Entity entity;
             if (_game.GlobalManager.FindEntityByGuid(entityGuid, out entity))
             {
-                if (!SubscribedDatablobs.ContainsKey(entityGuid))
-                    SubscribedDatablobs.Add(entityGuid, new HashSet<string>()); 
-                SubscribedDatablobs[entityGuid].Add(typeof(T).ToString());
+                if (!SubscribedDataCodes.ContainsKey(entityGuid))
+                    SubscribedDataCodes.Add(entityGuid, new HashSet<string>()); 
+                SubscribedDataCodes[entityGuid].Add(dataCode);
             }
         }
 
 
-        internal void TriggerIfSubscribed<T>(Guid entityGuid, UIData uiData)
-            where T : UIData
+        internal void TriggerIfSubscribed(Guid entityGuid, UIData uiData)
         {
-            if (IsSubscribedTo<T>(entityGuid))
-            {
-                
-
-                //T datablob = entity.GetDataBlob<T>();
-                //string stringblob = SerializeDataBlob(datablob);
-                //T uiData = UIData.CreateNew(_game, entity);
-                //UIDataBlobUpdateMessage message = new UIDataBlobUpdateMessage(uiData);
-                //_game.MessagePump.EnqueueOutgoingMessage(_connectionID, message);
+            if (IsSubscribedTo(entityGuid, uiData.GetDataCode))
+            {            
                 _game.MessagePump.EnqueueOutgoingMessage(_connectionID, uiData);
             }
         }
 
-        internal bool IsSubscribedTo<T>(Guid entityGuid)
-            where T : UIData
+        internal bool IsSubscribedTo(Guid entityGuid, string dataCode)
         {
-            if (SubscribedDatablobs.ContainsKey(entityGuid) && SubscribedDatablobs[entityGuid].Contains(typeof(T).ToString()))
+            if (SubscribedDataCodes.ContainsKey(entityGuid) && SubscribedDataCodes[entityGuid].Contains(dataCode))
                 return true;
-            else
+            else          
                 return false;
         }
 
@@ -70,15 +60,15 @@ namespace Pulsar4X.ECSLib.DataSubscription
     }
 
  
-    public class SubscriptionRequestMessage<T> : BaseToServerMessage where T : UIData
+    public class SubscriptionRequestMessage : BaseToServerMessage 
     {
         public Guid EntityGuid { get; set; }
-
+        public string DataCode { get; set; }
         public SubscriptionRequestMessage() { }
 
-        public static SubscriptionRequestMessage<T> newMessage(Guid connectionID, Guid factionID, Guid entityGuid)
+        public static SubscriptionRequestMessage newMessage(Guid connectionID, Guid factionID, Guid entityGuid)
         {
-            return new SubscriptionRequestMessage<T>()
+            return new SubscriptionRequestMessage()
             {
                 ConnectionID = connectionID,
                 FactionGuid = factionID,
@@ -88,18 +78,22 @@ namespace Pulsar4X.ECSLib.DataSubscription
 
         internal override void HandleMessage(Game game)
         {            
-            game.MessagePump.DataSubscibers[ConnectionID].Subscribe<T>(EntityGuid);
+            game.MessagePump.DataSubscibers[ConnectionID].Subscribe(EntityGuid, DataCode);
         }
     }
 
     public abstract class UIData : BaseToClientMessage
     {
-    }
-    
-    
-    
-    
+        public  SubscriptionRequestMessage CreateRequest(Guid connectionID, Guid entityGuid)
+        {
+            SubscriptionRequestMessage newSubscription = new SubscriptionRequestMessage()
+            {
+                ConnectionID = connectionID, EntityGuid = entityGuid, DataCode = GetDataCode
+            };
+            return newSubscription;
 
+        }
+    }
 }
 
 

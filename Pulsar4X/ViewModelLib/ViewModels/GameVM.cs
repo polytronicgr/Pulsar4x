@@ -26,6 +26,8 @@ namespace Pulsar4X.ViewModel
 
         public AuthenticationToken CurrentAuthToken { get; private set; }
 
+        internal Guid ConnectionID { get; } = Guid.Empty;//local connection is an empty guid
+        
         internal Entity CurrentFaction
         {
             get { return _currentFaction; }
