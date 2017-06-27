@@ -14,6 +14,8 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         public List<CargoTypeAmount> Capacities = new List<CargoTypeAmount>();
 
+        
+        
         [JsonConstructor]
         public CargoStorageUIData() { }
 

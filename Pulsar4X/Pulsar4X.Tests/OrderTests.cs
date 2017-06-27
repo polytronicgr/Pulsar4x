@@ -5,6 +5,8 @@ using System.Threading;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Pulsar4X.ECSLib;
+using Pulsar4X.ECSLib.DataSubscription;
+using Pulsar4X.ViewModel;
 
 
 namespace Pulsar4X.Tests
@@ -104,23 +106,42 @@ namespace Pulsar4X.Tests
         public void TestOrderViaMessagePump()
         {
             _testGame.GameSettings.EnableMultiThreading = false;
-            string sOrder = ObjectSerializer.SerializeObject(_cargoOrder);
-            AuthenticationToken auth = new AuthenticationToken(_testGame.Game.SpaceMaster, "");
-            _testGame.Game.MessagePump.EnqueueIncomingMessage(sOrder);
+            ClientMessageHandler incommingMessageHandler = new ClientMessageHandler(_testGame.Game.MessagePump);
+            FakeVM fakeVM = new FakeVM();
+            SubscriptionRequestMessage subreq = new SubscriptionRequestMessage()
+            {
+                ConnectionID = Guid.Empty, 
+                EntityGuid = _testGame.DefaultShip.Guid, 
+                DataCode = OrdersUIData.DataCode,             
+            };
 
-            bool itemFound = false;
-            _testGame.Game.GameLoop.Ticklength = TimeSpan.FromSeconds(10);
-            _testGame.Game.GameLoop.TickFrequency = TimeSpan.FromTicks(1);
-            GameOrder gameOrder = new GameOrder(IncomingMessageType.ExecutePulse);
-            _testGame.Game.MessagePump.EnqueueIncomingMessage(ObjectSerializer.SerializeObject(gameOrder));
-            Thread.Sleep(20);
-            Assert.True(_testGame.DefaultShip.Manager.OrderQueue.Count > 0, "no orders in queue");
-            _testGame.Game.MessagePump.EnqueueIncomingMessage(ObjectSerializer.SerializeObject(gameOrder));            
-            OrderProcessor.ProcessManagerOrders(_testGame.EarthColony.Manager);
+            incommingMessageHandler.Subscribe(subreq, fakeVM);            
+            
+            _testGame.Game.MessagePump.EnqueueIncomingMessage(_cargoOrder);
+            _testGame.Game.GameLoop.Ticklength = TimeSpan.FromHours(1);
+            BaseToClientMessage message;
+            while (!_testGame.Game.MessagePump.TryPeekOutgoingMessage(Guid.Empty, out message))
+            {
+                _testGame.Game.GameLoop.TimeStep();
+                OrderProcessor.ProcessManagerOrders(_testGame.EarthColony.Manager);
+                OrderProcessor.ProcessActionList(_testGame.Game.CurrentDateTime, _testGame.EarthColony.Manager);
+            }
+            
+            incommingMessageHandler.Read();
+            Assert.IsTrue(fakeVM.Name == "Cargo Transfer: Load from Venus Colony");
+        }
+        
+        public class FakeVM : IHandleMessage
+        {
+            public string Name { get; set; }
+            public string OrderStatus { get; set; }
 
-            OrderProcessor.ProcessActionList(_testGame.Game.CurrentDateTime, _testGame.EarthColony.Manager);
-            Assert.True(_testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue.Count > 0, "no actions in queue");
-
+            public void Update(BaseToClientMessage message)
+            {
+                OrdersUIData data = (OrdersUIData)message;
+                Name = data.OrderUIDatas[0].Name;
+                OrderStatus = data.OrderUIDatas[0].Status;
+            }
         }
     }
 }

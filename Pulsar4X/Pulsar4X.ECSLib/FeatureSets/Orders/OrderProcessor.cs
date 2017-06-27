@@ -65,7 +65,10 @@ namespace Pulsar4X.ECSLib
                     actionList.RemoveAt(i);
                 else 
                     i++;
-            }            
+            }
+            
+            if(entity.Manager.Game.MessagePump.AreAnySubscribers(entity.Guid, OrdersUIData.DataCode))
+                entity.Manager.Game.MessagePump.NotifyConnectionsOfDataChanges(entity.Guid, new OrdersUIData(orderableDB));
         }
 
         public static bool IsTargetClose(Game game, Entity thisEntity, Entity targetEntity, BaseAction order, int reqiredDistance)
