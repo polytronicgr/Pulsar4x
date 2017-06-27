@@ -64,15 +64,18 @@ namespace Pulsar4X.ECSLib.DataSubscription
     {
         public Guid EntityGuid { get; set; }
         public string DataCode { get; set; }
+        
+        [JsonConstructor]
         public SubscriptionRequestMessage() { }
 
-        public static SubscriptionRequestMessage newMessage(Guid connectionID, Guid factionID, Guid entityGuid)
+        public static SubscriptionRequestMessage NewMessage(Guid connectionID, Guid factionID, Guid entityGuid, string dataCode)
         {
             return new SubscriptionRequestMessage()
             {
                 ConnectionID = connectionID,
                 FactionGuid = factionID,
-                EntityGuid = entityGuid                
+                EntityGuid = entityGuid,
+                DataCode = dataCode,
             };
         }
 
@@ -84,15 +87,7 @@ namespace Pulsar4X.ECSLib.DataSubscription
 
     public abstract class UIData : BaseToClientMessage
     {
-        public  SubscriptionRequestMessage CreateRequest(Guid connectionID, Guid entityGuid)
-        {
-            SubscriptionRequestMessage newSubscription = new SubscriptionRequestMessage()
-            {
-                ConnectionID = connectionID, EntityGuid = entityGuid, DataCode = GetDataCode
-            };
-            return newSubscription;
-
-        }
+        
     }
 }
 

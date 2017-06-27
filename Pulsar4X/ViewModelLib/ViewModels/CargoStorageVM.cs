@@ -26,8 +26,14 @@ namespace Pulsar4X.ViewModel
         }
         public void Initialise(Entity entity)
         {
-            SubscriptionRequestMessage subscriptionReq = new CargoStorageUIData().CreateRequest(Guid.Empty, entity.Guid);
-            _gameVM.Game.MessagePump.EnqueueIncomingMessage(subscriptionReq);
+
+            SubscriptionRequestMessage subreq = new SubscriptionRequestMessage()
+            {
+                ConnectionID = Guid.Empty, 
+                EntityGuid = entity.Guid, 
+                DataCode = CargoStorageUIData.DataCode
+            };
+            _gameVM.Game.MessagePump.EnqueueIncomingMessage(subreq);
             
             
             _storageDB = entity.GetDataBlob<CargoStorageDB>();

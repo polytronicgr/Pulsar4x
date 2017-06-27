@@ -27,6 +27,8 @@ namespace Pulsar4X.ViewModel
         public AuthenticationToken CurrentAuthToken { get; private set; }
 
         internal Guid ConnectionID { get; } = Guid.Empty;//local connection is an empty guid
+
+        internal ClientMessageHandler IncomingMessageHandler { get; private set; }
         
         internal Entity CurrentFaction
         {
@@ -200,7 +202,7 @@ namespace Pulsar4X.ViewModel
                 _game = value;
                 OnPropertyChanged("HasGame");
                 TimeControl.Initialise(this);
-                
+                IncomingMessageHandler = new ClientMessageHandler(_game.MessagePump);
                 //forces anything listing for a change in the HasGame property to update. 
                 //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HasGame"));
             }

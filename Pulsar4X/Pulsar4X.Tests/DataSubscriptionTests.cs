@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using Pulsar4X.ECSLib;
 using Pulsar4X.ECSLib.DataSubscription;
+using Pulsar4X.ViewModel;
 
 namespace Pulsar4X.Tests
 {
@@ -13,11 +14,14 @@ namespace Pulsar4X.Tests
 
         TestGame _testGame;
         private MineralSD _duraniumSD;
-        
-        private DateTime _currentDateTime {get { return _testGame.Game.CurrentDateTime; }}
+
+        private DateTime _currentDateTime
+        {
+            get { return _testGame.Game.CurrentDateTime; }
+        }
 
         private BaseOrder _cargoOrder;
-        
+
         [SetUp]
         public void Init()
         {
@@ -26,13 +30,11 @@ namespace Pulsar4X.Tests
             OrderableDB orderable = new OrderableDB();
             TestingUtilities.ColonyFacilitys(_testGame, _testGame.EarthColony);
             _testGame.EarthColony.Manager.SetDataBlob(_testGame.DefaultShip.ID, orderable);
-            StorageSpaceProcessor.AddItemToCargo(_testGame.EarthColony.GetDataBlob<CargoStorageDB>(), _duraniumSD, 10000); 
-            
-            _cargoOrder = new CargoOrder(_testGame.DefaultShip.Guid, _testGame.HumanFaction.Guid, 
-                                         _testGame.EarthColony.Guid, CargoOrder.CargoOrderTypes.LoadCargo, 
-                                         _duraniumSD.ID, 100);
+            StorageSpaceProcessor.AddItemToCargo(_testGame.EarthColony.GetDataBlob<CargoStorageDB>(), _duraniumSD, 10000);
+
+            _cargoOrder = new CargoOrder(_testGame.DefaultShip.Guid, _testGame.HumanFaction.Guid, _testGame.EarthColony.Guid, CargoOrder.CargoOrderTypes.LoadCargo, _duraniumSD.ID, 100);
         }
-        
+
 
         [Test]
         public void SubscribeToUIData()
@@ -40,12 +42,12 @@ namespace Pulsar4X.Tests
 
             Guid conectionID = new Guid();
             AuthenticationToken auth = new AuthenticationToken(_testGame.Game.SpaceMaster, "");
-            
-            
-            
-           _testGame.Game.MessagePump.DataSubscibers[Guid.Empty].Subscribe(_testGame.DefaultShip.Guid, CargoStorageUIData.DataCode);
+
+
+
+            _testGame.Game.MessagePump.DataSubscibers[Guid.Empty].Subscribe(_testGame.DefaultShip.Guid, CargoStorageUIData.DataCode);
             //_testGame.Game.MessagePump.DataSubscibers[Guid.Empty].Subscribe<OrderableDB>(_testGame.DefaultShip.Guid);
- 
+
             Assert.True(_testGame.Game.MessagePump.DataSubscibers[Guid.Empty].IsSubscribedTo(_testGame.DefaultShip.Guid, CargoStorageUIData.DataCode), "not subscribed");
             Assert.True(_testGame.Game.MessagePump.AreAnySubscribers(_testGame.DefaultShip.Guid, CargoStorageUIData.DataCode), "No subscribers");
             BaseAction action = _cargoOrder.CreateAction(_testGame.Game, _cargoOrder);
@@ -55,27 +57,55 @@ namespace Pulsar4X.Tests
             OrderProcessor.ProcessManagerOrders(_testGame.EarthColony.Manager);
             Assert.True(_testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue[0] is CargoAction, "No action in ship orders");
             _testGame.Game.GameLoop.Ticklength = TimeSpan.FromSeconds(10);
-            _testGame.Game.GameLoop.TimeStep();            
+            _testGame.Game.GameLoop.TimeStep();
             OrderProcessor.ProcessActionList(_testGame.Game.CurrentDateTime, _testGame.EarthColony.Manager);
 
-            
-            
+
             BaseToClientMessage clientMessage;
-            Assert.True(_testGame.Game.MessagePump.TryDequeueOutgoingMessage(Guid.Empty, out clientMessage), "1st message not in pump");
-            Assert.True(clientMessage is CargoStorageUIData);   
+            Assert.True(_testGame.Game.MessagePump.TryDequeueOutgoingMessage(Guid.Empty, out clientMessage), "Message not in pump");
+            Assert.True(clientMessage is CargoStorageUIData);
         }
-        
+
         [Test]
         public void SubscribeViaMessage()
         {
-            
-            SubscriptionRequestMessage subscriptionReq = new CargoStorageUIData().CreateRequest(Guid.Empty, _testGame.DefaultShip.Guid);
+            SubscriptionRequestMessage subreq = new SubscriptionRequestMessage() {ConnectionID = Guid.Empty, EntityGuid = _testGame.DefaultShip.Guid, DataCode = CargoStorageUIData.DataCode};
 
-            _testGame.Game.MessagePump.EnqueueIncomingMessage(ObjectSerializer.SerializeObject(subscriptionReq));           
-            _testGame.Game.GameLoop.TimeStep(); 
+            _testGame.Game.MessagePump.EnqueueIncomingMessage(ObjectSerializer.SerializeObject(subreq));
+            _testGame.Game.GameLoop.TimeStep();
             Assert.True(_testGame.Game.MessagePump.AreAnySubscribers(_testGame.DefaultShip.Guid, CargoStorageUIData.DataCode));
+        }
+
+        [Test]
+        public void TestClientHandler()
+        {
+            ClientMessageHandler incommingMessageHandler = new ClientMessageHandler(_testGame.Game.MessagePump);
+            FakeVM fakeVM = new FakeVM();
+            SubscriptionRequestMessage subreq = new SubscriptionRequestMessage()
+            {
+                ConnectionID = Guid.Empty, 
+                EntityGuid = _testGame.DefaultShip.Guid, 
+                DataCode = CargoStorageUIData.DataCode,             
+            };
+
+            incommingMessageHandler.Subscribe(subreq, fakeVM);            
             
+            _testGame.Game.MessagePump.EnqueueIncomingMessage(_cargoOrder);
             
+            BaseToClientMessage message;
+            while (!_testGame.Game.MessagePump.TryPeekOutgoingMessage(Guid.Empty, out message))
+            {
+                _testGame.Game.GameLoop.TimeStep();
+            }
+            
+            incommingMessageHandler.Read();
+            Assert.IsTrue(fakeVM.IsHandled);
+        }
+        
+        public class FakeVM : IHandleMessage
+        {
+            public bool IsHandled { get; set; } = false;
+            public void Update(BaseToClientMessage message) { IsHandled = true; }
         }
     }
 }

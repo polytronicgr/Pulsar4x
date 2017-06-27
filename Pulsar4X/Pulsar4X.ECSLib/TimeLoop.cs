@@ -125,7 +125,7 @@ namespace Pulsar4X.ECSLib
         {
             _game = game;
             _timer.Interval = _tickInterval.TotalMilliseconds;
-            _timer.Elapsed += (sender, args) => TimerElapsed = true;
+            _timer.Elapsed += delegate { TimerElapsed = true; };
             _timer.AutoReset = false;
         }
         #endregion
