@@ -406,16 +406,16 @@ namespace Pulsar4X.ECSLib
                 }
             }
 
-            if (messagePump.AreAnySubscribers(cargoTo.OwningEntity.Guid, CargoStorageUIData.DataCode))
+            if (messagePump.AreAnySubscribers<CargoStorageUIData>(cargoTo.OwningEntity.Guid))
             {
                 CargoStorageUIData toData = new CargoStorageUIData(cargoTo.OwningEntity.Manager.Game.StaticData, cargoTo);
-                messagePump.NotifyConnectionsOfDataChanges(cargoTo.OwningEntity.Guid, toData);
+                messagePump.NotifyConnectionsOfDataChanges<CargoStorageUIData>(cargoTo.OwningEntity.Guid, toData);
             }
             
-            if (messagePump.AreAnySubscribers(cargoFrom.OwningEntity.Guid, CargoStorageUIData.DataCode))
+            if (messagePump.AreAnySubscribers<CargoStorageUIData>(cargoFrom.OwningEntity.Guid))
             {
                 CargoStorageUIData fromData = new CargoStorageUIData(cargoFrom.OwningEntity.Manager.Game.StaticData, cargoFrom);
-                messagePump.NotifyConnectionsOfDataChanges(cargoFrom.OwningEntity.Guid, fromData);
+                messagePump.NotifyConnectionsOfDataChanges<CargoStorageUIData>(cargoFrom.OwningEntity.Guid, fromData);
             }
         }
 

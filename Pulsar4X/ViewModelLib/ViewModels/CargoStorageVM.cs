@@ -12,7 +12,7 @@ using Pulsar4X.ECSLib.DataSubscription;
 
 namespace Pulsar4X.ViewModel
 {
-    public class CargoStorageVM : ViewModelBase
+    public class CargoStorageVM : ViewModelBase, IHandleMessage
     {
         private CargoStorageDB _storageDB;
         private StaticDataStore _dataStore;
@@ -27,11 +27,10 @@ namespace Pulsar4X.ViewModel
         public void Initialise(Entity entity)
         {
 
-            SubscriptionRequestMessage subreq = new SubscriptionRequestMessage()
+            SubscriptionRequestMessage<CargoStorageUIData> subreq = new SubscriptionRequestMessage<CargoStorageUIData>()
             {
                 ConnectionID = Guid.Empty, 
                 EntityGuid = entity.Guid, 
-                DataCode = CargoStorageUIData.DataCode
             };
             _gameVM.Game.MessagePump.EnqueueIncomingMessage(subreq);
             
@@ -64,6 +63,15 @@ namespace Pulsar4X.ViewModel
         }
 
 
+        public void Update(BaseToClientMessage message)
+        {
+            CargoStorageUIData data = (CargoStorageUIData)message;
+            foreach (var item in data.Capacities)
+            {
+                //item.TypeName
+                //item.Amount    
+            }
+        }
     }
 
     public class CargoStorageUIDataUpdateMethod: CargoStorageUIData

@@ -45,11 +45,11 @@ namespace Pulsar4X.Tests
 
 
 
-            _testGame.Game.MessagePump.DataSubscibers[Guid.Empty].Subscribe(_testGame.DefaultShip.Guid, CargoStorageUIData.DataCode);
+            _testGame.Game.MessagePump.DataSubscibers[Guid.Empty].Subscribe<CargoStorageUIData>(_testGame.DefaultShip.Guid);
             //_testGame.Game.MessagePump.DataSubscibers[Guid.Empty].Subscribe<OrderableDB>(_testGame.DefaultShip.Guid);
 
-            Assert.True(_testGame.Game.MessagePump.DataSubscibers[Guid.Empty].IsSubscribedTo(_testGame.DefaultShip.Guid, CargoStorageUIData.DataCode), "not subscribed");
-            Assert.True(_testGame.Game.MessagePump.AreAnySubscribers(_testGame.DefaultShip.Guid, CargoStorageUIData.DataCode), "No subscribers");
+            Assert.True(_testGame.Game.MessagePump.DataSubscibers[Guid.Empty].IsSubscribedTo<CargoStorageUIData>(_testGame.DefaultShip.Guid), "not subscribed");
+            Assert.True(_testGame.Game.MessagePump.AreAnySubscribers<CargoStorageUIData>(_testGame.DefaultShip.Guid), "No subscribers");
             BaseAction action = _cargoOrder.CreateAction(_testGame.Game, _cargoOrder);
             Assert.NotNull(action.OrderableProcessor);
 
@@ -69,11 +69,11 @@ namespace Pulsar4X.Tests
         [Test]
         public void SubscribeViaMessage()
         {
-            SubscriptionRequestMessage subreq = new SubscriptionRequestMessage() {ConnectionID = Guid.Empty, EntityGuid = _testGame.DefaultShip.Guid, DataCode = CargoStorageUIData.DataCode};
+            SubscriptionRequestMessage<CargoStorageUIData> subreq = new SubscriptionRequestMessage<CargoStorageUIData>() {ConnectionID = Guid.Empty, EntityGuid = _testGame.DefaultShip.Guid};
 
             _testGame.Game.MessagePump.EnqueueIncomingMessage(ObjectSerializer.SerializeObject(subreq));
             _testGame.Game.GameLoop.TimeStep();
-            Assert.True(_testGame.Game.MessagePump.AreAnySubscribers(_testGame.DefaultShip.Guid, CargoStorageUIData.DataCode));
+            Assert.True(_testGame.Game.MessagePump.AreAnySubscribers<CargoStorageUIData>(_testGame.DefaultShip.Guid));
         }
 
         [Test]
@@ -81,11 +81,10 @@ namespace Pulsar4X.Tests
         {
             ClientMessageHandler incommingMessageHandler = new ClientMessageHandler(_testGame.Game.MessagePump);
             FakeVM fakeVM = new FakeVM();
-            SubscriptionRequestMessage subreq = new SubscriptionRequestMessage()
+            SubscriptionRequestMessage<CargoStorageUIData> subreq = new SubscriptionRequestMessage<CargoStorageUIData>()
             {
                 ConnectionID = Guid.Empty, 
-                EntityGuid = _testGame.DefaultShip.Guid, 
-                DataCode = CargoStorageUIData.DataCode,             
+                EntityGuid = _testGame.DefaultShip.Guid,             
             };
 
             incommingMessageHandler.Subscribe(subreq, fakeVM);            

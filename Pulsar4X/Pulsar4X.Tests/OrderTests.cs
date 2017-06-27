@@ -108,11 +108,10 @@ namespace Pulsar4X.Tests
             _testGame.GameSettings.EnableMultiThreading = false;
             ClientMessageHandler incommingMessageHandler = new ClientMessageHandler(_testGame.Game.MessagePump);
             FakeVM fakeVM = new FakeVM();
-            SubscriptionRequestMessage subreq = new SubscriptionRequestMessage()
+            SubscriptionRequestMessage<OrdersUIData> subreq = new SubscriptionRequestMessage<OrdersUIData>()
             {
                 ConnectionID = Guid.Empty, 
-                EntityGuid = _testGame.DefaultShip.Guid, 
-                DataCode = OrdersUIData.DataCode,             
+                EntityGuid = _testGame.DefaultShip.Guid,             
             };
 
             incommingMessageHandler.Subscribe(subreq, fakeVM);            

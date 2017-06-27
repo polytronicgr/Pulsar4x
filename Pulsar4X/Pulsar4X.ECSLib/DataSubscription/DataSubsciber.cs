@@ -15,7 +15,7 @@ namespace Pulsar4X.ECSLib.DataSubscription
         private readonly Guid _connectionID;
         private readonly Game _game;
 
-        private Dictionary<Guid, HashSet<string>> SubscribedDataCodes { get; } = new Dictionary<Guid, HashSet<string>>();
+        private Dictionary<Guid, HashSet<Type>> SubscribedDataCodes { get; } = new Dictionary<Guid, HashSet<Type>>();
 
         public DataSubsciber(Game game, Guid connectionID)
         {
@@ -24,29 +24,29 @@ namespace Pulsar4X.ECSLib.DataSubscription
             _connectionID = connectionID;
         }
 
-        internal void Subscribe(Guid entityGuid, string dataCode)
+        internal void Subscribe<T>(Guid entityGuid) where T: BaseToClientMessage
         {
             Entity entity;
             if (_game.GlobalManager.FindEntityByGuid(entityGuid, out entity))
             {
                 if (!SubscribedDataCodes.ContainsKey(entityGuid))
-                    SubscribedDataCodes.Add(entityGuid, new HashSet<string>()); 
-                SubscribedDataCodes[entityGuid].Add(dataCode);
+                    SubscribedDataCodes.Add(entityGuid, new HashSet<Type>()); 
+                SubscribedDataCodes[entityGuid].Add(typeof(T));
             }
         }
 
 
-        internal void TriggerIfSubscribed(Guid entityGuid, UIData uiData)
+        internal void TriggerIfSubscribed<T>(Guid entityGuid, UIData uiData) where T : BaseToClientMessage
         {
-            if (IsSubscribedTo(entityGuid, uiData.GetDataCode))
+            if (IsSubscribedTo<T>(entityGuid))
             {            
                 _game.MessagePump.EnqueueOutgoingMessage(_connectionID, uiData);
             }
         }
 
-        internal bool IsSubscribedTo(Guid entityGuid, string dataCode)
+        internal bool IsSubscribedTo<T>(Guid entityGuid) where T : BaseToClientMessage
         {
-            if (SubscribedDataCodes.ContainsKey(entityGuid) && SubscribedDataCodes[entityGuid].Contains(dataCode))
+            if (SubscribedDataCodes.ContainsKey(entityGuid) && SubscribedDataCodes[entityGuid].Contains(typeof(T)))
                 return true;
             else          
                 return false;
@@ -60,28 +60,27 @@ namespace Pulsar4X.ECSLib.DataSubscription
     }
 
  
-    public class SubscriptionRequestMessage : BaseToServerMessage 
+    public class SubscriptionRequestMessage<T> : BaseToServerMessage where T: BaseToClientMessage
     {
         public Guid EntityGuid { get; set; }
-        public string DataCode { get; set; }
+
         
         [JsonConstructor]
         public SubscriptionRequestMessage() { }
 
-        public static SubscriptionRequestMessage NewMessage(Guid connectionID, Guid factionID, Guid entityGuid, string dataCode)
+        public static SubscriptionRequestMessage<T> NewMessage(Guid connectionID, Guid factionID, Guid entityGuid)
         {
-            return new SubscriptionRequestMessage()
+            return new SubscriptionRequestMessage<T>()
             {
                 ConnectionID = connectionID,
                 FactionGuid = factionID,
                 EntityGuid = entityGuid,
-                DataCode = dataCode,
             };
         }
 
         internal override void HandleMessage(Game game)
         {            
-            game.MessagePump.DataSubscibers[ConnectionID].Subscribe(EntityGuid, DataCode);
+            game.MessagePump.DataSubscibers[ConnectionID].Subscribe<T>(EntityGuid);
         }
     }
 

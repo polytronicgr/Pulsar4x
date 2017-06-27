@@ -64,19 +64,19 @@ namespace Pulsar4X.ECSLib
         }
 
         
-        internal void NotifyConnectionsOfDataChanges(Guid entityGuid, UIData data )
+        internal void NotifyConnectionsOfDataChanges<T>(Guid entityGuid, UIData data ) where T : BaseToClientMessage
         {
             foreach (var item in DataSubscibers.Values)
             {
-                item.TriggerIfSubscribed(entityGuid, data);
+                item.TriggerIfSubscribed<T>(entityGuid, data);
             }
         }
 
-        internal bool AreAnySubscribers(Guid entityGuid, string datacode) 
+        internal bool AreAnySubscribers<T>(Guid entityGuid) where T : BaseToClientMessage
         {
             foreach (var item in DataSubscibers.Values)
             {
-                if (item.IsSubscribedTo(entityGuid, datacode))
+                if (item.IsSubscribedTo<T>(entityGuid))
                     return true;
             }
             return false;
