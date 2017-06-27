@@ -9,7 +9,7 @@ using Pulsar4X.ECSLib.DataSubscription;
 namespace Pulsar4X.ECSLib
 {
 
-    public static class StorageSpaceProcessor
+    public static class CargoStorageHelpers
     {
         /// <summary>
         /// returns the amount of items for a given item guid.
@@ -366,7 +366,7 @@ namespace Pulsar4X.ECSLib
         }
     }
 
-    public class CargoOrderProcessor : IActionableProcessor
+    public class CargoActionProcessor : IActionableProcessor
     {
 
         public void ProcessAction(DateTime toDate, BaseAction action)
@@ -390,7 +390,7 @@ namespace Pulsar4X.ECSLib
             int amountThisMove = Math.Max((int)tonsThisDeltaT, 0);
             action.ThisStorage.AmountToTransfer -= amountThisMove;
 
-            StorageSpaceProcessor.TransferCargo(cargoFrom, cargoTo, action.ThisStorage.OrderTransferItem, amountThisMove);
+            CargoStorageHelpers.TransferCargo(cargoFrom, cargoTo, action.ThisStorage.OrderTransferItem, amountThisMove);
 
             if (action.ThisStorage.AmountToTransfer == 0)
             {

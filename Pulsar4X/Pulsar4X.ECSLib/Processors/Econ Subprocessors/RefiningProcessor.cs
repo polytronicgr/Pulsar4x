@@ -32,9 +32,9 @@ namespace Pulsar4X.ECSLib
                         if (job.PointsLeft == material.RefineryPointCost)
                         {
                             //consume all ingredients for this job on the first point use. 
-                            if (StorageSpaceProcessor.HasReqiredItems(stockpiles, costs))
+                            if (CargoStorageHelpers.HasReqiredItems(stockpiles, costs))
                             {
-                                StorageSpaceProcessor.RemoveResources(stockpiles, costs);
+                                CargoStorageHelpers.RemoveResources(stockpiles, costs);
                             }
                             else
                             {
@@ -51,7 +51,7 @@ namespace Pulsar4X.ECSLib
                         if (job.PointsLeft == 0)
                         {
                             job.NumberCompleted++; //complete job, 
-                            StorageSpaceProcessor.AddItemToCargo(stockpiles, material.ID, material.OutputAmount); //and add the product to the stockpile                        
+                            CargoStorageHelpers.AddItemToCargo(stockpiles, material.ID, material.OutputAmount); //and add the product to the stockpile                        
                             job.PointsLeft = material.RefineryPointCost; //and reset the points left for the next job in the batch.
                         }
                         

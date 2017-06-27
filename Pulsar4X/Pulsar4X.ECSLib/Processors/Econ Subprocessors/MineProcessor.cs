@@ -18,11 +18,11 @@ namespace Pulsar4X.ECSLib
                 double accessability = planetMinerals[kvp.Key].Accessibility;
                 double actualRate = kvp.Value * mineBonuses * accessability;
                 int mineralsMined = (int)Math.Min(actualRate, planetMinerals[kvp.Key].Amount);
-                long capacity = StorageSpaceProcessor.RemainingCapacity(stockpile, stockpile.CargoTypeID(kvp.Key));
+                long capacity = CargoStorageHelpers.RemainingCapacity(stockpile, stockpile.CargoTypeID(kvp.Key));
                 if (capacity > 0)
                 {
                     //colonyMineralStockpile.SafeValueAdd<Guid>(kvp.Key, mineralsMined);
-                    StorageSpaceProcessor.AddItemToCargo(stockpile, kvp.Key, mineralsMined);
+                    CargoStorageHelpers.AddItemToCargo(stockpile, kvp.Key, mineralsMined);
                     MineralDepositInfo mineralDeposit = planetMinerals[kvp.Key];
                     int newAmount = mineralDeposit.Amount -= mineralsMined;
 

@@ -180,7 +180,7 @@
     <Compile Include="FeatureSets\CargoStorage\CargoStorageAtbDB.cs" />
     <Compile Include="FeatureSets\CargoStorage\CargoStorageDB.cs" />
     <Compile Include="FeatureSets\CargoStorage\CargoStorageUIData.cs" />
-    <Compile Include="FeatureSets\CargoStorage\StorageSpaceProcessor.cs" />
+    <Compile Include="FeatureSets\CargoStorage\CargoStorageProcessor.cs" />
     <Compile Include="FeatureSets\Orders\BaseAction.cs" />
     <Compile Include="FeatureSets\Orders\BaseOrder.cs" />
     <Compile Include="FeatureSets\Orders\EnableDisableComponent.cs" />

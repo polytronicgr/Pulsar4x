@@ -73,7 +73,7 @@ namespace Pulsar4X.ECSLib
             Entity specificComponent = ComponentInstanceFactory.NewInstanceFromDesignEntity(designEntity, colonyEntity.GetDataBlob<OwnedDB>().ObjectOwner);
             if (batchJob.InstallOn != null)
             {
-                if (batchJob.InstallOn == colonyEntity || StorageSpaceProcessor.HasSpecificEntity(storage, colonyEntity))
+                if (batchJob.InstallOn == colonyEntity || CargoStorageHelpers.HasSpecificEntity(storage, colonyEntity))
                 {
                     EntityManipulation.AddComponentToEntity(batchJob.InstallOn, specificComponent);
                     ReCalcProcessor.ReCalcAbilities(batchJob.InstallOn);
@@ -82,7 +82,7 @@ namespace Pulsar4X.ECSLib
             }
             else
             {
-                StorageSpaceProcessor.AddItemToCargo(storage, specificComponent);
+                CargoStorageHelpers.AddItemToCargo(storage, specificComponent);
             }
 
             if (batchJob.NumberCompleted == batchJob.NumberOrdered)
@@ -104,7 +104,7 @@ namespace Pulsar4X.ECSLib
         {   
             foreach (KeyValuePair<Guid, int> kvp in toUse.ToArray())
             {             
-                int amountUsedThisTick = (int)StorageSpaceProcessor.SubtractValue(stockpile, kvp.Key, kvp.Value);
+                int amountUsedThisTick = (int)CargoStorageHelpers.SubtractValue(stockpile, kvp.Key, kvp.Value);
                 toUse[kvp.Key] -= amountUsedThisTick;                      
             }         
         }

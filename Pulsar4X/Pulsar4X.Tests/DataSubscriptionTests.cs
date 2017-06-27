@@ -30,7 +30,7 @@ namespace Pulsar4X.Tests
             OrderableDB orderable = new OrderableDB();
             TestingUtilities.ColonyFacilitys(_testGame, _testGame.EarthColony);
             _testGame.EarthColony.Manager.SetDataBlob(_testGame.DefaultShip.ID, orderable);
-            StorageSpaceProcessor.AddItemToCargo(_testGame.EarthColony.GetDataBlob<CargoStorageDB>(), _duraniumSD, 10000);
+            CargoStorageHelpers.AddItemToCargo(_testGame.EarthColony.GetDataBlob<CargoStorageDB>(), _duraniumSD, 10000);
 
             _cargoOrder = new CargoOrder(_testGame.DefaultShip.Guid, _testGame.HumanFaction.Guid, _testGame.EarthColony.Guid, CargoOrder.CargoOrderTypes.LoadCargo, _duraniumSD.ID, 100);
         }

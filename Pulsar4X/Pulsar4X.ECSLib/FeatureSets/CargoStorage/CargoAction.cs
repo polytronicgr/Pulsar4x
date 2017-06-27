@@ -9,7 +9,7 @@
             base(1, true, order, orderEntities.ThisEntity, orderEntities.FactionEntity, orderEntities.TargetEntity)
         {
             //set the orderableProcessor for cargoAction. 
-            OrderableProcessor = new CargoOrderProcessor();
+            OrderableProcessor = new CargoActionProcessor();
 
             if (order.CargoOrderType == CargoOrder.CargoOrderTypes.LoadCargo)
                 Name = "Cargo Transfer: Load from ";
@@ -39,7 +39,7 @@
             ThisStorage.AmountToTransfer = amount;
 
             ThisStorage.OrderTransferItemGuid = order.CargoItemGuid;      
-            OrderProcessor.SetNextInterupt(CargoOrderProcessor.EstDateTime(this, ThisStorage), this);
+            OrderProcessor.SetNextInterupt(CargoActionProcessor.EstDateTime(this, ThisStorage), this);
         }
     }
 }

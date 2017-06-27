@@ -29,7 +29,7 @@ namespace Pulsar4X.Tests
             OrderableDB orderable = new OrderableDB();
             TestingUtilities.ColonyFacilitys(_testGame, _testGame.EarthColony);
             _testGame.EarthColony.Manager.SetDataBlob(_testGame.DefaultShip.ID, orderable);
-            StorageSpaceProcessor.AddItemToCargo(_testGame.EarthColony.GetDataBlob<CargoStorageDB>(), _duraniumSD, 10000); 
+            CargoStorageHelpers.AddItemToCargo(_testGame.EarthColony.GetDataBlob<CargoStorageDB>(), _duraniumSD, 10000); 
             
             _cargoOrder = new CargoOrder(_testGame.DefaultShip.Guid, _testGame.HumanFaction.Guid, 
                                                    _testGame.EarthColony.Guid, CargoOrder.CargoOrderTypes.LoadCargo, 
@@ -77,15 +77,15 @@ namespace Pulsar4X.Tests
                                     
             Assert.Greater(nextStep, _currentDateTime, "nextStep should be greater than current datetime");
 
-            long spaceAvailible = StorageSpaceProcessor.RemainingCapacity(cargoStorageDB, _duraniumSD.CargoTypeID);
+            long spaceAvailible = CargoStorageHelpers.RemainingCapacity(cargoStorageDB, _duraniumSD.CargoTypeID);
 
             _testGame.Game.GameLoop.Ticklength = timeToTake;
             _testGame.Game.GameLoop.TimeStep();
             
             Assert.AreEqual(_currentDateTime, eta);
-            long amountInShip = StorageSpaceProcessor.GetAmountOf(cargoStorageDB, _duraniumSD.ID);   
-            long amountOnColony = StorageSpaceProcessor.GetAmountOf(_testGame.EarthColony.GetDataBlob<CargoStorageDB>(), _duraniumSD.ID); 
-            long spaceRemaining = StorageSpaceProcessor.RemainingCapacity(cargoStorageDB, _duraniumSD.CargoTypeID);
+            long amountInShip = CargoStorageHelpers.GetAmountOf(cargoStorageDB, _duraniumSD.ID);   
+            long amountOnColony = CargoStorageHelpers.GetAmountOf(_testGame.EarthColony.GetDataBlob<CargoStorageDB>(), _duraniumSD.ID); 
+            long spaceRemaining = CargoStorageHelpers.RemainingCapacity(cargoStorageDB, _duraniumSD.CargoTypeID);
             Assert.Greater(spaceAvailible, spaceRemaining);
             Assert.AreEqual(100, amountInShip, "ship has " + amountInShip.ToString() + " Duranium");
             Assert.AreEqual(9900, amountOnColony, "colony should have duranium removed");
