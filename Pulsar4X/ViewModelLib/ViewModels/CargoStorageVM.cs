@@ -36,13 +36,13 @@ namespace Pulsar4X.ViewModel
             
             
             _storageDB = entity.GetDataBlob<CargoStorageDB>();
-            foreach (var item in _storageDB.CargoCapicity)
+            foreach (var item in _storageDB.CargoCapicities)
             {
                 CargoStorageByTypeVM storeType = new CargoStorageByTypeVM(_gameVM);
                 storeType.Initalise(_storageDB, item.Key);
                 CargoStore.Add(storeType);
             }
-            _storageDB.CargoCapicity.CollectionChanged += _storageDB_CollectionChanged;
+            _storageDB.CargoCapicities.CollectionChanged += _storageDB_CollectionChanged;
             _storageDB.StoredEntities.CollectionChanged += StoredEntities_CollectionChanged;
         }
 
@@ -66,7 +66,7 @@ namespace Pulsar4X.ViewModel
         public void Update(BaseToClientMessage message)
         {
             CargoStorageUIData data = (CargoStorageUIData)message;
-            foreach (var item in data.Capacities)
+            foreach (var item in data.TotalCapacities)
             {
                 //item.TypeName
                 //item.Amount    
@@ -89,7 +89,7 @@ namespace Pulsar4X.ViewModel
         public Guid TypeID { get; private set; }
         private GameVM _gameVM;
         public string TypeName { get; set; }
-        public long MaxWeight { get { return _storageDB?.CargoCapicity[TypeID] ?? 0; } }
+        public long MaxWeight { get { return _storageDB?.CargoCapicities[TypeID] ?? 0; } }
         public float NetWeight { get { return CargoStorageHelpers.NetWeight(_storageDB, TypeID); } }
         public float RemainingWeight { get { return CargoStorageHelpers.RemainingCapacity(_storageDB, TypeID); } }
         private string _typeName;

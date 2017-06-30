@@ -12,7 +12,10 @@ namespace Pulsar4X.ECSLib
     public class CargoAbleTypeDB : BaseDataBlob , ICargoable
     {
         [JsonIgnore]
-        public string ItemName { get; private set; }
+        public string ItemTypeName
+        {
+            get { return OwningEntity?.GetDataBlob<DesignInfoDB>()?.DesignEntity.GetDataBlob<NameDB>()?.DefaultName ?? Name; }
+        }
 
         [JsonProperty]
         public Guid CargoTypeID { get; internal set; }
@@ -57,7 +60,7 @@ namespace Pulsar4X.ECSLib
         private void Deserialized(StreamingContext context)
         {
             //set item name to the design name if it exsists. 
-            ItemName = OwningEntity.GetDataBlob<DesignInfoDB>()?.DesignEntity.GetDataBlob<NameDB>()?.DefaultName ?? Name;
+            //ItemTypeName = OwningEntity?.GetDataBlob<DesignInfoDB>()?.DesignEntity.GetDataBlob<NameDB>()?.DefaultName ?? Name;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Pulsar4X.ECSLib
         public string Description;
         public Guid ID { get; set; }
         [JsonIgnore]
-        public string ItemName => "Refined Materials";
+        public string ItemTypeName => "Refined Materials";
         public Dictionary<Guid, int> RawMineralCosts;
         public Dictionary<Guid, int> RefinedMateraialsCosts;
         public ushort RefineryPointCost;

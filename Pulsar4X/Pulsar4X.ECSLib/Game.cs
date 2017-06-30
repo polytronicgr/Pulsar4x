@@ -126,6 +126,8 @@ namespace Pulsar4X.ECSLib
             {
                 StaticDataManager.LoadData("Pulsar4x", this);
             }
+            
+            
             // Create SM
 
 
