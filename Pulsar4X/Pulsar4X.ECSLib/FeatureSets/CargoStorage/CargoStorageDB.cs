@@ -20,8 +20,8 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         public PrIwObsDict<Guid, long> CargoCapicities { get; private set; } = new PrIwObsDict<Guid, long>();
         
-        [JsonProperty]
-        public Dictionary<Guid, long> UsedCapicities { get; private set; } = new Dictionary<Guid,long>();
+        //[JsonProperty]
+        //public Dictionary<Guid, long> UsedCapicities { get; private set; } = new Dictionary<Guid,long>();
 
         [JsonProperty]
         public PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>> StoredEntities { get; private set; } = new PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>>();
@@ -29,7 +29,7 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Key is CargoTypeSD.ID inner key is ICargoable.ID
         /// </summary>
-        [JsonProperty] //TODO maybe change the ICargoable key to a GUID.
+        [JsonProperty] 
         public PrIwObsDict<Guid, PrIwObsDict<Guid, long>> MinsAndMatsByCargoType { get; private set;} = new PrIwObsDict<Guid, PrIwObsDict<Guid, long>>();
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Pulsar4X.ECSLib
         internal Dictionary<Guid, Guid> ItemToTypeMap;
 
         [JsonIgnore] //don't store this in the savegame, we'll re-reference this OnDeserialised
-        private StaticDataStore _staticData;
+        internal StaticDataStore StaticData;
         
 
         [OnDeserialized]
@@ -50,7 +50,7 @@ namespace Pulsar4X.ECSLib
         {            
             var game = (Game)context.Context;
             ItemToTypeMap = game.StaticData.StorageTypeMap;
-            _staticData = game.StaticData;            
+            StaticData = game.StaticData;            
         }
 
         public CargoStorageDB()
@@ -59,7 +59,7 @@ namespace Pulsar4X.ECSLib
 
         public CargoStorageDB(StaticDataStore staticDataStore)
         {
-            _staticData = staticDataStore;
+            StaticData = staticDataStore;
             ItemToTypeMap = staticDataStore.StorageTypeMap;
         }
 
@@ -74,7 +74,7 @@ namespace Pulsar4X.ECSLib
             PartAmount = cargoDB.PartAmount;
             OrderTransferRate = cargoDB.OrderTransferRate;
             LastRunDate = cargoDB.LastRunDate;
-            _staticData = cargoDB._staticData;
+            StaticData = cargoDB.StaticData;
 
         }
 
@@ -87,7 +87,7 @@ namespace Pulsar4X.ECSLib
         /// <returns></returns>
         public CargoTypeSD CargoType(Guid itemID)
         {
-            return _staticData.CargoTypes[ItemToTypeMap[itemID]];
+            return StaticData.CargoTypes[ItemToTypeMap[itemID]];
         }
 
         public Guid CargoTypeID(Guid itemID)
@@ -117,7 +117,7 @@ namespace Pulsar4X.ECSLib
             set
             {
                 _orderTranferItemGuid = value;  
-                OrderTransferItem = _staticData.GetICargoable(value);
+                OrderTransferItem = StaticData.GetICargoable(value);
             }
         }
 

@@ -10,9 +10,7 @@ namespace Pulsar4X.ECSLib
 {
 
     public static class CargoStorageHelpers
-    {
-        
-        public static StaticDataStore StaticData { get; set; }
+    {        
         
         /// <summary>
         /// returns the amount of items for a given item guid.
@@ -102,7 +100,7 @@ namespace Pulsar4X.ECSLib
 
                 foreach (KeyValuePair<Guid, long> kvp in fromCargo.MinsAndMatsByCargoType[typeID])
                 {
-                    returnDic.Add(StaticData.GetICargoable(kvp.Key), kvp.Value);
+                    returnDic.Add(fromCargo.StaticData.GetICargoable(kvp.Key), kvp.Value);
                 }
                 return returnDic;
             }
@@ -413,7 +411,6 @@ namespace Pulsar4X.ECSLib
             {
                 //action.ThisStorage.PercentComplete.Percent = 1.0f;
                 action.IsFinished = true;
-
             }
             else
             {
