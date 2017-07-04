@@ -136,6 +136,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CargoTests.cs" />
     <Compile Include="DataBlobTests.cs" />
     <Compile Include="FactoryTests.cs" />
     <Compile Include="OrderQueueTest.cs" />

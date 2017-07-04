@@ -82,7 +82,7 @@ namespace Pulsar4X.ECSLib
             }
             else
             {
-                CargoStorageHelpers.AddItemToCargo(storage, specificComponent);
+                CargoStorageHelpers.AddItemToCargo(storage, specificComponent.GetDataBlob<CargoAbleTypeDB>(), 1);
             }
 
             if (batchJob.NumberCompleted == batchJob.NumberOrdered)
@@ -104,7 +104,7 @@ namespace Pulsar4X.ECSLib
         {   
             foreach (KeyValuePair<Guid, int> kvp in toUse.ToArray())
             {             
-                int amountUsedThisTick = (int)CargoStorageHelpers.SubtractValue(stockpile, kvp.Key, kvp.Value);
+                int amountUsedThisTick = (int)CargoStorageHelpers.SubtractValue(stockpile, kvp.Key, (uint)kvp.Value);
                 toUse[kvp.Key] -= amountUsedThisTick;                      
             }         
         }

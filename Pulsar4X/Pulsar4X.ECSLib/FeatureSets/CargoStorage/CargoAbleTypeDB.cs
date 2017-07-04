@@ -22,7 +22,7 @@ namespace Pulsar4X.ECSLib
 
         [JsonIgnore]
         public Guid ID {
-            get { return this.OwningEntity.Guid; }
+            get { return this.OwningEntity.Guid; } //this should be changed to a designID if it exists
         }
 
         [JsonIgnore]

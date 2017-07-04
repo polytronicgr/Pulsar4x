@@ -39,5 +39,17 @@ namespace Pulsar4X.ECSLib
             }
             throw new Exception(name + " not found");
         }
+        
+        internal static ProcessedMaterialSD TryGetMaterialSD(Game game, string name)
+        {
+            foreach (var kvp in game.StaticData.ProcessedMaterials)
+            {
+                if (name == kvp.Value.Name)
+                {
+                    return kvp.Value;
+                }
+            }
+            throw new Exception(name + " not found");
+        }
     }
 }

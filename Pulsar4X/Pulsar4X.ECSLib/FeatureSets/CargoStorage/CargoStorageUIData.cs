@@ -17,7 +17,7 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         public Dictionary<CargoTypeSD, long> TotalCapacities = new Dictionary<CargoTypeSD, long>();
 
-        public Dictionary<CargoTypeSD, Dictionary<CargoableUIData, long>> CargoByType = new Dictionary<CargoTypeSD, Dictionary<CargoableUIData, long>>();
+        public Dictionary<CargoTypeSD, CargoStorageTypeData> CargoByType = new Dictionary<CargoTypeSD, CargoStorageTypeData>();
 
         
         [JsonConstructor]
@@ -25,23 +25,17 @@ namespace Pulsar4X.ECSLib
 
         public CargoStorageUIData(StaticDataStore staticData, CargoStorageDB db)
         {
-            foreach (var kvp in db.CargoCapicities)
+            foreach (var kvp in db.StorageByType)
             {
                 CargoTypeSD cargoType = staticData.CargoTypes[kvp.Key];
-                TotalCapacities.Add(cargoType, kvp.Value);
+                TotalCapacities.Add(cargoType, kvp.Value.Capacity);
+                
+                CargoByType.Add(cargoType, kvp.Value);
+                
             }
             
 
-            foreach (var kvp in db.MinsAndMatsByCargoType)
-            {
-                CargoTypeSD cargoType = staticData.CargoTypes[kvp.Key];
-                CargoByType.Add(cargoType, new Dictionary<CargoableUIData, long>());
-                foreach (var kvp2 in kvp.Value)
-                {
-                     CargoableUIData newUIData = new CargoableUIData(staticData.GetICargoable(kvp2.Key));   
-                    CargoByType[cargoType].Add(newUIData, kvp2.Value);
-                }
-            }
+
         }
 
   

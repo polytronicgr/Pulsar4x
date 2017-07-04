@@ -17,20 +17,22 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class CargoStorageDB : BaseDataBlob
     {
-        [JsonProperty]
-        public PrIwObsDict<Guid, long> CargoCapicities { get; private set; } = new PrIwObsDict<Guid, long>();
+        //[JsonProperty]
+        //public PrIwObsDict<Guid, long> CargoCapicities { get; private set; } = new PrIwObsDict<Guid, long>();
         
         //[JsonProperty]
         //public Dictionary<Guid, long> UsedCapicities { get; private set; } = new Dictionary<Guid,long>();
 
-        [JsonProperty]
-        public PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>> StoredEntities { get; private set; } = new PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>>();
+        //[JsonProperty]
+        //public PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>> StoredEntities { get; private set; } = new PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>>();
         
         /// <summary>
         /// Key is CargoTypeSD.ID inner key is ICargoable.ID
         /// </summary>
-        [JsonProperty] 
-        public PrIwObsDict<Guid, PrIwObsDict<Guid, long>> MinsAndMatsByCargoType { get; private set;} = new PrIwObsDict<Guid, PrIwObsDict<Guid, long>>();
+        //[JsonProperty] 
+        //public PrIwObsDict<Guid, PrIwObsDict<Guid, long>> MinsAndMatsByCargoType { get; private set;} = new PrIwObsDict<Guid, PrIwObsDict<Guid, long>>();
+        
+        public Dictionary<Guid, CargoStorageTypeData> StorageByType { get; private set; } = new Dictionary<Guid, CargoStorageTypeData>();
 
         /// <summary>
         /// in tones per hour?
@@ -65,9 +67,12 @@ namespace Pulsar4X.ECSLib
 
         public CargoStorageDB(CargoStorageDB cargoDB)
         {
-            CargoCapicities = new PrIwObsDict<Guid, long>(cargoDB.CargoCapicities);
-            MinsAndMatsByCargoType = new PrIwObsDict<Guid, PrIwObsDict<Guid, long>>(cargoDB.MinsAndMatsByCargoType);
-            StoredEntities = new PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>>(cargoDB.StoredEntities);
+            //CargoCapicities = new PrIwObsDict<Guid, long>(cargoDB.CargoCapicities);
+            //MinsAndMatsByCargoType = new PrIwObsDict<Guid, PrIwObsDict<Guid, long>>(cargoDB.MinsAndMatsByCargoType);
+            //StoredEntities = new PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>>(cargoDB.StoredEntities);
+
+            StorageByType = new Dictionary<Guid, CargoStorageTypeData>(cargoDB.StorageByType);        
+            
             ItemToTypeMap = cargoDB.ItemToTypeMap; //note that this is not 'new', the dictionary referenced here is static and should be the same dictionary throughout the game.
         
             AmountToTransfer = cargoDB.AmountToTransfer;
@@ -126,5 +131,20 @@ namespace Pulsar4X.ECSLib
 
         [JsonProperty]
         public DateTime LastRunDate { get; internal set; }
+    }
+
+    public class CargoStorageTypeData
+    {
+        /// <summary>
+        /// by Weight
+        /// </summary>
+        internal long Capacity { get; set; } = 0;
+
+        /// <summary>
+        /// By Weight
+        /// </summary>
+        internal long FreeCapacity { get; set; } = 0;
+        internal Dictionary<Guid, uint> StoredByItemID { get; } = new Dictionary<Guid, uint>();
+        internal Dictionary<Guid, Entity> StoredEntities { get; } = new Dictionary<Guid, Entity>();
     }
 }

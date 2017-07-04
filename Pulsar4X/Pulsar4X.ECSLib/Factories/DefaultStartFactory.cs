@@ -68,13 +68,15 @@ namespace Pulsar4X.ECSLib
             // IE, the fire control on ship1 is the same entity as on ship2
             // Both the design and instances should be unique
 
+            ProcessedMaterialSD SoruimFuel = NameLookup.TryGetMaterialSD(game, "Sorium Fuel");
+
             Entity ship1 = ShipFactory.CreateShip(shipClass, sol.SystemManager, factionEntity, earth, sol, "Serial Peacemaker");
             Entity ship2 = ShipFactory.CreateShip(shipClass, sol.SystemManager, factionEntity, earth, sol, "Ensuing Calm");
-            CargoStorageHelpers.AddItemToCargo(ship1.GetDataBlob<CargoStorageDB>(), new Guid("33e6ac88-0235-4917-a7ff-35c8886aad3a"), 200000000000);
-            CargoStorageHelpers.AddItemToCargo(ship2.GetDataBlob<CargoStorageDB>(), new Guid("33e6ac88-0235-4917-a7ff-35c8886aad3a"), 200000000000);
+            CargoStorageHelpers.AddItemToCargo(ship1.GetDataBlob<CargoStorageDB>(), SoruimFuel, 2000000000);
+            CargoStorageHelpers.AddItemToCargo(ship2.GetDataBlob<CargoStorageDB>(), SoruimFuel, 2000000000);
 
             Entity gunShip = ShipFactory.CreateShip(gunShipClass, sol.SystemManager, factionEntity, earth, sol, "Prevailing Stillness");
-            CargoStorageHelpers.AddItemToCargo(gunShipClass.GetDataBlob<CargoStorageDB>(), new Guid("33e6ac88-0235-4917-a7ff-35c8886aad3a"), 2000000000);
+            CargoStorageHelpers.AddItemToCargo(gunShipClass.GetDataBlob<CargoStorageDB>(), SoruimFuel, 2000000000);
 
             sol.SystemManager.SetDataBlob(ship1.ID, new TransitableDB());
             sol.SystemManager.SetDataBlob(ship2.ID, new TransitableDB());
