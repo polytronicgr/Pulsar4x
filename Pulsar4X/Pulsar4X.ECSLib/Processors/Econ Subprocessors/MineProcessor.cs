@@ -14,11 +14,12 @@ namespace Pulsar4X.ECSLib
             CargoStorageDB stockpile = colonyEntity.GetDataBlob<CargoStorageDB>();
             float mineBonuses = 1;//colonyEntity.GetDataBlob<ColonyBonusesDB>().GetBonus(AbilityType.Mine);
             foreach (var kvp in mineRates)
-            {                
+            {
+                var typeID = stockpile.StaticData.GetICargoable(kvp.Key).CargoTypeID;
                 double accessability = planetMinerals[kvp.Key].Accessibility;
                 double actualRate = kvp.Value * mineBonuses * accessability;
                 int mineralsMined = (int)Math.Min(actualRate, planetMinerals[kvp.Key].Amount);
-                long capacity = stockpile.StorageByType[kvp.Key].Capacity;
+                long capacity = stockpile.StorageByType[typeID].Capacity;
                 if (capacity > 0)
                 {
                     //colonyMineralStockpile.SafeValueAdd<Guid>(kvp.Key, mineralsMined);

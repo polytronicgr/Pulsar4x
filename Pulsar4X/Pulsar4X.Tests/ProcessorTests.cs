@@ -1,68 +1,68 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Runtime.Remoting.Channels;
-//using System.Security.Cryptography;
-//using NUnit.Framework;
-//using Pulsar4X.ECSLib;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Remoting.Channels;
+using System.Security.Cryptography;
+using NUnit.Framework;
+using Pulsar4X.ECSLib;
 
-//namespace Pulsar4X.Tests
-//{
-//    [TestFixture, Description("Processor Tests")]
-//    class ProcessorTests
-//    {
-//        private Game _game;
-//        EntityManager _entityManager;
-//        private Entity _faction;
-//        private Entity _colonyEntity;
-//        private MineralSD _duraniumSD;
-//        private MineralSD _corundiumSD;
+namespace Pulsar4X.Tests
+{
+    [TestFixture, Description("Processor Tests")]
+    class ProcessorTests
+    {
+        private Game _game;
+        EntityManager _entityManager;
+        private Entity _faction;
+        private Entity _colonyEntity;
+        private Entity _earth;
+        private MineralSD _duraniumSD;
+        TestGame _testGame;
 
-//        [SetUp]
-//        public void Init()
-//        {
-//            _game = new Game(new LibProcessLayer(), "Unit Test Game");
-//            StaticDataManager.LoadFromDefaultDataDirectory();
-//            _entityManager = new EntityManager();
-//            _faction = FactionFactory.CreateFaction(_game.GlobalManager, "Terrian");
+        private DateTime _currentDateTime
+        {
+            get { return _testGame.Game.CurrentDateTime; }
+        }
 
-//            _duraniumSD = StaticDataManager.StaticDataStore.Minerals.Find(m => m.Name == "Duranium");
-//            _corundiumSD = StaticDataManager.StaticDataStore.Minerals.Find(m => m.Name == "Corundium");
+        private CargoStorageDB _cargoStorageDB;
+        private Guid DuraniumID => _duraniumSD.ID;
+        private Guid DuraniumCargoTypeID => _duraniumSD.CargoTypeID;
+        
+        
+        [SetUp]
+        public void Init()
+        {
+            _testGame = new TestGame(1);
+            _duraniumSD = NameLookup.TryGetMineralSD(_testGame.Game, "Duranium");
 
-//            //StarSystem starSystem = StarSystemFactory.CreateSystem("Sol", 1);
-//            //Entity planetEntity = SystemBodyFactory.CreateBaseBody(starSystem);
-//            //SystemBodyDB planetDB = planetEntity.GetDataBlob<SystemBodyDB>();
-//            List<BaseDataBlob> blobs = new List<BaseDataBlob>();
-//            SystemBodyDB planetDB = new SystemBodyDB();
-//            planetDB.SupportsPopulations = true;
+            TestingUtilities.ColonyFacilitys(_testGame, _testGame.EarthColony);
 
-//            blobs.Add(planetDB);
-//            Entity planetEntity = new Entity(_entityManager, blobs);
+            _cargoStorageDB = _testGame.EarthColony.GetDataBlob<CargoStorageDB>();
 
-//            Dictionary<Guid, MineralDepositInfo> minerals = planetDB.Minerals;
+            _colonyEntity = _testGame.EarthColony;
+            _faction = _testGame.HumanFaction;
+            _game = _testGame.Game;
+            _entityManager = _colonyEntity.Manager;
+            _earth = _testGame.Earth;
+        }
 
-//            MineralDepositInfo duraniumDeposit = new MineralDepositInfo { Amount = 10000, Accessibility = 1, HalfOriginalAmount = 5000 };
+        [Test]
+        public void TestMining()
+        {
+            Assert.True(_earth.GetDataBlob<SystemBodyInfoDB>().Minerals.ContainsKey(DuraniumID), "Planet doesn't have minerals");
+            Assert.True(_colonyEntity.GetDataBlob<ColonyMinesDB>().MineingRate[DuraniumID] > 0, "Colony is incapable of mining");
+            Assert.True(_colonyEntity.GetDataBlob<CargoStorageDB>().StorageByType[DuraniumCargoTypeID].FreeCapacity > 0, "Colony can't store minerals");
+            MineProcessor.MineResources(_colonyEntity);
+            
+            Assert.True(_colonyEntity.GetDataBlob<CargoStorageDB>().StorageByType[DuraniumCargoTypeID].StoredByItemID[DuraniumID] > 0, "Should have Duranum in cargo");
+        }
 
-//            minerals.Add(_duraniumSD.ID, duraniumDeposit);
+    }
+}
 
-//            MineralDepositInfo corundiumDeposit = new MineralDepositInfo { Amount = 1000, Accessibility = 0.5, HalfOriginalAmount = 500 };
 
-//            minerals.Add(_corundiumSD.ID, corundiumDeposit);
 
-//            Entity species = SpeciesFactory.CreateSpeciesHuman(_faction, _entityManager);
 
-//            _colonyEntity = ColonyFactory.CreateColony(_faction, species, planetEntity);
-
-//            InstallationsDB installationsDB = _colonyEntity.GetDataBlob<InstallationsDB>();
-
-//            //wow holy shit, this is a pain. definatly need to add an "AddInstallation" to the InstallationProcessor. (and RemoveInstallation);
-//            Guid mineguidGuid = new Guid("406E22B5-65DB-4C7E-B956-B120B0466503");
-//            //InstallationSD mineSD = StaticDataManager.StaticDataStore.Installations[mineguidGuid];
-//            installationsDB.Installations[mineguidGuid] = 1f;
-//            InstallationEmployment installationEmployment = new InstallationEmployment {Enabled = true, Type = mineguidGuid};
-//            installationsDB.EmploymentList.Add(installationEmployment);
-
-//        }
 
 //        [TearDown]
 //        public void Cleanup()
