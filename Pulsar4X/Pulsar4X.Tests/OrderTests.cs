@@ -77,7 +77,7 @@ namespace Pulsar4X.Tests
                                     
             Assert.Greater(nextStep, _currentDateTime, "nextStep should be greater than current datetime");
 
-            long spaceAvailible = CargoStorageHelpers.RemainingCapacity(cargoStorageDB, _duraniumSD.CargoTypeID);
+            long spaceAvailible = cargoStorageDB.StorageByType[_duraniumSD.CargoTypeID].Capacity;
 
             _testGame.Game.GameLoop.Ticklength = timeToTake;
             _testGame.Game.GameLoop.TimeStep();
@@ -85,8 +85,7 @@ namespace Pulsar4X.Tests
             Assert.AreEqual(_currentDateTime, eta);
             long amountInShip = CargoStorageHelpers.GetAmountOf(cargoStorageDB, _duraniumSD.ID);   
             long amountOnColony = CargoStorageHelpers.GetAmountOf(_testGame.EarthColony.GetDataBlob<CargoStorageDB>(), _duraniumSD.ID); 
-            long spaceRemaining = CargoStorageHelpers.RemainingCapacity(cargoStorageDB, _duraniumSD.CargoTypeID);
-            Assert.Greater(spaceAvailible, spaceRemaining);
+            long spaceRemaining = cargoStorageDB.StorageByType[_duraniumSD.CargoTypeID].FreeCapacity;
             Assert.AreEqual(100, amountInShip, "ship has " + amountInShip.ToString() + " Duranium");
             Assert.AreEqual(9900, amountOnColony, "colony should have duranium removed");
 

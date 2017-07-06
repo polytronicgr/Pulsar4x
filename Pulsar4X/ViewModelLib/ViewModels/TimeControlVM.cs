@@ -92,6 +92,7 @@ namespace Pulsar4X.ViewModel
         {                        
             OnPropertyChanged(nameof(CurrentGameDate));
             OnPropertyChanged(nameof(LastTickLen));
+            _gameVM.IncomingMessageHandler.Read();
         }
     }
 }

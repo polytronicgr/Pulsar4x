@@ -138,13 +138,16 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// by Weight
         /// </summary>
-        internal long Capacity { get; set; } = 0;
+        public long Capacity { get; set; } = 0;
 
         /// <summary>
         /// By Weight
         /// </summary>
-        internal long FreeCapacity { get; set; } = 0;
-        internal Dictionary<Guid, uint> StoredByItemID { get; } = new Dictionary<Guid, uint>();
-        internal Dictionary<Guid, Entity> StoredEntities { get; } = new Dictionary<Guid, Entity>();
+        public long FreeCapacity { get; set; } = 0;
+        /// <summary>
+        /// Key is ICargoable.ID
+        /// </summary>
+        public Dictionary<Guid, uint> StoredByItemID { get; } = new Dictionary<Guid, uint>();
+        public Dictionary<Guid, Entity> StoredEntities { get; } = new Dictionary<Guid, Entity>();
     }
 }

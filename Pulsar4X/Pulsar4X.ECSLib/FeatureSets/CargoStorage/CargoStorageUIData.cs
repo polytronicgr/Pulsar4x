@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Antlr.Runtime;
 using Newtonsoft.Json;
 using Pulsar4X.ECSLib.DataSubscription;
@@ -10,15 +11,12 @@ namespace Pulsar4X.ECSLib
 {
     public class CargoStorageUIData : UIData
     {
-        public static string DataCode = "CargoData";
 
-        public override string GetDataCode{get { return DataCode; }}
+        public Dictionary<Guid, CargoStorageTypeData> CargoByType = new Dictionary<Guid, CargoStorageTypeData>();
 
-        [JsonProperty]
-        public Dictionary<CargoTypeSD, long> TotalCapacities = new Dictionary<CargoTypeSD, long>();
-
-        public Dictionary<CargoTypeSD, CargoStorageTypeData> CargoByType = new Dictionary<CargoTypeSD, CargoStorageTypeData>();
-
+        //this needs to be moved to UI side.
+        public Dictionary<Guid, CargoableUIData> CargoableData = new Dictionary<Guid, CargoableUIData>();
+        
         
         [JsonConstructor]
         public CargoStorageUIData() { }
@@ -26,12 +24,12 @@ namespace Pulsar4X.ECSLib
         public CargoStorageUIData(StaticDataStore staticData, CargoStorageDB db)
         {
             foreach (var kvp in db.StorageByType)
-            {
-                CargoTypeSD cargoType = staticData.CargoTypes[kvp.Key];
-                TotalCapacities.Add(cargoType, kvp.Value.Capacity);
-                
-                CargoByType.Add(cargoType, kvp.Value);
-                
+            {                
+                CargoByType.Add(kvp.Key, kvp.Value);
+                foreach (var kvp2 in kvp.Value.StoredByItemID)
+                {
+                    CargoableData.Add(kvp2.Key, new CargoableUIData(staticData.GetICargoable(kvp2.Key)));
+                }
             }
             
 
@@ -61,97 +59,225 @@ namespace Pulsar4X.ECSLib
             }
         }
         
-        public class StoredObservableList<T> : IList<T>
+        
+    }
+
+    public class StoredObservableDictionary<TK, TV> : IDictionary<TK, TV>
+    {
+        public enum DictionaryActions
         {
+            Add,
+            Remove,
+            Replace,
+            Clear,
+        }
+        public struct DictionaryActionData
+        {
+            public DictionaryActions Action;
+            public KeyValuePair<TK, TV> KeyValuePair;
+        }
+        
+        internal Dictionary<TK, TV> InternalDictionary { get; set; }
 
-            public enum Actions
+        internal List<DictionaryActionData> Changes { get; private set; } = new List<DictionaryActionData>();
+
+        public StoredObservableDictionary(Dictionary<TK, TV> dictionary) { InternalDictionary = dictionary; }
+
+        /// <summary>
+        /// Threadsafe
+        /// </summary>
+        /// <returns></returns>
+        public List<DictionaryActionData> GetAndClearChanges()
+        {
+            List<DictionaryActionData> changes;
+            lock (Changes)
             {
-                Add,
-                Insert,
-                Remove,
-                RemoveAt,
-                Clear,
-                Replace
-            }
-            
-            public struct ActionData
+                changes = Changes.ToList();
+                Changes = new List<DictionaryActionData>();                
+            }        
+            return changes;
+        }
+
+        public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator() => InternalDictionary.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
+
+        public void Add(KeyValuePair<TK, TV> item)
+        {
+            InternalDictionary.Add(item.Key, item.Value);
+            Changes.Add(new DictionaryActionData()
             {
-                public Actions Action;
-                public int Index;
-                public T NewData;
-            }
-            
-            
-            internal List<T> InternalList { get; private set; }
+                Action = DictionaryActions.Add, 
+                KeyValuePair = item
+            }); 
+        }
 
-            internal List<ActionData> Changes { get; } = new List<ActionData>();
-            
-            public StoredObservableList(List<T> list)
+        public void Clear()
+        {
+            InternalDictionary.Clear();
+            Changes.Add(new DictionaryActionData()
             {
-                InternalList = list;
-            }
+                Action = DictionaryActions.Clear,                
+            });
+        }
 
-            public IEnumerator<T> GetEnumerator() => InternalList.GetEnumerator();
+        public bool Contains(KeyValuePair<TK, TV> item) => InternalDictionary.Contains(item);
 
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public void CopyTo(KeyValuePair<TK, TV>[] array, int arrayIndex) { throw new NotImplementedException(); }
 
-            public void Add(T item)
+        public bool Remove(KeyValuePair<TK, TV> item)
+        {
+            bool wasSuccessfull = InternalDictionary.Remove(item.Key);
+            if (wasSuccessfull)
             {
-                InternalList.Add(item); 
-                Changes.Add(new ActionData()
+                Changes.Add(new DictionaryActionData()
                 {
-                    Action = Actions.Add, 
-                    NewData = item
+                    Action = DictionaryActions.Remove,
+                    KeyValuePair = item                    
                 });
             }
+            return wasSuccessfull;
+        }
 
-            public void Clear()
+        public int Count => InternalDictionary.Count;
+        public bool IsReadOnly { get; }
+
+        public void Add(TK key, TV value)
+        {
+            Add(new KeyValuePair<TK, TV>(key,value));
+        }
+
+        public bool ContainsKey(TK key) => InternalDictionary.ContainsKey(key);
+
+        public bool Remove(TK key) => Remove(new KeyValuePair<TK, TV>(key, InternalDictionary[key]));
+
+        public bool TryGetValue(TK key, out TV value) => InternalDictionary.TryGetValue(key, out value);
+
+        public TV this[TK key]
+        {
+            get { return InternalDictionary[key]; }
+            set
             {
-                InternalList.Clear();
-                Changes.Add(new ActionData() {Action = Actions.Clear});
-            }
-
-            public bool Contains(T item) => InternalList.Contains(item);
-
-            public void CopyTo(T[] array, int arrayIndex) { InternalList.CopyTo(array, arrayIndex); }
-
-            public bool Remove(T item)
-            {
-                int index = IndexOf(item);
-                if (index >= 0) {
-                    RemoveAt(index);
-                    return true;
-                }
- 
-                return false;              
-            }
-
-            public int Count => InternalList.Count;
-            
-            public bool IsReadOnly { get; }
-
-            public int IndexOf(T item) => InternalList.IndexOf(item);
-
-            public void Insert(int index, T item)
-            {
-                InternalList.Insert(index, item);
-                Changes.Add(new ActionData(){Action = Actions.Insert, NewData = item});
-            }
-
-            public void RemoveAt(int index)
-            {
-                InternalList.RemoveAt(index);
-                Changes.Add(new ActionData(){Action = Actions.RemoveAt, Index = index});
-            }
-
-            public T this[int index]
-            {
-                get {return InternalList[index]; }
-                set
+                InternalDictionary[key] = value;
+                Changes.Add(new DictionaryActionData()
                 {
-                    InternalList[index] = value;
-                    Changes.Add(new ActionData(){Action = Actions.Replace, Index = index, NewData = value});
-                }
+                    Action = DictionaryActions.Replace,
+                    KeyValuePair = new KeyValuePair<TK, TV>(key, value)
+                });
+            }
+        }
+
+        public ICollection<TK> Keys => InternalDictionary.Keys;
+        public ICollection<TV> Values => InternalDictionary.Values;
+    }
+    
+    
+
+    public class StoredObservableList<T> : IList<T>
+    {
+
+        public enum ListActions
+        {
+            Add,
+            Insert,
+            Remove,
+            RemoveAt,
+            Clear,
+            Replace
+        }
+        
+        public struct ListActionData
+        {
+            public ListActions Action;
+            public int Index;
+            public T NewData;
+        }
+        
+        
+        internal List<T> InternalList { get; private set; }
+
+        internal List<ListActionData> Changes { get; private set; } = new List<ListActionData>();
+        
+        public StoredObservableList(List<T> list)
+        {
+            InternalList = list;
+        }
+
+        /// <summary>
+        /// Threadsafe
+        /// </summary>
+        /// <returns></returns>
+        public List<ListActionData> GetAndClearChanges()
+        {
+            List<ListActionData> changes;
+            lock (Changes)
+            {
+                changes = Changes.ToList();
+                Changes = new List<ListActionData>();                
+            }        
+            return changes;
+        }
+        
+        public IEnumerator<T> GetEnumerator() => InternalList.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public void Add(T item)
+        {
+            InternalList.Add(item); 
+            Changes.Add(new ListActionData()
+            {
+                Action = ListActions.Add, 
+                NewData = item
+            });
+        }
+
+        public void Clear()
+        {
+            InternalList.Clear();
+            Changes.Add(new ListActionData() {Action = ListActions.Clear});
+        }
+
+        public bool Contains(T item) => InternalList.Contains(item);
+
+        public void CopyTo(T[] array, int arrayIndex) { InternalList.CopyTo(array, arrayIndex); }
+
+        public bool Remove(T item)
+        {
+            int index = IndexOf(item);
+            if (index >= 0) {
+                RemoveAt(index);
+                return true;
+            }
+
+            return false;              
+        }
+
+        public int Count => InternalList.Count;
+        
+        public bool IsReadOnly { get; }
+
+        public int IndexOf(T item) => InternalList.IndexOf(item);
+
+        public void Insert(int index, T item)
+        {
+            InternalList.Insert(index, item);
+            Changes.Add(new ListActionData(){Action = ListActions.Insert, NewData = item});
+        }
+
+        public void RemoveAt(int index)
+        {
+            InternalList.RemoveAt(index);
+            Changes.Add(new ListActionData(){Action = ListActions.RemoveAt, Index = index});
+        }
+
+        public T this[int index]
+        {
+            get {return InternalList[index]; }
+            set
+            {
+                InternalList[index] = value;
+                Changes.Add(new ListActionData(){Action = ListActions.Replace, Index = index, NewData = value});
             }
         }
     }

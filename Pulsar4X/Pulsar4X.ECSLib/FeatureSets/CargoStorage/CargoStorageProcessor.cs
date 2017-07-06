@@ -76,7 +76,10 @@ namespace Pulsar4X.ECSLib
             uint amountToMove = Math.Min(AmountMovable(toCargo, cargoableItem), amount);
             long massToMove = (long)massPerItem * amountToMove;
 
+            
             toCargo.StorageByType[cargoTypeID].FreeCapacity -= massToMove;
+            if(!toCargo.StorageByType[cargoTypeID].StoredByItemID.ContainsKey(cargoableItem.ID))
+                toCargo.StorageByType[cargoTypeID].StoredByItemID.Add(cargoableItem.ID, 0);
             toCargo.StorageByType[cargoTypeID].StoredByItemID[cargoableItem.ID] += amountToMove;
 
             if (cargoableItem is CargoAbleTypeDB)
@@ -102,19 +105,18 @@ namespace Pulsar4X.ECSLib
             uint amountInStore = fromCargo.StorageByType[cargoTypeID].StoredByItemID[cargoableItem.ID];
 
             uint amountToMove = Math.Min(amountInStore, amount);
-            long massToMove = (long)massPerItem * amountToMove;
+            long massToMove = (long)(massPerItem * amountToMove);
             
             
 
-            fromCargo.StorageByType[cargoTypeID].FreeCapacity -= massToMove;
+            fromCargo.StorageByType[cargoTypeID].FreeCapacity += massToMove;
             fromCargo.StorageByType[cargoTypeID].StoredByItemID[cargoableItem.ID] -= amountToMove;
         }
 
-        internal static uint AmountMovable(CargoStorageDB cargo, ICargoable item)
+        internal static uint AmountMovable(CargoStorageDB cargoTo, ICargoable item)
         {
             float massPerItem = item.Mass;
-            long freeCapacity = cargo.StorageByType[item.CargoTypeID].FreeCapacity;
-            
+            long freeCapacity = cargoTo.StorageByType[item.CargoTypeID].FreeCapacity;           
             return (uint)(freeCapacity / massPerItem);
         }
 
@@ -126,9 +128,14 @@ namespace Pulsar4X.ECSLib
         /// <param name="toCargo"></param>
         /// <param name="item"></param>
         /// <param name="amount"></param>
-        internal static void TransferCargo(CargoStorageDB fromCargo, CargoStorageDB toCargo, ICargoable item, long amount)
+        internal static void TransferCargo(CargoStorageDB fromCargo, CargoStorageDB toCargo, ICargoable item, uint amount)
         {
-            
+            uint maxAddable = AmountMovable(toCargo, item);
+            uint maxremovable = fromCargo.StorageByType[item.CargoTypeID].StoredByItemID[item.ID];
+            uint amountToMove = Math.Min(maxremovable, amount);
+            amountToMove = Math.Min(amountToMove, maxAddable);
+            RemoveItemFromCargo(fromCargo, item, amountToMove);
+            AddItemToCargo(toCargo, item, amountToMove);
         }
 
         /// <summary>
@@ -247,7 +254,7 @@ namespace Pulsar4X.ECSLib
             int amountThisMove = Math.Max((int)tonsThisDeltaT, 0);
             action.ThisStorage.AmountToTransfer -= amountThisMove;
 
-            CargoStorageHelpers.TransferCargo(cargoFrom, cargoTo, action.ThisStorage.OrderTransferItem, amountThisMove);
+            CargoStorageHelpers.TransferCargo(cargoFrom, cargoTo, action.ThisStorage.OrderTransferItem, (uint)amountThisMove);
 
             if (action.ThisStorage.AmountToTransfer == 0)
             {

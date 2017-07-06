@@ -172,6 +172,7 @@
     <Compile Include="DataBlobs\NewtonBalisticDB.cs" />
     <Compile Include="DataBlobs\ShipDBs\DesignInfoDB.cs" />
     <Compile Include="DataSubscription\DataSubsciber.cs" />
+    <Compile Include="Entity\EntityUIData.cs" />
     <Compile Include="Factories\AsteroidFactory.cs" />
     <Compile Include="Factories\ShipComponents\ComponentInstanceFactory.cs" />
     <Compile Include="FeatureSets\CargoStorage\CargoAction.cs" />

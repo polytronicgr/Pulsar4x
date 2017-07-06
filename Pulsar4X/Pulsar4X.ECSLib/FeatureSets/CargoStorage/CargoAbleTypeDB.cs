@@ -7,7 +7,7 @@ namespace Pulsar4X.ECSLib
 {
     /// <summary>
     /// Contains info on how an entitiy can be stored.
-    /// NOTE an entity with this datablob must also have a MassVolumeDB
+    /// NOTE an entity with this datablob must also have a MassVolumeDB and DesignInfoDB
     /// </summary>
     public class CargoAbleTypeDB : BaseDataBlob , ICargoable
     {
@@ -22,7 +22,7 @@ namespace Pulsar4X.ECSLib
 
         [JsonIgnore]
         public Guid ID {
-            get { return this.OwningEntity.Guid; } //this should be changed to a designID if it exists
+            get { return this.OwningEntity.GetDataBlob<DesignInfoDB>().DesignEntity.Guid; }
         }
 
         [JsonIgnore]

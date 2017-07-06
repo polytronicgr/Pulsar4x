@@ -14,7 +14,7 @@ namespace Pulsar4X.ViewModel
 {
     public class CargoStorageVM : ViewModelBase, IHandleMessage
     {
-        private CargoStorageDB _storageDB;
+        private CargoStorageUIData _cargoData;
         private StaticDataStore _dataStore;
         private GameVM _gameVM;
 
@@ -35,15 +35,9 @@ namespace Pulsar4X.ViewModel
             _gameVM.Game.MessagePump.EnqueueIncomingMessage(subreq);
             
             
-            _storageDB = entity.GetDataBlob<CargoStorageDB>();
-            foreach (var item in _storageDB.CargoCapicities)
-            {
-                CargoStorageByTypeVM storeType = new CargoStorageByTypeVM(_gameVM);
-                storeType.Initalise(_storageDB, item.Key);
-                CargoStore.Add(storeType);
-            }
-            _storageDB.CargoCapicities.CollectionChanged += _storageDB_CollectionChanged;
-            _storageDB.StoredEntities.CollectionChanged += StoredEntities_CollectionChanged;
+            
+
+
         }
 
         private void StoredEntities_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -57,7 +51,7 @@ namespace Pulsar4X.ViewModel
             {
                 CargoStorageByTypeVM storeType = new CargoStorageByTypeVM(_gameVM);
                 KeyValuePair<Guid, object> kvp = (KeyValuePair<Guid, object>)e.NewItems[0];
-                storeType.Initalise(_storageDB, kvp.Key);
+                //storeType.Initalise(_cargoData, kvp.Key);
                 CargoStore.Add(storeType);               
             }
         }
@@ -65,33 +59,30 @@ namespace Pulsar4X.ViewModel
 
         public void Update(BaseToClientMessage message)
         {
-            CargoStorageUIData data = (CargoStorageUIData)message;
-            foreach (var item in data.TotalCapacities)
+            _cargoData = (CargoStorageUIData)message;
+            foreach (var item in _cargoData.CargoByType)
             {
-                //item.TypeName
-                //item.Amount    
+                CargoStorageByTypeVM storeType = new CargoStorageByTypeVM(_gameVM);
+                storeType.Initalise(item.Value, item.Key);
+                CargoStore.Add(storeType);
             }
+
         }
     }
 
-    public class CargoStorageUIDataUpdateMethod: CargoStorageUIData
-    {
-        public void Update(CargoStorageVM vm)
-        {
-            
-        }
-    }
+
 
     public class CargoStorageByTypeVM : INotifyPropertyChanged
     {
-        private CargoStorageDB _storageDB;
+        private CargoStorageTypeData _storageData;
+        private CargoStorageUIData _storageUIData;
         private StaticDataStore _dataStore;
         public Guid TypeID { get; private set; }
         private GameVM _gameVM;
         public string TypeName { get; set; }
-        public long MaxWeight { get { return _storageDB?.CargoCapicities[TypeID] ?? 0; } }
-        public float NetWeight { get { return CargoStorageHelpers.NetWeight(_storageDB, TypeID); } }
-        public float RemainingWeight { get { return CargoStorageHelpers.RemainingCapacity(_storageDB, TypeID); } }
+        public long MaxWeight { get { return _storageData?.Capacity ?? 0; } }
+        public float NetWeight { get { return MaxWeight - _storageData?.FreeCapacity ?? 0; } }
+        public float RemainingWeight { get { return _storageData?.FreeCapacity ?? 0; } }
         private string _typeName;
         public string HeaderText { get { return _typeName; } set { _typeName = value; OnPropertyChanged(); } }
         public ObservableCollection<CargoItemVM> TypeStore { get; } = new ObservableCollection<CargoItemVM>();
@@ -103,37 +94,37 @@ namespace Pulsar4X.ViewModel
             _dataStore = _gameVM.Game.StaticData;
         }
 
-        public void Initalise(CargoStorageDB storageDB, Guid storageTypeID)
+        public void Initalise(CargoStorageTypeData storageData, Guid storageTypeID)
         {
-            _storageDB = storageDB;
+            _storageData = storageData;
             TypeID = storageTypeID;
 
             CargoTypeSD cargoType = _dataStore.CargoTypes[TypeID];
             TypeName = cargoType.Name;
-            foreach (var itemKVP in CargoStorageHelpers.GetResourcesOfCargoType(storageDB, TypeID))
+            foreach (var item in _storageData.StoredByItemID)
             {                             
-                CargoItemVM cargoItem = new CargoItemVM(_gameVM, _storageDB, itemKVP.Key);
+                CargoItemVM cargoItem = new CargoItemVM(_gameVM, _storageData, _dataStore.GetICargoable(item.Key));
                 TypeStore.Add(cargoItem);
             }
-            if (_storageDB.StoredEntities.ContainsKey(TypeID))
+            if (_storageData.StoredEntities.ContainsKey(TypeID))
             {
                 InitEntities();
             }
 
             HeaderText = cargoType.Name + ": " + NetWeight.ToString() + " of " + MaxWeight.ToString() + " used, " + RemainingWeight.ToString() + " remaining";
-            _storageDB.OwningEntity.Manager.ManagerSubpulses.SystemDateChangedEvent += ManagerSubpulses_SystemDateChangedEvent;
-            _storageDB.MinsAndMatsByCargoType[TypeID].CollectionChanged += _storageDB_CollectionChanged;
-            _storageDB.StoredEntities.CollectionChanged += StoredEntities_CollectionChanged;
+            //_storageData.OwningEntity.Manager.ManagerSubpulses.SystemDateChangedEvent += ManagerSubpulses_SystemDateChangedEvent;
+            //_storageData.MinsAndMatsByCargoType[TypeID].CollectionChanged += _storageDB_CollectionChanged;
+            //_storageData.StoredEntities.CollectionChanged += StoredEntities_CollectionChanged;
         }
 
         private void InitEntities()
         {
-            foreach (var item in _storageDB.StoredEntities[TypeID])
+            foreach (var item in _storageData.StoredEntities)
             {
-                ComponentSpecificDesignVM design = new ComponentSpecificDesignVM(item.Key, item.Value);
-                DesignStore.Add(design);
+                //ComponentSpecificDesignVM design = new ComponentSpecificDesignVM(item.Key, item.Value);
+                //DesignStore.Add(design);
             }
-            _storageDB.StoredEntities[TypeID].CollectionChanged += CargoStorageByTypeVM_CollectionChanged;
+            //_storageData.StoredEntities[TypeID].CollectionChanged += CargoStorageByTypeVM_CollectionChanged;
             OnPropertyChanged(nameof(HasComponents));
         }
 
@@ -206,7 +197,7 @@ namespace Pulsar4X.ViewModel
         {
             if (newItem.Key.CargoTypeID == TypeID)
             {
-                CargoItemVM cargoItem = new CargoItemVM(_gameVM, _storageDB, newItem.Key);
+                CargoItemVM cargoItem = new CargoItemVM(_gameVM, _storageData, newItem.Key);
                 TypeStore.Add(cargoItem);
             }
         }
@@ -243,21 +234,23 @@ namespace Pulsar4X.ViewModel
 
     public class CargoItemVM : INotifyPropertyChanged
     {
-        CargoStorageDB _storageDB;
+        CargoStorageTypeData _storageData;
         internal Guid ItemID { get; private set; }
+        internal Guid TypeID { get; private set; }
         public string ItemName { get; set; }
         public string ItemTypeName { get; set; }
-        public long Amount { get { return CargoStorageHelpers.GetAmountOf(_storageDB, ItemID); } }
+        public long Amount { get { return _storageData.StoredByItemID[ItemID]; } }
         public float ItemWeight { get; set; } = 0;
         public float TotalWeight { get { return (ItemWeight * Amount); } } 
 
-        public CargoItemVM(GameVM gameVM, CargoStorageDB storageDB, ICargoable item)
+        public CargoItemVM(GameVM gameVM, CargoStorageTypeData storageData, ICargoable item)
         {
             ItemID = item.ID;
+            TypeID = item.CargoTypeID;
             ItemName = item.Name;
-            _storageDB = storageDB;
+            _storageData = storageData;
             ItemWeight = item.Mass;
-            _storageDB.OwningEntity.Manager.ManagerSubpulses.SystemDateChangedEvent += ManagerSubpulses_SystemDateChangedEvent;
+            //_storageData.OwningEntity.Manager.ManagerSubpulses.SystemDateChangedEvent += ManagerSubpulses_SystemDateChangedEvent;
             if (item is MineralSD)
                 ItemTypeName = "Raw Mineral";
             else if (item is ProcessedMaterialSD)

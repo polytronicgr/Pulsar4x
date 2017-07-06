@@ -115,7 +115,7 @@
     <Compile Include="Helpers\ItemPair.cs" />
     <Compile Include="Helpers\RangeEnableObservibleCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\CargoStorageVM.cs" />
+    <Compile Include="ViewModels\CargoStorage\CargoStorageVM.cs" />
     <Compile Include="ViewModels\ComponentListVM.cs" />
     <Compile Include="ViewModels\GenericEntityVM.cs" />
     <Compile Include="ViewModels\LogViewerVM.cs" />

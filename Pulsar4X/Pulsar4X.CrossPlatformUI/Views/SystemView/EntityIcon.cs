@@ -152,10 +152,10 @@ namespace Pulsar4X.CrossPlatformUI.Views
             float green = 128 / 255;
             float blue = 128 / 255;
             Color colour = new Color(128 /255, 128/255, 128/255);
-            foreach (var item in cargodb.CargoCapicities)
+            foreach (var item in cargodb.StorageByType)
             {
-                int height = (int)(item.Value / 100);
-                int width = (int)(item.Value / 100);
+                int height = (int)(item.Value.Capacity / 100);
+                int width = (int)(item.Value.Capacity / 100);
                 Pen containerPen = new Pen(new Color(red, green, blue));
                 green += 20 / 255;
                 GraphicsPath containerPath = new GraphicsPath();

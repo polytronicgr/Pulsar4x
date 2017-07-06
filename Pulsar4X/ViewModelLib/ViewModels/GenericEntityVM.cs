@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Pulsar4X.ECSLib;
+using Pulsar4X.ECSLib.DataSubscription;
 
 namespace Pulsar4X.ViewModel
 {
@@ -9,18 +10,26 @@ namespace Pulsar4X.ViewModel
     /// This view model and corrisponding view serves as a container for subcontrols 
     /// which corrispond to the entitys processor/databobs 
     /// </summary>
-    public class GenericEntityVM
+    public class GenericEntityVM : IHandleMessage
     {
         private Guid EntityGuid { get; set; }
-        private List<BaseDataBlob> DataBlobList { get; set; }
         
         public ObservableCollection<DataBlobVMBase> ChildVMs { get; } = new ObservableCollection<DataBlobVMBase>();
         
         public string Name { get; set; }
 
-        GenericEntityVM(Guid entityGuid)
+        GenericEntityVM(ClientMessageHandler messageHandler, Guid entityGuid)
         {
             EntityGuid = entityGuid;
+            
+            SubscriptionRequestMessage<EntityUIData> subreq = new SubscriptionRequestMessage<EntityUIData>()
+            {
+                ConnectionID = Guid.Empty, 
+                EntityGuid = entityGuid            
+            };
+            
+            
+            
             /*
             
             * get datablob info for entity
@@ -35,7 +44,16 @@ namespace Pulsar4X.ViewModel
             
             */
         }
+
+        public void Update(BaseToClientMessage message)
+        {
+            var entityUIData = (EntityUIData)message;
+            
+            
+        }
     }
+
+
 
     public class DataBlobVMBase
     {

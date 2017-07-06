@@ -7,8 +7,7 @@ namespace Pulsar4X.ECSLib
 {
     public class OrdersUIData : UIData
     {
-        public static string DataCode = "OrderData";
-        public override string GetDataCode { get { return DataCode; } }
+
 
         [JsonProperty]
         public List<OrderUIData> OrderUIDatas = new List<OrderUIData>();

@@ -60,7 +60,6 @@ namespace Pulsar4X.ECSLib
             public double AmountPerKM;
         }
 
-        public override string GetDataCode { get; } = "MoveData";
     }
 
     public class TranslateOrderableDB:BaseDataBlob

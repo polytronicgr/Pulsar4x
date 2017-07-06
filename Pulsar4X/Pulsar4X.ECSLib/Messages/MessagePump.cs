@@ -105,7 +105,6 @@ namespace Pulsar4X.ECSLib
 
     public abstract class BaseToClientMessage
     {
-        public abstract string GetDataCode { get; }
     }
 
     public class UIInfoMessage : BaseToClientMessage
@@ -113,7 +112,6 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         public string Message;     
         public UIInfoMessage(string message) { Message = message; }
-        public override string GetDataCode { get; } = "InfoMessage";
     }
 
 
