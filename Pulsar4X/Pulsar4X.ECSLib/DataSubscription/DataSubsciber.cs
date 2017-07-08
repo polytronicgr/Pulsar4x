@@ -88,6 +88,17 @@ namespace Pulsar4X.ECSLib.DataSubscription
     {
         
     }
+    
+    public interface ISubscribableDatablob
+    {
+        bool HasSubscribers { get; set; }
+        List<DatablobChange> Changes { get; }
+    }
+
+    public abstract class DatablobChange
+    {
+        
+    }
 }
 
 

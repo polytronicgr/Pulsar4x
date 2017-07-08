@@ -1,37 +1,25 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Runtime.Serialization;
+using Pulsar4X.ECSLib.DataSubscription;
 
 namespace Pulsar4X.ECSLib
 {
 
     /// <summary>
     /// Contains info on a ships cargo capicity.
-    /// Needs to store: Total Capacities for each CargoTypeSD.ID that the parent entity is capable of storing.
+        /// Needs to store: Total Capacities for each CargoTypeSD.ID that the parent entity is capable of storing.
     /// Items Stored: this is both static data and entities.
     /// entities need to reference specific items or it'd be possible to put damaged components into cargo and take them out new.  
     /// Either capacity used or capacity remaining. 
     /// </summary>
-    public class CargoStorageDB : BaseDataBlob
+    public class CargoStorageDB : BaseDataBlob, ISubscribableDatablob
     {
-        //[JsonProperty]
-        //public PrIwObsDict<Guid, long> CargoCapicities { get; private set; } = new PrIwObsDict<Guid, long>();
         
-        //[JsonProperty]
-        //public Dictionary<Guid, long> UsedCapicities { get; private set; } = new Dictionary<Guid,long>();
+        public bool HasSubscribers { get; set; }
+        public List<DatablobChange> Changes { get; } = new List<DatablobChange>();
 
-        //[JsonProperty]
-        //public PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>> StoredEntities { get; private set; } = new PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>>();
-        
-        /// <summary>
-        /// Key is CargoTypeSD.ID inner key is ICargoable.ID
-        /// </summary>
-        //[JsonProperty] 
-        //public PrIwObsDict<Guid, PrIwObsDict<Guid, long>> MinsAndMatsByCargoType { get; private set;} = new PrIwObsDict<Guid, PrIwObsDict<Guid, long>>();
-        
         public Dictionary<Guid, CargoStorageTypeData> StorageByType { get; private set; } = new Dictionary<Guid, CargoStorageTypeData>();
 
         /// <summary>
@@ -150,4 +138,23 @@ namespace Pulsar4X.ECSLib
         public Dictionary<Guid, uint> StoredByItemID { get; } = new Dictionary<Guid, uint>();
         public Dictionary<Guid, Entity> StoredEntities { get; } = new Dictionary<Guid, Entity>();
     }
+
+
+
+    public class CargoDataChange : DatablobChange
+    {
+        public enum CargoChangeTypes
+        {
+            AddToCargo,
+            RemoveFromCargo,
+            CapacityChange,
+            TransferRateChange
+        }
+        public CargoChangeTypes ChangeType;
+        public Guid TypGuid;
+        public Guid ItemID;      
+        public uint Amount;        
+    }
+    
+
 }

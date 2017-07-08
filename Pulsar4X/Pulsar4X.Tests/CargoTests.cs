@@ -24,10 +24,8 @@ namespace Pulsar4X.Tests
             TestingUtilities.ColonyFacilitys(_testGame, _testGame.EarthColony);
 
             _cargoStorageDB = _testGame.EarthColony.GetDataBlob<CargoStorageDB>();
-            
 
-
-
+            _cargoStorageDB.HasSubscribers = true;
         }
 
         [Test]
@@ -40,6 +38,11 @@ namespace Pulsar4X.Tests
             
             long cargoWeight = (long)(_duraniumSD.Mass * 10000);
             Assert.AreEqual(freeSpace - cargoWeight, _cargoStorageDB.StorageByType[DuraniumCargoTypeID].FreeCapacity, "Free space incorrectly allocated");
+
+            CargoDataChange change = (CargoDataChange)_cargoStorageDB.Changes[0];
+            
+            Assert.True(change.Amount == 10000);
+            Assert.True(change.ChangeType == CargoDataChange.CargoChangeTypes.AddToCargo);
         }
         
         [Test]
