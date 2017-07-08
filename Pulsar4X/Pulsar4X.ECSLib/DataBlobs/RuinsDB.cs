@@ -1,9 +1,33 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class RuinsDB : BaseDataBlob
     {
+        private uint _ruinCount;
+        private int _ruinTechLevel;
+        private RSize _ruinSize;
+        private RQuality _ruinQuality;
+
         /// <summary>
         /// Ruins size descriptors
         /// </summary>
@@ -34,25 +58,25 @@ namespace Pulsar4X.ECSLib
         /// How many ruins are on this world. or something.
         /// </summary>
         [JsonProperty]
-        public uint RuinCount { get; internal set; }
+        public uint RuinCount { get { return _ruinCount; } internal set { SetField(ref _ruinCount, value);; } }
 
         /// <summary>
         /// What kinds of things should be found in this ruin? including sophistication of killbots?
         /// </summary>
         [JsonProperty]
-        public int RuinTechLevel { get; internal set; }
+        public int RuinTechLevel { get { return _ruinTechLevel; } internal set { SetField(ref _ruinTechLevel, value);; } }
 
         /// <summary>
         /// How big are these ruins?
         /// </summary>
         [JsonProperty]
-        public RSize RuinSize { get; internal set; }
+        public RSize RuinSize { get { return _ruinSize; } internal set { SetField(ref _ruinSize, value);; } }
 
         /// <summary>
         /// What shape are these ruins in?
         /// </summary>
         [JsonProperty]
-        public RQuality RuinQuality { get; internal set; }
+        public RQuality RuinQuality { get { return _ruinQuality; } internal set { SetField(ref _ruinQuality, value);; } }
 
         /// <summary>
         /// Empty constructor for RuinsDataBlob.

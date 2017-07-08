@@ -1,4 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
@@ -7,68 +26,79 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class SpeciesDB : BaseDataBlob
     {
+        private double _baseGravity;
+        private double _minimumGravityConstraint;
+        private double _maximumGravityConstraint;
+        private double _basePressure;
+        private double _minimumPressureConstraint;
+        private double _maximumPressureConstraint;
+        private double _baseTemperature;
+        private double _minimumTemperatureConstraint;
+        private double _maximumTemperatureConstraint;
+        private double _temperatureToleranceRange;
+
         /// <summary>
         /// The ideal gravity for this species.
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double BaseGravity { get; internal set; }
+        public double BaseGravity { get { return _baseGravity; } internal set { SetField(ref _baseGravity, value);; } }
 
         /// <summary>
         /// The minimum gravity the species can tolerate
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double MinimumGravityConstraint { get; internal set; }
+        public double MinimumGravityConstraint { get { return _minimumGravityConstraint; } internal set { SetField(ref _minimumGravityConstraint, value); } }
 
         /// <summary>
         /// The maximum gravity the species can tolerate
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double MaximumGravityConstraint { get; internal set; }
+        public double MaximumGravityConstraint { get { return _maximumGravityConstraint; } internal set { SetField(ref _maximumGravityConstraint, value);; } }
 
         /// <summary>
         /// The ideal atmospheric pressure for the species
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double BasePressure { get; internal set; }
+        public double BasePressure { get { return _basePressure; } internal set { SetField(ref _basePressure, value);; } }
 
         /// <summary>
         /// The minimum atmospheric pressure the species can tolerate
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double MinimumPressureConstraint { get; internal set; }
+        public double MinimumPressureConstraint { get { return _minimumPressureConstraint; } internal set { SetField(ref _minimumPressureConstraint, value);; } }
 
         /// <summary>
         /// The maximum atmospheric pressure the species can tolerate
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double MaximumPressureConstraint { get; internal set; }
+        public double MaximumPressureConstraint { get { return _maximumPressureConstraint; } internal set { SetField(ref _maximumPressureConstraint, value);; } }
 
         /// <summary>
         /// The ideal temperature for the species
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double BaseTemperature { get; internal set; }
+        public double BaseTemperature { get { return _baseTemperature; } internal set { SetField(ref _baseTemperature, value);; } }
 
         /// <summary>
         /// The minimum temperature the species can tolerate
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double MinimumTemperatureConstraint { get; internal set; }
+        public double MinimumTemperatureConstraint { get { return _minimumTemperatureConstraint; } internal set { SetField(ref _minimumTemperatureConstraint, value);; } }
 
         /// <summary>
         /// The maximum temperature the species can tolerate
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double MaximumTemperatureConstraint { get; internal set; }
+        public double MaximumTemperatureConstraint { get { return _maximumTemperatureConstraint; } internal set { SetField(ref _maximumTemperatureConstraint, value);; } }
 
         /// <summary>
         /// Range of temperatures this species can withstand?
@@ -80,7 +110,7 @@ namespace Pulsar4X.ECSLib
         /// </remarks>
         [PublicAPI]
         [JsonProperty]
-        public double TemperatureToleranceRange { get; internal set; }
+        public double TemperatureToleranceRange { get { return _temperatureToleranceRange; } internal set { SetField(ref _temperatureToleranceRange, value);; } }
 
         public SpeciesDB() { }
 

@@ -1,4 +1,23 @@
-﻿using System.Collections.Generic;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Remoting.Messaging;
 using Newtonsoft.Json;
@@ -10,11 +29,14 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class TransitableDB : BaseDataBlob
     {
+        private Entity _destination;
+        private bool _isStabilized;
+
         /// <summary>
         /// Destination that this jump point goes to.
         /// </summary>
         [JsonProperty]
-        public Entity Destination { get; internal set; }
+        public Entity Destination { get { return _destination; } internal set { SetField(ref _destination, value);; } }
 
         /// <summary>
         /// Determination if this jump point has a "gate" on it.
@@ -24,7 +46,7 @@ namespace Pulsar4X.ECSLib
         /// We might want to use a TransitType enum, to allow different types of FTL using the same type of DB
         /// </remarks>
         [JsonProperty]
-        public bool IsStabilized { get; internal set; }
+        public bool IsStabilized { get { return _isStabilized; } internal set { SetField(ref _isStabilized, value);; } }
 
         public TransitableDB() { }
 

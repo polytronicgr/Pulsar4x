@@ -1,13 +1,55 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 using System;
 
 namespace Pulsar4X.ECSLib
 {
     public class PositionDB : TreeHierarchyDB
     {
-
         [JsonProperty]
-        public Guid SystemGuid;
+        private Guid _systemGuid;
+
+        public override Entity Parent
+        {
+            get { return base.Parent; }
+            set
+            {
+                if (value != null && !value.HasDataBlob<PositionDB>())
+                {
+                    throw new Exception("newParent must have a PositionDB");
+                }
+                Vector4 currentAbsolute = this.AbsolutePosition;
+                Vector4 newRelative;
+                if (value == null)
+                {
+                    newRelative = currentAbsolute;
+                }
+                else
+                {
+                    newRelative = currentAbsolute - value.GetDataBlob<PositionDB>().AbsolutePosition;
+                }
+                Parent = value;
+                _position = newRelative;
+            }
+        }
 
         /// <summary>
         /// The Position as a Vec4, in AU.
@@ -17,25 +59,32 @@ namespace Pulsar4X.ECSLib
             get
             {
                 if (Parent == null)
-                    return _position;
-                else if (Parent == OwningEntity)
-                    throw new Exception("Infinite loop triggered");
-                else
                 {
-                    PositionDB parentpos = (PositionDB)ParentDB;
-                    if(parentpos == this)
-                        throw new Exception("Infinite loop triggered");
-                    return parentpos.AbsolutePosition + _position;
+                    return _position;
                 }
+                if (Parent == OwningEntity)
+                {
+                    throw new Exception("Infinite loop triggered");
+                }
+
+                var parentpos = (PositionDB)ParentDB;
+                if(parentpos == this)
+                {
+                    throw new Exception("Infinite loop triggered");
+                }
+
+                return parentpos.AbsolutePosition + _position;
             }
             internal set
             {
                 if (Parent == null)
-                    _position = value;
+                {
+                    SetField(ref _position, value);
+                }
                 else
                 {
-                    PositionDB parentpos = (PositionDB)ParentDB;
-                    _position = value - parentpos.AbsolutePosition;
+                    var parentpos = (PositionDB)ParentDB;
+                    SetField(ref _position, value - parentpos.AbsolutePosition);
                 }
             }
         }
@@ -48,7 +97,7 @@ namespace Pulsar4X.ECSLib
         public Vector4 RelativePosition
         {
             get { return _position; }
-            internal set { _position = value; }
+            internal set { SetField(ref _position, value);; }
         }
 
 
@@ -58,7 +107,7 @@ namespace Pulsar4X.ECSLib
         public double X
         {
             get { return AbsolutePosition.X; }
-            internal set { _position.X = value; }
+            internal set { SetField(ref _position.X, value);; }
         }
 
         /// <summary>
@@ -67,7 +116,7 @@ namespace Pulsar4X.ECSLib
         public double Y
         {
             get { return AbsolutePosition.Y; }
-            internal set { _position.Y = value; }
+            internal set { SetField(ref _position.Y, value);; }
         }
 
         /// <summary>
@@ -76,7 +125,7 @@ namespace Pulsar4X.ECSLib
         public double Z
         {
             get { return AbsolutePosition.Z; }
-            internal set { _position.Z = value; }
+            internal set { SetField(ref _position.Z, value);; }
         }
 
         #region Unit Conversion Properties
@@ -116,6 +165,8 @@ namespace Pulsar4X.ECSLib
             get { return Distance.AuToKm(AbsolutePosition.Z); }
             set { _position.Z = Distance.KmToAU(value); }
         }
+
+        public Guid SystemGuid { get { return _systemGuid; } set { SetField(ref _systemGuid, value);; } }
 
         public void AddMeters(Vector4 addVector)
         {
@@ -163,61 +214,26 @@ namespace Pulsar4X.ECSLib
         private PositionDB() : this(Guid.Empty) { }
 
         /// <summary>
-        /// changes the positions relative to
-        /// Can be null.
-        /// </summary>
-        /// <param name="newParent"></param>
-        internal override void SetParent(Entity newParent)
-        {
-            if (newParent != null && !newParent.HasDataBlob<PositionDB>())
-                throw new Exception("newParent must have a PositionDB");
-            Vector4 currentAbsolute = this.AbsolutePosition;
-            Vector4 newRelative;
-            if (newParent == null)
-            {
-                newRelative = currentAbsolute;
-            }
-            else
-            {
-                newRelative = currentAbsolute - newParent.GetDataBlob<PositionDB>().AbsolutePosition;
-            }
-            base.SetParent(newParent);
-            _position = newRelative;
-        }
-
-        /// <summary>
         /// Static function to find the distance between two positions.
         /// </summary>
         /// <returns>AU Distance between posA and posB.</returns>
-        public static double GetDistanceBetween(PositionDB posA, PositionDB posB)
-        {
-            return (posA.AbsolutePosition - posB.AbsolutePosition).Length();
-        }
+        public static double GetDistanceBetween(PositionDB posA, PositionDB posB) => (posA.AbsolutePosition - posB.AbsolutePosition).Length();
 
         /// <summary>
         /// Instance function for those who don't like static functions.
         /// </summary>
         /// <returns>AU distance to otherPos</returns>
-        public double GetDistanceTo(PositionDB otherPos)
-        {
-            return GetDistanceBetween(this, otherPos);
-        }
+        public double GetDistanceTo(PositionDB otherPos) => GetDistanceBetween(this, otherPos);
 
         /// <summary>
         /// Static Function to find the Distance Squared betweeen two positions.
         /// </summary>
-        public static double GetDistanceBetweenSqrd(PositionDB posA, PositionDB posB)
-        {
-            return (posA.AbsolutePosition - posB.AbsolutePosition).LengthSquared();
-        }
+        public static double GetDistanceBetweenSqrd(PositionDB posA, PositionDB posB) => (posA.AbsolutePosition - posB.AbsolutePosition).LengthSquared();
 
         /// <summary>
         /// Instance function for those who don't like static functions.
         /// </summary>
-        public double GetDistanceToSqrd(PositionDB otherPos)
-        {
-            return GetDistanceBetweenSqrd(this, otherPos);
-        }
+        public double GetDistanceToSqrd(PositionDB otherPos) => GetDistanceBetweenSqrd(this, otherPos);
 
         public static PositionDB operator +(PositionDB posA, PositionDB posB)
         {
@@ -239,9 +255,6 @@ namespace Pulsar4X.ECSLib
             */
         }
 
-        public override object Clone()
-        {
-            return new PositionDB(this);
-        }
+        public override object Clone() => new PositionDB(this);
     }
 }

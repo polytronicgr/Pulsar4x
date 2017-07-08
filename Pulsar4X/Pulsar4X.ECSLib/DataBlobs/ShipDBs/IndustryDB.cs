@@ -1,15 +1,40 @@
-﻿namespace Pulsar4X.ECSLib
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+namespace Pulsar4X.ECSLib
 {
     /// <summary>
     /// Contains info on the industral capabilities of a ship.
     /// </summary>
     public class IndustryDB : BaseDataBlob
     {
-        public double MiningRate { get; set; }
-        public double FuelHarvestingRate { get; set; }
-        public double SalvageRate { get; set; }
-        public double TerraformingRate { get; set; }
-        public double JumpGateConstructionRate { get; set; }
+        private double _miningRate;
+        private double _fuelHarvestingRate;
+        private double _salvageRate;
+        private double _terraformingRate;
+        private double _jumpGateConstructionRate;
+
+        public double MiningRate { get { return _miningRate; } set { SetField(ref _miningRate, value); } }
+        public double FuelHarvestingRate { get { return _fuelHarvestingRate; } set { SetField(ref _fuelHarvestingRate, value); } }
+        public double SalvageRate { get { return _salvageRate; } set { SetField(ref _salvageRate, value); } }
+        public double TerraformingRate { get { return _terraformingRate; } set { SetField(ref _terraformingRate, value); } }
+        public double JumpGateConstructionRate { get { return _jumpGateConstructionRate; } set { SetField(ref _jumpGateConstructionRate, value); } }
 
         public IndustryDB()
         {

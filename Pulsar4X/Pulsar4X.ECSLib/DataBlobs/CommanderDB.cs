@@ -1,4 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
@@ -11,14 +30,18 @@ namespace Pulsar4X.ECSLib
 
     public class CommanderDB : BaseDataBlob
     {
-        [JsonProperty]
-        public CommanderNameSD Name { get; internal set; }
+        private CommanderNameSD _name;
+        private int _rank;
+        private CommanderTypes _type;
 
         [JsonProperty]
-        public int Rank { get; internal set; }
+        public CommanderNameSD Name { get { return _name; } internal set { SetField(ref _name, value); } }
 
         [JsonProperty]
-        public CommanderTypes Type { get; internal set; }
+        public int Rank { get { return _rank; } internal set { SetField(ref _rank, value); } }
+
+        [JsonProperty]
+        public CommanderTypes Type { get { return _type; } internal set { SetField(ref _type, value); } }
 
         public CommanderDB() { }
 

@@ -1,26 +1,49 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class BeamFireControlAtbDB : BaseDataBlob
     {
+        private int _range;
+        private int _trackingSpeed;
+        private bool _finalFireOnly;
+
         /// <summary>
         /// Max range of this Beam Fire Control
         /// </summary>
         [JsonProperty]
-        public int Range { get; internal set; }
+        public int Range { get { return _range; } internal set { SetField(ref _range, value); } }
 
         /// <summary>
         /// Tracking Speed of this Beam Fire Control
         /// </summary>
         [JsonProperty]
-        public int TrackingSpeed { get; internal set; }
-        
+        public int TrackingSpeed { get { return _trackingSpeed; } internal set { SetField(ref _trackingSpeed, value); } }
+
         /// <summary>
         /// Determines if this Beam Fire Control is only capable of FinalDefensiveFire (Like CIWS)
         /// </summary>
         [JsonProperty]
-        public bool FinalFireOnly { get; internal set; }
+        public bool FinalFireOnly { get { return _finalFireOnly; } internal set { SetField(ref _finalFireOnly, value); } }
 
         public BeamFireControlAtbDB(double range, double trackingSpeed) : this((int)range, (int)trackingSpeed) { }
 

@@ -1,4 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -19,6 +38,9 @@ namespace Pulsar4X.ECSLib
     /// </remarks>
     public abstract class TreeHierarchyDB : BaseDataBlob
     {
+        protected Entity _owningEntity_;
+        private Entity _parent;
+
         [PublicAPI]
         public override Entity OwningEntity
         {
@@ -26,7 +48,7 @@ namespace Pulsar4X.ECSLib
             internal set
             {
                 ParentDB?.RemoveChild(_owningEntity_);
-                _owningEntity_ = value;
+                SetField(ref _owningEntity_, value);
 
                 if (OwningEntity != Entity.InvalidEntity)
                 {
@@ -34,7 +56,6 @@ namespace Pulsar4X.ECSLib
                 }
             }
         }
-        protected Entity _owningEntity_;
 
         /// <summary>
         /// Parent node to this node.
@@ -42,7 +63,16 @@ namespace Pulsar4X.ECSLib
         [CanBeNull]
         [PublicAPI]
         [JsonProperty]
-        public Entity Parent { get; private set; }
+        public virtual Entity Parent
+        {
+            get { return _parent; }
+            set
+            {
+                ParentDB?.RemoveChild(OwningEntity);
+                SetField(ref _parent, value);
+                ParentDB?.AddChild(OwningEntity);
+            }
+        }
 
         /// <summary>
         /// Same type DataBlob of my parent node. 
@@ -52,7 +82,7 @@ namespace Pulsar4X.ECSLib
         /// </example>
         [CanBeNull]
         [PublicAPI]
-        public TreeHierarchyDB ParentDB
+        public virtual TreeHierarchyDB ParentDB
         {
             get
             {
@@ -90,7 +120,7 @@ namespace Pulsar4X.ECSLib
         public List<Entity> Children => _children;
         [JsonProperty]
         private readonly List<Entity> _children;
-
+        
         /// <summary>
         /// All node nodeDB's to this node.
         /// </summary>
@@ -108,22 +138,11 @@ namespace Pulsar4X.ECSLib
             _children = new List<Entity>();
         }
 
-        /// <summary>
-        /// Sets the parent of this node to another node, adjusting hierarchy as needed.
-        /// </summary>
-        /// <param name="parent"></param>
-        internal virtual void SetParent(Entity parent)
-        {
-            ParentDB?.RemoveChild(OwningEntity);
-            Parent = parent;
-            ParentDB?.AddChild(OwningEntity);
-        }
-
         private void AddChild(Entity child)
         {
             if (child.Guid == Guid.Empty)
             {
-                
+                return;
             }
             if (Children.Contains(child))
             {
@@ -230,7 +249,7 @@ namespace Pulsar4X.ECSLib
                 Assert.AreEqual(parent2Children, parent2DB.ChildrenDBs);
 
                 // Change P2C1's parent to P1.
-                parent2Child1DB.SetParent(parent1DB.OwningEntity);
+                parent2Child1DB.Parent = parent1DB.OwningEntity;
                 // Make sure P2C1 is owned by P1;
                 Assert.IsNotNull(parent2Child1DB.ParentDB);
                 Assert.AreEqual(parent1DB.OwningEntity, parent2Child1DB.ParentDB.OwningEntity);
@@ -250,7 +269,7 @@ namespace Pulsar4X.ECSLib
                 ConcreteTreeHierarchyDB root2DB = root2Node.GetDataBlob<ConcreteTreeHierarchyDB>();
 
                 // Assign P2 to the new root.
-                parent2DB.SetParent(root2Node);
+                parent2DB.Parent = root2Node;
                 // Make sure P2's child has a new RootDB.
                 Assert.AreEqual(root2DB.OwningEntity, parent2Child2DB.RootDB.OwningEntity);
 

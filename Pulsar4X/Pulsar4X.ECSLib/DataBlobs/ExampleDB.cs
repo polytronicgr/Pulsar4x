@@ -1,4 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 using System;
 using System.Runtime.Serialization;
 
@@ -12,7 +31,10 @@ namespace Pulsar4X.ECSLib
     // EntityManager does quite a bit of work to shift things around
     // and it's not easy to understand everything the EntityManager does. So just derive from BaseDataBlob.
     {
+        // Any value you want to save must be marked with [JsonProperty] attribute.
+        [JsonProperty]
         private int _importantNumber;
+        [JsonProperty]
         private ICloneable _cloneableObj;
 
         private BasicExampleDB()
@@ -40,28 +62,24 @@ namespace Pulsar4X.ECSLib
 
     public class IntermediateExampleDB : BaseDataBlob
     {
-        // Most variables need to be viewable outside this library by the UI.
-        // They should be marked with a [PublicAPI] attribute.
-        [PublicAPI]
+        // Any non-private variables need to be encapsulated with a Property.
+        private int _viewableInt;
+
+        [JsonProperty]
         public int ViewableInt
         {
             get { return _viewableInt; }
-
-            // But we don't want the UI to be able to set the value.
-            // So we use a backing field with an internal or private setter.
-            internal set { _viewableInt = value; }
+            // In order to invoke INotifyPropertyChanged events, use SetField to set the value.
+            set { SetField(ref _viewableInt, value); }
         }
 
-        // If we want this value to be saved in the savegame for this datablob, we need to mark it for JSON.
-        [JsonProperty]
-        private int _viewableInt;
-
         // The above is actually equivilent to this, use this format for reabibility.
+        private int _viewableInt2;
         [PublicAPI]
         [JsonProperty]
-        public int ViewableInt2 { get; internal set; }
-        
-        [PublicAPI]
+        public int ViewableInt2 { get { return _viewableInt2; } set { SetField(ref _viewableInt2, value); } }
+
+    [PublicAPI]
         public void BadFunction()
         {
             // DataBlobs are DATA, not LOGIC. You should have MINIMAL logic in datablobs.
@@ -98,7 +116,7 @@ namespace Pulsar4X.ECSLib
         public Entity FriendEntity
         {
             get { return _friendEntity; }
-            internal set { _friendEntity = value; }
+            internal set { SetField(ref _friendEntity, value); }
         }
 
         [JsonProperty]

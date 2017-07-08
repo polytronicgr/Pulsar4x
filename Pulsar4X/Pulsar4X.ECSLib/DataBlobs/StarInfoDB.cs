@@ -1,4 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 using System;
 
 namespace Pulsar4X.ECSLib
@@ -32,12 +51,20 @@ namespace Pulsar4X.ECSLib
 
     public class StarInfoDB : BaseDataBlob
     {
+        private double _age;
+        private double _temperature;
+        private double _luminosity;
+        private string _class;
+        private SpectralType _spectralType;
+        private ushort _spectralSubDivision;
+        private LuminosityClass _luminosityClass;
+
         /// <summary>
         /// Age of this star. Fluff.
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double Age { get; internal set; }
+        public double Age { get { return _age; } internal set { SetField(ref _age, value);; } }
 
         /// <summary>
         /// Effective ("Photosphere") temperature in Degrees C.
@@ -45,28 +72,28 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double Temperature { get; internal set; }
+        public double Temperature { get { return _temperature; } internal set { SetField(ref _temperature, value);; } }
 
         /// <summary>
         /// Luminosity of this star. Fluff.
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double Luminosity { get; internal set; }
+        public double Luminosity { get { return _luminosity; } internal set { SetField(ref _luminosity, value);; } }
 
         /// <summary>
         /// Star class. Mostly fluff (affects SystemGeneration).
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public string Class { get; internal set; }
+        public string Class { get { return _class; } internal set { SetField(ref _class, value);; } }
 
         /// <summary>
         /// Main Type. Mostly fluff (affects SystemGeneration).
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public SpectralType SpectralType { get; internal set; }
+        public SpectralType SpectralType { get { return _spectralType; } internal set { SetField(ref _spectralType, value);; } }
 
         /// <summary>
         /// Subtype.  Mostly fluff (affects SystemGeneration).
@@ -74,14 +101,14 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public ushort SpectralSubDivision { get; internal set; }
+        public ushort SpectralSubDivision { get { return _spectralSubDivision; } internal set { SetField(ref _spectralSubDivision, value);; } }
 
         /// <summary>
         /// LuminosityClass. Fluff.
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public LuminosityClass LuminosityClass { get; internal set; }
+        public LuminosityClass LuminosityClass { get { return _luminosityClass; } internal set { SetField(ref _luminosityClass, value);; } }
 
         /// <summary>
         /// Calculates and sets the Habitable Zone of this star based on it Luminosity.
@@ -117,9 +144,6 @@ namespace Pulsar4X.ECSLib
 
         }
 
-        public override object Clone()
-        {
-            return new StarInfoDB(this);
-        }
+        public override object Clone() => new StarInfoDB(this);
     }
 }

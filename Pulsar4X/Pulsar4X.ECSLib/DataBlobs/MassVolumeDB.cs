@@ -1,34 +1,57 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 using System;
 
 namespace Pulsar4X.ECSLib
 {
     public class MassVolumeDB : BaseDataBlob
     {
+        private double _mass;
+        private double _volume;
+        private double _density;
+        private double _radius;
 
         /// <summary>
         /// Mass in KG of this entity.
         /// </summary>
         [JsonProperty]
-        public double Mass { get; internal set; }
+        public double Mass { get { return _mass; } internal set { SetField(ref _mass, value);; } }
 
         /// <summary>
         /// Volume of this entity in Km^3.
         /// </summary>
         [JsonProperty]
-        public double Volume { get; internal set; }
+        public double Volume { get { return _volume; } internal set { SetField(ref _volume, value);; } }
 
         /// <summary>
         /// The density of the body in kg/cm^3
         /// </summary> 
         [JsonProperty]
-        public double Density { get; internal set; }
+        public double Density { get { return _density; } internal set { SetField(ref _density, value);; } }
 
         /// <summary>
         /// The Average Radius in AU.
         /// </summary>
         [JsonProperty]
-        public double Radius { get; internal set; }
+        public double Radius { get { return _radius; } internal set { SetField(ref _radius, value);; } }
 
         /// <summary>
         /// The Average Radius in Km.

@@ -1,4 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 using System;
 using System.Runtime.Serialization;
 
@@ -12,7 +31,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double SemiMajorAxis { get; private set; }
+        public double SemiMajorAxis { get { return _semiMajorAxis; } set { SetField(ref _semiMajorAxis, value);; } }
 
         /// <summary>
         /// Eccentricity of orbit.
@@ -20,7 +39,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double Eccentricity { get; private set; }
+        public double Eccentricity { get { return _eccentricity; } set { SetField(ref _eccentricity, value);; } }
 
         /// <summary>
         /// Angle between the orbit and the flat reference plane.
@@ -28,7 +47,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double Inclination { get; private set; }
+        public double Inclination { get { return _inclination; } set { SetField(ref _inclination, value);; } }
 
         /// <summary>
         /// Horizontal orientation of the point where the orbit crosses
@@ -36,14 +55,14 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double LongitudeOfAscendingNode { get; private set; }
+        public double LongitudeOfAscendingNode { get { return _longitudeOfAscendingNode; } set { SetField(ref _longitudeOfAscendingNode, value);; } }
 
         /// <summary>
         /// Angle from the Ascending Node to the Periapsis stored in degrees.
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double ArgumentOfPeriapsis { get; private set; }
+        public double ArgumentOfPeriapsis { get { return _argumentOfPeriapsis; } set { SetField(ref _argumentOfPeriapsis, value);; } }
 
         /// <summary>
         /// Definition of the position of the body in the orbit at the reference time
@@ -52,59 +71,73 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double MeanAnomaly { get; private set; }
+        public double MeanAnomaly { get { return _meanAnomaly; } set { SetField(ref _meanAnomaly, value);; } }
 
         /// <summary>
         /// reference time. Orbital parameters are stored relative to this reference.
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public DateTime Epoch { get; internal set; }
+        public DateTime Epoch { get { return _epoch; } set { SetField(ref _epoch, value);; } }
 
         /// <summary>
         /// 2-Body gravitational parameter of system.
         /// </summary>
         [PublicAPI]
-        public double GravitationalParameter { get; private set; }
+        public double GravitationalParameter { get { return _gravitationalParameter; } set { SetField(ref _gravitationalParameter, value);; } }
 
         /// <summary>
         /// Orbital Period of orbit.
         /// </summary>
         [PublicAPI]
-        public TimeSpan OrbitalPeriod { get; private set; }
+        public TimeSpan OrbitalPeriod { get { return _orbitalPeriod; } set { SetField(ref _orbitalPeriod, value);; } }
 
         /// <summary>
         /// Mean Motion of orbit. Stored as Degrees/Sec.
         /// </summary>
         [PublicAPI]
-        public double MeanMotion { get; private set; }
+        public double MeanMotion { get { return _meanMotion; } set { SetField(ref _meanMotion, value);; } }
 
         /// <summary>
         /// Point in orbit furthest from the ParentBody. Measured in AU.
         /// </summary>
         [PublicAPI]
-        public double Apoapsis { get; private set; }
+        public double Apoapsis { get { return _apoapsis; } set { SetField(ref _apoapsis, value);; } }
 
         /// <summary>
         /// Point in orbit closest to the ParentBody. Measured in AU.
         /// </summary>
         [PublicAPI]
-        public double Periapsis { get; private set; }
+        public double Periapsis { get { return _periapsis; } set { SetField(ref _periapsis, value);; } }
 
         /// <summary>
         /// Stationary orbits don't have all of the data to update. They always return (0, 0).
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public bool IsStationary { get; private set; }
+        public bool IsStationary { get { return _isStationary; } set { SetField(ref _isStationary, value);; } }
 
         [JsonProperty]
         private readonly double _parentMass;
         [JsonProperty]
         private readonly double _myMass;
 
+        private double _semiMajorAxis;
+        private double _eccentricity;
+        private double _inclination;
+        private double _longitudeOfAscendingNode;
+        private double _argumentOfPeriapsis;
+        private double _meanAnomaly;
+        private DateTime _epoch;
+        private double _gravitationalParameter;
+        private TimeSpan _orbitalPeriod;
+        private double _meanMotion;
+        private double _apoapsis;
+        private double _periapsis;
+        private bool _isStationary;
+
         //radius in AU
-        public double SphereOfInfluince { get; private set; }
+        public double SphereOfInfluince { get; set; }
 
         #region Construction Interface
         /// <summary>

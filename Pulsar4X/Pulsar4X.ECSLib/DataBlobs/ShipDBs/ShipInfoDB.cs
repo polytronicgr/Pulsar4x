@@ -1,4 +1,23 @@
-﻿using System;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using System;
 using System.Collections.Generic;
 
 namespace Pulsar4X.ECSLib
@@ -14,30 +33,40 @@ namespace Pulsar4X.ECSLib
         /// The guid of the ship class, if this is a ship class then the Guid will be empty. 
         /// use IsClassDefinition() to determin if this is a ship class definmition
         /// </summary>
-        public Guid ShipClassDefinition { get; set; }
+        public Guid ShipClassDefinition { get { return _shipClassDefinition; } set { SetField(ref _shipClassDefinition, value); } }
 
-        public bool Obsolete { get; set; }
-        public bool Conscript { get; set; }
+        public bool Obsolete { get { return _obsolete; } set { SetField(ref _obsolete, value); } }
+        public bool Conscript { get { return _conscript; } set { SetField(ref _conscript, value); } }
 
         // Should we have these: ??
-        public bool Tanker { get; set; }
-        public bool Collier { get; set; }
-        public bool SupplyShip { get; set; }
+        public bool Tanker { get { return _tanker; } set { SetField(ref _tanker, value); } }
+
+        public bool Collier { get { return _collier; } set { SetField(ref _collier, value); } }
+        public bool SupplyShip { get { return _supplyShip; } set { SetField(ref _supplyShip, value); } }
 
         /// <summary>
         /// The Ships health minus its armour and sheilds, i.e. the total HTK of all its internal Components.
         /// </summary>
-        public int InternalHTK { get; set; }
+        public int InternalHTK { get { return _internalHTK; } set { SetField(ref _internalHTK, value); } }
 
-        public bool IsMilitary { get; set; }
+        public bool IsMilitary { get { return _isMilitary; } set { SetField(ref _isMilitary, value); } }
 
-        public float Tonnage { get; set; }
+        public float Tonnage { get { return _tonnage; } set { SetField(ref _tonnage, value); } }
 
         public double TCS { get {return Tonnage * 0.02;} }
 
         ///  Ship orders.  
         public Queue<BaseOrder> Orders;
 
+        private Guid _shipClassDefinition;
+        private bool _obsolete;
+        private bool _conscript;
+        private bool _tanker;
+        private bool _collier;
+        private bool _supplyShip;
+        private int _internalHTK;
+        private bool _isMilitary;
+        private float _tonnage;
         #endregion
 
         #region Constructors

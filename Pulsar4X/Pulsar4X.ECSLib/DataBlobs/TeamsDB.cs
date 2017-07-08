@@ -1,4 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
@@ -19,11 +38,7 @@ namespace Pulsar4X.ECSLib
         /// Ensure Property/Fields are consistant throughout all DB usage.
         /// Example: TransitableDB uses TeamSize { public get; internal set;}
         [PublicAPI]
-        public int TeamSize
-        {
-            get { return _teamSize; }
-            internal set { _teamSize = value; }
-        }
+        public int TeamSize { get { return _teamSize; } set { SetField(ref _teamSize, value);; } }
 
         /// <summary>
         /// not sure if this should be a blob, entity or guid. and maybe a queue as well. 
@@ -31,11 +46,7 @@ namespace Pulsar4X.ECSLib
         /// TODO: Communications Review
         /// Detemine team orders system
         [PublicAPI]
-        public object TeamTask
-        {
-            get { return _teamTask; }
-            internal set { _teamTask = value; }
-        }
+        public object TeamTask { get { return _teamTask; } set { SetField(ref _teamTask, value);; } }
 
         public TeamsDB() { }
 

@@ -1,4 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -14,6 +33,8 @@ namespace Pulsar4X.ECSLib
     /// </remarks>
     public class ScientistDB : BaseDataBlob
     {
+        private byte _maxLabs;
+        private byte _assignedLabs;
         /// <summary>
         /// Bonuses that this scentist imparts.
         /// </summary>
@@ -26,13 +47,13 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public byte MaxLabs { get; internal set; }
+        public byte MaxLabs { get { return _maxLabs; } internal set { SetField(ref _maxLabs, value);; } }
 
         /// <summary>
         /// Current number of labs assigned to this scientist.
         /// </summary>
         [JsonProperty]
-        public byte AssignedLabs { get; internal set; }
+        public byte AssignedLabs { get { return _assignedLabs; } internal set { SetField(ref _assignedLabs, value);; } }
 
         /// <summary>
         /// Queue of projects currently being worked on by this scientist.
@@ -62,9 +83,6 @@ namespace Pulsar4X.ECSLib
             ProjectQueue = dB.ProjectQueue;
         }
 
-        public override object Clone()
-        {
-            return new ScientistDB(this);
-        }
+        public override object Clone() => new ScientistDB(this);
     }
 }
