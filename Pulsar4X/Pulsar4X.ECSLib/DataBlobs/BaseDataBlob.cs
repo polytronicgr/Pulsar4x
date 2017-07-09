@@ -20,13 +20,14 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Pulsar4X.ECSLib
 {
     [JsonObject(MemberSerialization.OptIn)]
-    public abstract class BaseDataBlob : ICloneable, INotifyPropertyChanged
+    public abstract class BaseDataBlob : ICloneable, INotifyPropertyChanged, INotifySubCollectionChanged
     {
         [NotNull]
         public virtual Entity OwningEntity { get { return _owningEntity; } internal set { SetField(ref _owningEntity, value); } }
@@ -35,6 +36,7 @@ namespace Pulsar4X.ECSLib
         public abstract object Clone();
 
         public event PropertyChangedEventHandler PropertyChanged;
+        public event SubCollectionChangedEventHandler SubCollectionChanged;
 
         /// <summary>
         /// Sets the field's value while firing PropertyChanged events.
@@ -60,6 +62,16 @@ namespace Pulsar4X.ECSLib
 
             // Fire the PropertyChanged event.
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// Allows derived classes to fire the SubCollectionChanged event.
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <param name="args"></param>
+        protected void OnSubCollectionChanged(string propertyName, NotifyCollectionChangedEventArgs args)
+        {
+            SubCollectionChanged?.Invoke(this, new SubCollectionChangedEventArgs(propertyName, args));
         }
     }
 }

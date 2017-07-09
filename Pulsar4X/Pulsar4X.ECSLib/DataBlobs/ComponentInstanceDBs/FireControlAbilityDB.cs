@@ -30,7 +30,7 @@ namespace Pulsar4X.ECSLib
         private Entity _target;
         private List<Entity> _assignedWeapons = new List<Entity>();
         private bool _isEngaging = false;
-        public Entity Target { get { return _target; } internal set { SetField(ref _target, value); } }
+        public Entity Target { get { return _target; } set { SetField(ref _target, value); } }
 
         public List<Entity> AssignedWeapons { get { return _assignedWeapons; } internal set { SetField(ref _assignedWeapons, value); } }
 

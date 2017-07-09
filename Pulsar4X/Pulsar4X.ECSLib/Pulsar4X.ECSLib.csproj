@@ -195,8 +195,10 @@
     <Compile Include="Helpers\CargoDictionary.cs" />
     <Compile Include="Helpers\EntityManipulation.cs" />
     <Compile Include="Helpers\CollectionChangedHelpers.cs" />
+    <Compile Include="Helpers\INotifySubCollectionChanged.cs" />
     <Compile Include="Helpers\NameLookup.cs" />
     <Compile Include="Helpers\ObjectSerializer.cs" />
+    <Compile Include="Helpers\ObservableDictionary.cs" />
     <Compile Include="Helpers\ObserviableConcurrentDictionary.cs" />
     <Compile Include="ManagerSubPulse.cs" />
     <Compile Include="Messages\IncomingMessageType.cs" />
@@ -335,7 +337,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DataBlobs\ShipDBs\ShipAbilityDBs\" />
-    <Folder Include="Messages\MessageHandlers" />
+    <Folder Include="Messages\MessageHandlers\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
