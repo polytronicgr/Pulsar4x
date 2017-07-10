@@ -13,15 +13,12 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class ConstructionAtbDB : BaseDataBlob
     {
-        public ReadOnlyDictionary<ConstructionType, int> ConstructionPoints => new ReadOnlyDictionary<ConstructionType, int>(InternalConstructionPoints);
+        public ObservableDictionary<ConstructionType, int> ConstructionPoints = new ObservableDictionary<ConstructionType, int>();
 
         public int InstallationConstrustionPoints => GetConstructionPoints(ConstructionType.Installations);
         public int ShipConstructionPoints => GetConstructionPoints(ConstructionType.Ships);
         public int FighterConstructionPoints => GetConstructionPoints(ConstructionType.Fighters);
         public int OrdnanceConstructionPoints => GetConstructionPoints(ConstructionType.Ordnance);
-
-        [JsonProperty]
-        internal Dictionary<ConstructionType, int> InternalConstructionPoints { get; set; } = new Dictionary<ConstructionType, int>();
 
         public ConstructionAtbDB(IDictionary<ConstructionType, double> constructionPoints) 
             : this(constructionPoints.ToDictionary(constructionPoint => constructionPoint.Key, constructionPoint => (int)constructionPoint.Value)) { }
@@ -29,10 +26,8 @@ namespace Pulsar4X.ECSLib
         [JsonConstructor]
         public ConstructionAtbDB(IDictionary<ConstructionType, int> constructionPoints = null)
         {
-            if (constructionPoints != null)
-            {
-                InternalConstructionPoints = new Dictionary<ConstructionType, int>(constructionPoints);
-            }
+            ConstructionPoints.Merge(constructionPoints);
+            ConstructionPoints.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ConstructionPoints), args);
         }
 
         public override object Clone()
@@ -46,7 +41,7 @@ namespace Pulsar4X.ECSLib
         public int GetConstructionPoints(ConstructionType type)
         {
             int totalConstructionPoints = 0;
-            foreach (KeyValuePair<ConstructionType, int> keyValuePair in InternalConstructionPoints)
+            foreach (KeyValuePair<ConstructionType, int> keyValuePair in ConstructionPoints)
             {
                 ConstructionType entryType = keyValuePair.Key;
                 int constructionPoints = keyValuePair.Value;

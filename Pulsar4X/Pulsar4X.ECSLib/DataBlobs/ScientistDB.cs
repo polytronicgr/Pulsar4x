@@ -20,6 +20,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Pulsar4X.ECSLib
 {
@@ -40,7 +41,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public Dictionary<ResearchCategories, float> Bonuses { get; internal set; }
+        public ObservableDictionary<ResearchCategories, float> Bonuses { get; internal set; } = new ObservableDictionary<ResearchCategories, float>();
 
         /// <summary>
         /// Max number of labs this scientist can manage.
@@ -62,25 +63,28 @@ namespace Pulsar4X.ECSLib
         /// TODO: Pre-release Review
         /// Why is ProjectQueue not a queue?
         /// </remarks>
-        public List<Guid> ProjectQueue { get; internal set; }
-//        public List<Guid> ProjectQueue { get; internal set; } 
+        public ObservableCollection<Guid> ProjectQueue { get; internal set; } = new ObservableCollection<Guid>();
 
-        public ScientistDB() { }
-
-        public ScientistDB(Dictionary<ResearchCategories,float> bonuses, byte maxLabs )
+        public ScientistDB()
         {
-            Bonuses = bonuses;
-            MaxLabs = maxLabs;
-            AssignedLabs = 0;
-            ProjectQueue = new List<Guid>();
+            Bonuses.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Bonuses), args);
+            ProjectQueue.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ProjectQueue), args);
         }
 
-        public ScientistDB(ScientistDB dB)
+        public ScientistDB(IDictionary<ResearchCategories,float> bonuses, byte maxLabs ) : this()
         {
-            Bonuses = new Dictionary<ResearchCategories, float>(dB.Bonuses);
-            MaxLabs = dB.MaxLabs;
+            Bonuses.Merge(bonuses);
+            MaxLabs = maxLabs;
+            AssignedLabs = 0;
+        }
+
+        public ScientistDB(ScientistDB dB) : this(dB.Bonuses, dB.MaxLabs)
+        {
             AssignedLabs = dB.AssignedLabs;
-            ProjectQueue = dB.ProjectQueue;
+            foreach (Guid guid in dB.ProjectQueue)
+            {
+                ProjectQueue.Add(guid);
+            }
         }
 
         public override object Clone() => new ScientistDB(this);

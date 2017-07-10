@@ -1,6 +1,26 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,28 +35,28 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [JsonProperty]
         [PublicAPI]
-        public PrIwObsDict<Entity, PrIwObsList<Entity>> SpecificInstances { get; internal set; } = new PrIwObsDict<Entity, PrIwObsList<Entity>>();
+        public ObservableDictionary<Entity, ObservableCollection<Entity>> SpecificInstances { get; internal set; } = new ObservableDictionary<Entity, ObservableCollection<Entity>>();
 
 
         // list of components and where in the ship they are.
-        public Dictionary<Entity, double> ComponentDictionary { get; set; }
+        public ObservableDictionary<Entity, double> ComponentDictionary { get; set; } = new ObservableDictionary<Entity, double>();
 
         public ComponentInstancesDB()
         {
-            ComponentDictionary = new Dictionary<Entity, double>();
+            SpecificInstances.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(SpecificInstances), args);
+            ComponentDictionary.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ComponentDictionary), args);
         }
 
-
-
-        // @todo: check to see if the instances are simply copied over, or duplicated
-        public ComponentInstancesDB(ComponentInstancesDB db)
+        public ComponentInstancesDB(IDictionary<Entity, ObservableCollection<Entity>> specificInstances, IDictionary<Entity, double> componentDiectory) : this()
         {
-            SpecificInstances = new PrIwObsDict<Entity, PrIwObsList<Entity>>(db.SpecificInstances);
-            ComponentDictionary = new Dictionary<Entity, double>(db.ComponentDictionary);
+            SpecificInstances.Merge(specificInstances);
+            ComponentDictionary.Merge(componentDiectory);
         }
+        
+        public ComponentInstancesDB(ComponentInstancesDB db) : this(db.SpecificInstances, db.ComponentDictionary) { }
 
         /// <summary>
-        /// this is a somewhat shallow clone. it does not clone the referenced component instance entities!!!
+        /// this is a shallow clone. it does not clone the referenced component instance entities!!!
         /// </summary>
         /// <returns></returns>
         public override object Clone()

@@ -1,4 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -12,7 +31,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public Dictionary<Guid,int> ResearchedTechs { get; internal set; }
+        public ObservableDictionary<Guid, int> ResearchedTechs { get; internal set; } = new ObservableDictionary<Guid, int>();
 
         /// <summary>
         /// dictionary of technologies that are available to research, or are being researched. 
@@ -21,14 +40,14 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public Dictionary<TechSD, int> ResearchableTechs { get; internal set; }
+        public ObservableDictionary<TechSD, int> ResearchableTechs { get; internal set; } = new ObservableDictionary<TechSD, int>();
 
         /// <summary>
         /// a list of techs not yet meeting the requirements to research
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public Dictionary<TechSD, int> UnavailableTechs { get; internal set; }
+        public ObservableDictionary<TechSD, int> UnavailableTechs { get; internal set; } = new ObservableDictionary<TechSD, int>();
 
         [PublicAPI]
         [JsonProperty]
@@ -40,31 +59,28 @@ namespace Pulsar4X.ECSLib
         /// <param name="alltechs">a list of all possible techs in game</param>
         public FactionTechDB(List<TechSD> alltechs)
         {
-            UnavailableTechs = new Dictionary<TechSD, int>();
+            UnavailableTechs = new ObservableDictionary<TechSD, int>();
             foreach (var techSD in alltechs)
             {             
                 UnavailableTechs.Add(techSD,0);
             }
-            
-            ResearchedTechs = new Dictionary<Guid, int>();
-            ResearchableTechs = new Dictionary<TechSD, int>();
+
             ResearchPoints = 0;
         }
 
-        public FactionTechDB(FactionTechDB techDB)
+        public FactionTechDB(FactionTechDB techDB) : this()
         {
-            UnavailableTechs = new Dictionary<TechSD, int>(techDB.UnavailableTechs);
-            ResearchedTechs = new Dictionary<Guid, int>(techDB.ResearchedTechs);
-            ResearchableTechs = new Dictionary<TechSD, int>(techDB.ResearchableTechs);
+            UnavailableTechs.Merge(techDB.UnavailableTechs);
+            ResearchedTechs.Merge(techDB.ResearchedTechs);
+            ResearchableTechs.Merge(techDB.ResearchableTechs);
             ResearchPoints = techDB.ResearchPoints;
         }
 
         public FactionTechDB()
         {
-            UnavailableTechs = new Dictionary<TechSD, int>();
-            ResearchedTechs = new Dictionary<Guid, int>();
-            ResearchableTechs = new Dictionary<TechSD, int>();
-            ResearchPoints = 0;
+            UnavailableTechs.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(UnavailableTechs), args);
+            ResearchedTechs.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ResearchedTechs), args);
+            ResearchableTechs.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ResearchableTechs), args);
         }
 
         /// <summary>

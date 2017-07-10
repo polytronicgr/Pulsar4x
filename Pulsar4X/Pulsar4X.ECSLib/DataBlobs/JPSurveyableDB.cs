@@ -36,17 +36,21 @@ namespace Pulsar4X.ECSLib
     /// </remarks>
     public class JPSurveyableDB : BaseDataBlob
     {
-        [JsonProperty]
         private int surveyPointsRequired;
-        [JsonProperty]
-        public Dictionary<Entity, int> SurveyPointsAccumulated;
 
+        [JsonProperty]
+        public ObservableDictionary<Entity, int> SurveyPointsAccumulated { get; set; } = new ObservableDictionary<Entity, int>();
+
+        [JsonProperty]
         public int SurveyPointsRequired { get { return surveyPointsRequired; } set { SetField(ref surveyPointsRequired, value);; } }
 
         /// <summary>
         /// Default public constructor for Json
         /// </summary>
-        public JPSurveyableDB() { }
+        public JPSurveyableDB()
+        {
+            SurveyPointsAccumulated.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(SurveyPointsAccumulated), args);
+        }
 
         /// <summary>
         /// Copy constructor
@@ -54,7 +58,7 @@ namespace Pulsar4X.ECSLib
         public JPSurveyableDB(int pointsRequired, IDictionary<Entity, int> pointsAccumulated)
         {
             SurveyPointsRequired = pointsRequired;
-            SurveyPointsAccumulated = new Dictionary<Entity, int>(pointsAccumulated);
+            SurveyPointsAccumulated.Merge(pointsAccumulated);
         }
 
         /// <summary>

@@ -21,10 +21,12 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using static Pulsar4X.ECSLib.EntityChangeEvent;
 
 namespace Pulsar4X.ECSLib
 {
+    [DebuggerDisplay("{" + nameof(PropertyName) + "}")]
     public class EntityChangeEvent
     {
         #region Types
@@ -64,7 +66,7 @@ namespace Pulsar4X.ECSLib
     {
         #region Fields
         private readonly Dictionary<Guid, List<EntityChangeEvent>> _entityChanges = new Dictionary<Guid, List<EntityChangeEvent>>();
-        
+        private readonly List<EntityChangeEvent> _entityEvents = new List<EntityChangeEvent>();
         #endregion
 
 
@@ -119,6 +121,13 @@ namespace Pulsar4X.ECSLib
             {
                 _entityChanges.Add(changeEvent.EntityGuid, new List<EntityChangeEvent>{changeEvent});
             }
+            _entityEvents.Add(changeEvent);
+        }
+
+        public void ClearEvents()
+        {
+            _entityChanges.Clear();
+            _entityEvents.Clear();
         }
 
         #region EntityEventHandlers

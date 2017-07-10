@@ -50,7 +50,7 @@ namespace Pulsar4X.ECSLib
 
             foreach (Guid starSystemGuid in factionDB.KnownSystems)
             {
-                List<Entity> jumpPoints = factionDB.KnownJumpPoints[starSystemGuid];
+                IList<Entity> jumpPoints = factionDB.KnownJumpPoints[starSystemGuid];
 
                 foreach (Entity jumpPoint in jumpPoints)
                 {

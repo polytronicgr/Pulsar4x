@@ -141,7 +141,7 @@ namespace Pulsar4X.ViewModel
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                foreach (KeyValuePair<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>> newitem in e.NewItems)
+                foreach (KeyValuePair<Guid, ObservableDictionary<Entity, ObservableCollection<Entity>>> newitem in e.NewItems)
                 {        
                     if (TypeID == newitem.Key)
                     {
@@ -157,7 +157,7 @@ namespace Pulsar4X.ViewModel
             {
                 foreach (var item in e.NewItems)
                 {
-                    KeyValuePair<Entity, PrIwObsList<Entity>> kvp = (KeyValuePair<Entity, PrIwObsList<Entity>>)item;
+                    KeyValuePair<Entity, ObservableCollection<Entity>> kvp = (KeyValuePair<Entity, ObservableCollection<Entity>>)item;
                     ComponentSpecificDesignVM design = new ComponentSpecificDesignVM(kvp.Key, kvp.Value);
                     DesignStore.Add(design);
                 }

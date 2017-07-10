@@ -18,25 +18,30 @@
 */
 #endregion
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Pulsar4X.ECSLib
 {
     public class ColonyBonusesDB : BaseDataBlob
     {
        
-        private Dictionary<AbilityType, float> FactionBonus => OwningEntity.GetDataBlob<FactionAbilitiesDB>().AbilityBonuses;
+        private ObservableDictionary<AbilityType, float> FactionBonus = new ObservableDictionary<AbilityType, float>();
 
         public float GetBonus(AbilityType type) => FactionBonus[type];
 
         public ColonyBonusesDB()
         {
-            
+            FactionBonus.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(FactionBonus), args);
         }
 
-        public ColonyBonusesDB(ColonyBonusesDB db)
+        public ColonyBonusesDB(IDictionary<AbilityType, float> bonuses) : this()
         {
-
+            FactionBonus.Merge(bonuses);
         }
+
+        public ColonyBonusesDB(ColonyBonusesDB db) : this(db.FactionBonus) { }
+
+
 
         public override object Clone()
         {

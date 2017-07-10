@@ -93,7 +93,7 @@ namespace Pulsar4X.Tests
         {
             long[] basePop = new long[] { 0, 5, 10, 100, 999, 1000, 10000, 100000, 10000000 };
             long[] infrastructureAmounts = new long[] { 0, 1, 5, 100 };
-            Dictionary<Entity, long> newPop, returnedPop;
+            IDictionary<Entity, long> newPop, returnedPop;
 
             int i, j, k;
 
@@ -102,7 +102,7 @@ namespace Pulsar4X.Tests
             ComponentDesign infrastructureDesign = GenericComponentFactory.StaticToDesign(infrastructureSD, _game.HumanFaction.GetDataBlob<FactionTechDB>(), _game.Game.StaticData);
             Entity infrastructureEntity = GenericComponentFactory.DesignToDesignEntity(_game.Game, _game.HumanFaction, infrastructureDesign);
 
-            Dictionary<Entity, long> pop = _game.EarthColony.GetDataBlob<ColonyInfoDB>().Population;
+            IDictionary<Entity, long> pop = _game.EarthColony.GetDataBlob<ColonyInfoDB>().Population;
 
 
             // Single iteration growth test
@@ -204,7 +204,7 @@ namespace Pulsar4X.Tests
             return newPop;
         }
 
-        private Dictionary<Entity, long> calcGrowthIteration(Entity colony, Dictionary<Entity, long> lastPop )
+        private Dictionary<Entity, long> calcGrowthIteration(Entity colony, IDictionary<Entity, long> lastPop )
         {
             // Get current population
             Dictionary<Entity, long> returnPop = new Dictionary<Entity, long>();

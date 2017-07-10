@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 
@@ -10,9 +11,9 @@ namespace Pulsar4X.ECSLib
         internal static void GrowPopulation(Entity colony)
         {
             // Get current population
-            Dictionary<Entity, long> currentPopulation = colony.GetDataBlob<ColonyInfoDB>().Population;
+            IDictionary<Entity, long> currentPopulation = colony.GetDataBlob<ColonyInfoDB>().Population;
             var instancesDB = colony.GetDataBlob<ComponentInstancesDB>();
-            List<KeyValuePair<Entity, PrIwObsList<Entity>>> infrastructure = instancesDB.SpecificInstances.GetInternalDictionary().Where(item => item.Key.HasDataBlob<PopulationSupportAtbDB>()).ToList();
+            List<KeyValuePair<Entity, ObservableCollection<Entity>>> infrastructure = instancesDB.SpecificInstances.Where(item => item.Key.HasDataBlob<PopulationSupportAtbDB>()).ToList();
             long popSupportValue;
 
             //  Pop Cap = Total Population Support Value / Colony Cost
@@ -92,7 +93,7 @@ namespace Pulsar4X.ECSLib
 
             var infrastructure = new List<Entity>();
             var instancesDB = colonyEntity.GetDataBlob<ComponentInstancesDB>();
-            List<KeyValuePair<Entity, PrIwObsList<Entity>>> infrastructureEntities = instancesDB.SpecificInstances.GetInternalDictionary().Where(item => item.Key.HasDataBlob<PopulationSupportAtbDB>()).ToList();
+            List<KeyValuePair<Entity, ObservableCollection<Entity>>> infrastructureEntities = instancesDB.SpecificInstances.Where(item => item.Key.HasDataBlob<PopulationSupportAtbDB>()).ToList();
             long totalMaxPop = 0;
 
             foreach (var infrastructureDesignList in infrastructureEntities)

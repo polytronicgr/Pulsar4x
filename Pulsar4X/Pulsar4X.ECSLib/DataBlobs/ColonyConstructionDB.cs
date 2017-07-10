@@ -20,6 +20,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Pulsar4X.ECSLib
 {
@@ -81,30 +82,41 @@ namespace Pulsar4X.ECSLib
         public int PointsPerTick { get { return _pointsPerTick; } internal set { SetField(ref _pointsPerTick, value); } }
 
         [JsonProperty]
-        public Dictionary<ConstructionType, int> ConstructionRates { get; internal set; }
-
+        public ObservableDictionary<ConstructionType, int> ConstructionRates { get; internal set; } = new ObservableDictionary<ConstructionType, int>
+                                                                                                      {
+                                                                                                          {ConstructionType.Ordnance, 0},
+                                                                                                          {ConstructionType.Installations, 0},
+                                                                                                          {ConstructionType.Fighters, 0},
+                                                                                                          {ConstructionType.ShipComponents, 0},
+                                                                                                          {ConstructionType.Ships, 0},
+                                                                                                      };
         [JsonProperty]
-        public List<ConstructionJob> JobBatchList { get; internal set; }
-
+        public ObservableCollection<ConstructionJob> JobBatchList { get; internal set; } = new ObservableCollection<ConstructionJob>();
 
         public ColonyConstructionDB()
         {
-            ConstructionRates = new Dictionary<ConstructionType, int>
+            ConstructionRates.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ConstructionRates), args);
+            JobBatchList.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(JobBatchList), args);
+        }
+        
+        public ColonyConstructionDB(IDictionary<ConstructionType, int> rates, IEnumerable<ConstructionJob> jobBatchList) : this()
+        {
+            if (rates != null)
             {
-                {ConstructionType.Ordnance, 0}, 
-                {ConstructionType.Installations, 0}, 
-                {ConstructionType.Fighters, 0}, 
-                {ConstructionType.ShipComponents, 0},
-                {ConstructionType.Ships, 0},
-            };
-            JobBatchList = new List<ConstructionJob>();
+                ConstructionRates.Merge(rates);
+            }
+
+            if (jobBatchList == null)
+            {
+                jobBatchList = new ConstructionJob[0];
+            }
+            foreach (ConstructionJob job in jobBatchList)
+            {
+                JobBatchList.Add(job);
+            }
         }
 
-        public ColonyConstructionDB(ColonyConstructionDB db)
-        {
-            ConstructionRates = db.ConstructionRates;
-            JobBatchList = db.JobBatchList;
-        }
+        public ColonyConstructionDB(ColonyConstructionDB db) : this(db.ConstructionRates, db.JobBatchList) { }
 
         public override object Clone()
         {

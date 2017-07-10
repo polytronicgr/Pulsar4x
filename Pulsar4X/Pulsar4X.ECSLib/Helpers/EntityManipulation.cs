@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,7 +57,7 @@ namespace Pulsar4X.ECSLib
 
             if (!instancesDict.SpecificInstances.ContainsKey(design))
             {
-                instancesDict.SpecificInstances.Add(design, new PrIwObsList<Entity>(new List<Entity>() { instance}) );
+                instancesDict.SpecificInstances.Add(design, new ObservableCollection<Entity>(new List<Entity> { instance}) );
             }
             else
                 instancesDict.SpecificInstances[design].Add(instance);           

@@ -20,6 +20,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Pulsar4X.ECSLib
 {
@@ -32,30 +33,37 @@ namespace Pulsar4X.ECSLib
 
     public class ColonyRefiningDB : BaseDataBlob
     {
+        private int _pointsPerTick;
+
         public int PointsPerTick { get { return _pointsPerTick; } internal set { SetField(ref _pointsPerTick, value); } }
 
         //recalc this on game load todo implement this in the processor. 
-        public Dictionary<Guid, int> RefiningRates{ get; internal set; }
-
-        [JsonProperty] 
-        private List<RefineingJob> _jobBatchList;
-
-        private int _pointsPerTick;
-        public List<RefineingJob> JobBatchList { get{return _jobBatchList;} internal set { _jobBatchList = value; } }
-
+        public ObservableDictionary<Guid, int> RefiningRates{ get; internal set; } = new ObservableDictionary<Guid, int>();
         
+        [JsonProperty]
+        public ObservableCollection<RefineingJob> JobBatchList { get; internal set; } = new ObservableCollection<RefineingJob>();
+
         public ColonyRefiningDB()
         {
-            RefiningRates = new Dictionary<Guid, int>();
-            JobBatchList = new List<RefineingJob>();
+            RefiningRates.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(RefiningRates), args);
+            JobBatchList.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(JobBatchList), args);
         }
 
-        public ColonyRefiningDB(ColonyRefiningDB db)
+        public ColonyRefiningDB(IDictionary<Guid, int> refiningRates, IEnumerable<RefineingJob> jobsList) : this()
         {
-            RefiningRates = new Dictionary<Guid, int>(db.RefiningRates);
-            JobBatchList = new List<RefineingJob>(db.JobBatchList);
+            RefiningRates.Merge(refiningRates);
+
+            if (jobsList != null)
+            {
+                foreach (RefineingJob job in jobsList)
+                {
+                    JobBatchList.Add(job);
+                }
+            }
         }
 
+        public ColonyRefiningDB(ColonyRefiningDB db) : this(db.RefiningRates, db.JobBatchList) { }
+        
         public override object Clone()
         {
             return new ColonyRefiningDB(this);

@@ -74,7 +74,7 @@ namespace Pulsar4X.ECSLib
 
         public float BaseGroundUnitStrengthBonus { get { return _baseGroundUnitStrengthBonus; } set { SetField(ref _baseGroundUnitStrengthBonus, value); } }
 
-        public Dictionary<AbilityType, float> AbilityBonuses { get; set; }
+        public ObservableDictionary<AbilityType, float> AbilityBonuses { get; set; } = new ObservableDictionary<AbilityType, float>();
 
         /// <summary>
         /// To determine final colony costs, from the Colonization Cost Reduction X% techs.
@@ -84,30 +84,30 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Default faction abilities constructor.
         /// </summary>
+        /// 
+        /// 
         public FactionAbilitiesDB()
-            : this(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.001f, 250, 1.0f, 1.0f)
         {
-
+            AbilityBonuses.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(AbilityBonuses), args);
         }
-
         public FactionAbilitiesDB(float constructionBonus,
-            float fighterConstructionBonus,
-            float miningBonus,
-            float refiningBonus,
-            float ordnanceConstructionBonus,
-            float researchBonus,
-            float shipAsseblyBonus,
-            float terraformingBonus,
-            int basePlanetarySensorStrength,
-            float groundUnitStrengthBonus,
-            float colonyCostMultiplier)
+            float fighterConstructionBonus = 1.0f,
+            float miningBonus = 1.0f,
+            float refiningBonus = 1.0f,
+            float ordnanceConstructionBonus = 1.0f,
+            float researchBonus = 1.0f,
+            float shipAsseblyBonus = 1.0f,
+            float terraformingBonus = 1.0f,
+            int basePlanetarySensorStrength = 250,
+            float groundUnitStrengthBonus = 1.0f,
+            float colonyCostMultiplier = 1.0f)
+            : this()
         {
 
             BasePlanetarySensorStrength = basePlanetarySensorStrength;
             BaseGroundUnitStrengthBonus = groundUnitStrengthBonus;
             ColonyCostMultiplier = colonyCostMultiplier;
-
-            AbilityBonuses = new Dictionary<AbilityType, float>();
+            
             AbilityBonuses.Add(AbilityType.GenericConstruction, constructionBonus);
             AbilityBonuses.Add(AbilityType.FighterConstruction, fighterConstructionBonus);
             AbilityBonuses.Add(AbilityType.Mine, miningBonus);
@@ -119,12 +119,12 @@ namespace Pulsar4X.ECSLib
 
         }
 
-        public FactionAbilitiesDB(FactionAbilitiesDB db)
+        public FactionAbilitiesDB(FactionAbilitiesDB db) : this()
         {
-            AbilityBonuses = new Dictionary<AbilityType, float>(db.AbilityBonuses);
             BasePlanetarySensorStrength = db.BasePlanetarySensorStrength;
             BaseGroundUnitStrengthBonus = db.BaseGroundUnitStrengthBonus;
             ColonyCostMultiplier = db.ColonyCostMultiplier;
+            AbilityBonuses.Merge(db.AbilityBonuses);
         }
 
         public override object Clone()

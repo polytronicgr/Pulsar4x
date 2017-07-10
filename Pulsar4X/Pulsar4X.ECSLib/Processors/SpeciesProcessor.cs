@@ -47,7 +47,7 @@ namespace Pulsar4X.ECSLib
             SystemBodyInfoDB sysBody = planet.GetDataBlob<SystemBodyInfoDB>();
             AtmosphereDB atmosphere = planet.GetDataBlob<AtmosphereDB>();
 
-            Dictionary<AtmosphericGasSD, float> atmosphereComp = atmosphere.Composition;
+            IDictionary<AtmosphericGasSD, float> atmosphereComp = atmosphere.Composition;
 
             foreach(KeyValuePair<AtmosphericGasSD, float> kvp in atmosphereComp)
             {
@@ -86,7 +86,7 @@ namespace Pulsar4X.ECSLib
                 return 1.0;
             }
 
-            Dictionary<AtmosphericGasSD, float> atmosphereComp = atmosphere.Composition;
+            IDictionary<AtmosphericGasSD, float> atmosphereComp = atmosphere.Composition;
 
             foreach (KeyValuePair<AtmosphericGasSD, float> kvp in atmosphereComp)
             {
@@ -135,7 +135,7 @@ namespace Pulsar4X.ECSLib
                 return 2.0;
             }
 
-            Dictionary<AtmosphericGasSD, float> atmosphereComp = atmosphere.Composition;
+            IDictionary<AtmosphericGasSD, float> atmosphereComp = atmosphere.Composition;
 
             foreach (KeyValuePair<AtmosphericGasSD, float> kvp in atmosphereComp)
             {

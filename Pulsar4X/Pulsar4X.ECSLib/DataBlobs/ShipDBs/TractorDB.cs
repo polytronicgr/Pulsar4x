@@ -19,6 +19,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Pulsar4X.ECSLib
 {
@@ -29,7 +30,6 @@ namespace Pulsar4X.ECSLib
     public class TractorDB : BaseDataBlob
     {
         private int _noOfTractors;
-        private List<Guid> _tractoredShips;
 
         /// <summary>
         /// The number of tractors this ship has, which will determine how many ships it can tractor at once (1 ship per tractor)
@@ -37,24 +37,26 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         public int NoOfTractors { get { return _noOfTractors; } set { SetField(ref _noOfTractors, value); } }
 
-        public List<Guid> TractoredShips { get { return _tractoredShips; } set { SetField(ref _tractoredShips, value); } }
+        public ObservableCollection<Guid> TractoredShips { get; set; } = new ObservableCollection<Guid>();
 
-        public TractorDB() : this(0)
+        public TractorDB()
         {
-
+            TractoredShips.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(TractoredShips), args);
         }
 
-        public TractorDB(int noOfTractors)
+        public TractorDB(int noOfTractors, IEnumerable<Guid> tractoredShips) : this()
         {
             NoOfTractors = noOfTractors;
-            TractoredShips = new List<Guid>(NoOfTractors);
+            if (tractoredShips != null)
+            {
+                foreach (Guid tractoredShip in tractoredShips)
+                {
+                    TractoredShips.Add(tractoredShip);
+                }
+            }
         }
 
-        public TractorDB(TractorDB tractorDB)
-        {
-            NoOfTractors = tractorDB.NoOfTractors;
-            TractoredShips = new List<Guid>(NoOfTractors); //Even if we copy datablob we shouldn't copy list of tractored ship
-        }
+        public TractorDB(TractorDB tractorDB) : this(tractorDB.NoOfTractors, tractorDB.TractoredShips) { }
 
         public override object Clone()
         {

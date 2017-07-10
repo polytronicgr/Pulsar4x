@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 
@@ -18,7 +19,7 @@ namespace Pulsar4X.ECSLib
             int totalEnginePower = 0;
             Dictionary<Guid, double> totalFuelUsage = new Dictionary<Guid, double>();
             var instancesDB = ship.GetDataBlob<ComponentInstancesDB>();
-            List<KeyValuePair<Entity,PrIwObsList<Entity>>> engineEntities = instancesDB.SpecificInstances.GetInternalDictionary().Where(item => item.Key.HasDataBlob<EnginePowerAtbDB>()).ToList();
+            List<KeyValuePair<Entity,ObservableCollection<Entity>>> engineEntities = instancesDB.SpecificInstances.Where(item => item.Key.HasDataBlob<EnginePowerAtbDB>()).ToList();
             foreach (var engineDesign in engineEntities)
             {
                 foreach (var engineInstance in engineDesign.Value)

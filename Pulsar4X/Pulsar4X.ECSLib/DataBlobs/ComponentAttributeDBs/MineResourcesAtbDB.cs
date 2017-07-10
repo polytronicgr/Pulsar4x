@@ -34,7 +34,7 @@ namespace Pulsar4X.ECSLib
         /// Component factory constructor.
         /// </summary>
         /// <param name="resources">values will be cast to ints!</param>
-        public MineResourcesAtbDB(Dictionary<Guid,double> resources)
+        public MineResourcesAtbDB(IDictionary<Guid,double> resources)
         {
             ResourcesPerEconTick = new Dictionary<Guid, int>();
             foreach (var kvp in resources)

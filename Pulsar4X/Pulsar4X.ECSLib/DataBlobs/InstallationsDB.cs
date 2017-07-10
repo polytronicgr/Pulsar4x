@@ -1,18 +1,28 @@
-﻿using System;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Pulsar4X.ECSLib
 {
-    //public struct ConstructionJob
-    //{        
-    //    public Guid Type;
-    //    public float ItemsRemaining;
-    //    public PercentValue PriorityPercent;
-    //    public Dictionary<Guid, int> RawMaterialsRemaining;
-    //    public int BuildPointsRemaining;
-    //    public int BuildPointsPerItem;
-    //}
-
     /// <summary>
     /// this is used to turn installations on and off, 
     /// and also used by the Processor to check pop requirements.
@@ -28,41 +38,30 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// a dictionary of installationtype, and the number of that specific type including partial installations.
         /// </summary>
-        public Dictionary<Guid, float> Installations { get; set; }
+        public ObservableDictionary<Guid, float> Installations { get; set; } = new ObservableDictionary<Guid, float>();
 
-        public Dictionary<Guid,int> WorkingInstallations { get; set; }
+        public ObservableDictionary<Guid,int> WorkingInstallations { get; set; } = new ObservableDictionary<Guid, int>();
 
-        public List<InstallationEmployment> EmploymentList { get; set; } 
+        public ObservableCollection<InstallationEmployment> EmploymentList { get; set; } = new ObservableCollection<InstallationEmployment>();
         /// <summary>
         /// list of ConstructionJob Structs.
         /// </summary>
-        //public List<ConstructionJob> InstallationJobs { get; set; }
-        //public List<ConstructionJob> OrdnanceJobs { get; set; }
-        //public List<ConstructionJob> ComponentJobs { get; set; }
-        //public List<ConstructionJob> FigherJobs { get; set; }
-        //public List<ConstructionJob> RefineryJobs { get; set; }
         public InstallationsDB()
         {
-            Installations = new Dictionary<Guid, float>();
-            WorkingInstallations = new Dictionary<Guid, int>();
-            EmploymentList = new List<InstallationEmployment>();
-            //InstallationJobs = new List<ConstructionJob>();
-            //ComponentJobs = new List<ConstructionJob>(); 
-            //OrdnanceJobs = new List<ConstructionJob>();
-            //FigherJobs = new List<ConstructionJob>();
-            //RefineryJobs = new List<ConstructionJob>();
+            Installations.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Installations), args);
+            WorkingInstallations.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(WorkingInstallations), args);
+            EmploymentList.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(EmploymentList), args);
+
         }
 
-        public InstallationsDB(InstallationsDB db)
+        public InstallationsDB(InstallationsDB db) : this()
         {
-            Installations = new Dictionary<Guid, float>(db.Installations);
-            WorkingInstallations = new Dictionary<Guid, int>(db.WorkingInstallations);
-            EmploymentList = new List<InstallationEmployment>(db.EmploymentList);
-            //InstallationJobs = new List<ConstructionJob>(db.InstallationJobs);
-            //ComponentJobs = new List<ConstructionJob>(db.ComponentJobs);
-            //OrdnanceJobs = new List<ConstructionJob>(db.OrdnanceJobs);
-            //FigherJobs = new List<ConstructionJob>(db.FigherJobs);
-            //RefineryJobs = new List<ConstructionJob>(db.RefineryJobs);
+            Installations.Merge(db.Installations);
+            WorkingInstallations.Merge(db.WorkingInstallations);
+            foreach (InstallationEmployment installationEmployment in db.EmploymentList)
+            {
+                EmploymentList.Add(installationEmployment);
+            }
         }
 
         public override object Clone()

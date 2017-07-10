@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 
@@ -98,9 +99,9 @@ namespace Pulsar4X.ECSLib
         //        pointsRate += points;
         //    }
 
-            Dictionary<Guid, int> rates = new Dictionary<Guid, int>();
-            ComponentInstancesDB instancesDB = colonyEntity.GetDataBlob<ComponentInstancesDB>();
-            List<KeyValuePair<Entity, PrIwObsList<Entity>>> refineingEntities = instancesDB.SpecificInstances.GetInternalDictionary().Where(item => item.Key.HasDataBlob<RefineResourcesAtbDB>()).ToList();
+            var rates = new Dictionary<Guid, int>();
+            var instancesDB = colonyEntity.GetDataBlob<ComponentInstancesDB>();
+            List<KeyValuePair<Entity, ObservableCollection<Entity>>> refineingEntities = instancesDB.SpecificInstances.Where(item => item.Key.HasDataBlob<RefineResourcesAtbDB>()).ToList();
             foreach (var refiningComponentDesignList in refineingEntities)
             {
                 RefineResourcesAtbDB refineblob = refiningComponentDesignList.Key.GetDataBlob<RefineResourcesAtbDB>();
@@ -121,7 +122,8 @@ namespace Pulsar4X.ECSLib
             }
 
             var refining = colonyEntity.GetDataBlob<ColonyRefiningDB>();
-            refining.RefiningRates = rates;
+            refining.RefiningRates.Clear();
+            refining.RefiningRates.Merge(rates);
             refining.PointsPerTick = maxPoints;
         }
 
@@ -206,9 +208,7 @@ namespace Pulsar4X.ECSLib
         public MVMCollectionSyncher(IList<T> wrappedCollection)
         {
             if (wrappedCollection == null)
-                throw new ArgumentNullException(
-                 "wrappedCollection",
-                 "wrappedCollection must not be null.");
+                throw new ArgumentNullException(nameof(wrappedCollection));
             _wrappedCollection = wrappedCollection;
         }
 

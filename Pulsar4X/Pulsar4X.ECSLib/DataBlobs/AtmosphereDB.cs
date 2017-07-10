@@ -19,6 +19,7 @@
 #endregion
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Pulsar4X.ECSLib
 {
@@ -88,7 +89,7 @@ namespace Pulsar4X.ECSLib
         //In Earth Atmospheres (atm).
         //</summary>
         [JsonProperty]
-        public Dictionary<AtmosphericGasSD, float> Composition { get; internal set; }
+        public ObservableDictionary<AtmosphericGasSD, float> Composition { get; internal set; }
 
         /// <summary>
         /// A sting describing the Atmosphere in Percentages, like this:
@@ -113,7 +114,8 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         public AtmosphereDB()
         {
-            Composition = new Dictionary<AtmosphericGasSD, float>();
+            Composition = new ObservableDictionary<AtmosphericGasSD, float>();
+            Composition.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Composition), args);
         }
 
         /// <summary>
@@ -127,7 +129,7 @@ namespace Pulsar4X.ECSLib
         /// <param name="albedo">from 0 to 1.</param>
         /// <param name="surfaceTemp">AFTER greenhouse effects, In Degrees C.</param>
         /// <param name="composition">a Dictionary of gas types as keys and amounts as values</param>
-        internal AtmosphereDB(float pressure, bool hydrosphere, short hydroExtent, float greenhouseFactor, float greenhousePressue, float albedo, float surfaceTemp, Dictionary<AtmosphericGasSD,float> composition)
+        internal AtmosphereDB(float pressure, bool hydrosphere, short hydroExtent, float greenhouseFactor, float greenhousePressue, float albedo, float surfaceTemp, IDictionary<AtmosphericGasSD,float> composition) : this()
         {
             Pressure = pressure;
             Hydrosphere = hydrosphere;
@@ -136,19 +138,11 @@ namespace Pulsar4X.ECSLib
             GreenhousePressure = greenhousePressue;
             Albedo = albedo;
             SurfaceTemperature = surfaceTemp;
-            Composition = composition;
+            Composition.AddRange(composition);
         }
 
-        public AtmosphereDB(AtmosphereDB atmosphereDB)
-            : this(atmosphereDB.Pressure, atmosphereDB.Hydrosphere, atmosphereDB.HydrosphereExtent, 
-            atmosphereDB.GreenhouseFactor, atmosphereDB.GreenhousePressure, atmosphereDB.Albedo, 
-            atmosphereDB.SurfaceTemperature, 
-            new Dictionary<AtmosphericGasSD, float>(atmosphereDB.Composition)
-            )
-        {
-
-        }
-
+        public AtmosphereDB(AtmosphereDB atmosphereDB) : this(atmosphereDB.Pressure, atmosphereDB.Hydrosphere, atmosphereDB.HydrosphereExtent, atmosphereDB.GreenhouseFactor, atmosphereDB.GreenhousePressure, atmosphereDB.Albedo, atmosphereDB.SurfaceTemperature, atmosphereDB.Composition) { }
+        
         /// <summary>
         /// This function generates the different text discriptions of the atmosphere.
         /// It should be run after any changes to the atmosphere which may effect the description.

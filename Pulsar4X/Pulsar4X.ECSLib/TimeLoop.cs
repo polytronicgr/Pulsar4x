@@ -212,7 +212,7 @@ namespace Pulsar4X.ECSLib
                 _timer.Start();
             }        
             _stopwatch.Start(); //start the processor loop stopwatch
-
+            
             //check for global interupts
             TargetDateTime = GameGlobalDateTime + Ticklength;
 
@@ -221,7 +221,7 @@ namespace Pulsar4X.ECSLib
                 DateTime nextInterupt = ProcessNextInterupt(TargetDateTime);
                 //do system processors
 
-                if (_game.Settings.EnableMultiThreading == true) //threaded
+                if (_game.Settings.EnableMultiThreading == false) //threaded
                 {
                     Parallel.ForEach(_game.Systems.Values, starSys => starSys.SystemManager.ManagerSubpulses.ProcessSystem(nextInterupt));
                 }

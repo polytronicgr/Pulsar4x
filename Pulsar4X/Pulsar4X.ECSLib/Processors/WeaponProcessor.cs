@@ -1,6 +1,26 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,7 +61,7 @@ namespace Pulsar4X.ECSLib
         public static void RecalcBeamWeapons(Entity ship)
         {
             var instancesDB = ship.GetDataBlob<ComponentInstancesDB>();
-            List<KeyValuePair<Entity, PrIwObsList<Entity>>> beamWeaponEntities = instancesDB.SpecificInstances.GetInternalDictionary().Where(item => item.Key.HasDataBlob<BeamWeaponAtbDB>()).ToList();
+            List<KeyValuePair<Entity, ObservableCollection<Entity>>> beamWeaponEntities = instancesDB.SpecificInstances.Where(item => item.Key.HasDataBlob<BeamWeaponAtbDB>()).ToList();
             List<Entity>fireControlEntities = new List<Entity>();
 
             BeamWeaponsDB bwDB;
@@ -53,7 +73,7 @@ namespace Pulsar4X.ECSLib
             int maxRange = 0;
             int maxTrackingSpeed = 0;
 
-            foreach (KeyValuePair<Entity, PrIwObsList<Entity>> beamWeaponTemplate in beamWeaponEntities)
+            foreach (KeyValuePair<Entity, ObservableCollection<Entity>> beamWeaponTemplate in beamWeaponEntities)
             {
                 foreach(Entity beamWeapon in beamWeaponTemplate.Value)
                 {
@@ -61,7 +81,7 @@ namespace Pulsar4X.ECSLib
                     BeamWeaponAtbDB bwAtb = beamWeapon.GetDataBlob<BeamWeaponAtbDB>();
                     BeamFireControlAtbDB fcAtb = state.FireControl.GetDataBlob<BeamFireControlAtbDB>();
 
-                    if (!fireControlEntities.Contains(state.FireControl)) ; //This semi-colon is probably bad
+                    if (!fireControlEntities.Contains(state.FireControl)) //This semi-colon is probably bad
                         fireControlEntities.Add(state.FireControl);
 
                     numBeamWeapons++;

@@ -20,6 +20,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Pulsar4X.ECSLib
 {
@@ -30,7 +31,7 @@ namespace Pulsar4X.ECSLib
         /// Species Entity and amount
         /// </summary>
         [JsonProperty]
-        public Dictionary<Entity, long> Population { get; internal set; } = new Dictionary<Entity, long>();
+        public ObservableDictionary<Entity, long> Population { get; internal set; } = new ObservableDictionary<Entity, long>();
 
 
         /// <summary>
@@ -38,19 +39,19 @@ namespace Pulsar4X.ECSLib
         /// Construction pulls and pushes from here.
         /// </summary>
         [JsonProperty]
-        public Dictionary<Guid, int> ComponentStockpile { get; internal set; } = new Dictionary<Guid, int>();
+        public ObservableDictionary<Guid, int> ComponentStockpile { get; internal set; } = new ObservableDictionary<Guid, int>();
 
         /// <summary>
         /// Construction pushes here.
         /// </summary>
         [JsonProperty]
-        public Dictionary<Guid, float> OrdinanceStockpile { get; internal set; } = new Dictionary<Guid, float>();
+        public ObservableDictionary<Guid, float> OrdinanceStockpile { get; internal set; } = new ObservableDictionary<Guid, float>();
 
         /// <summary>
         /// Construction *adds* to this list. damaged and partialy constructed fighters will go here too, but shouldnt launch.
         /// </summary>
         [JsonProperty]
-        public List<Entity> FighterStockpile { get; internal set; } = new List<Entity>();
+        public ObservableCollection<Entity> FighterStockpile { get; internal set; } = new ObservableCollection<Entity>();
 
         /// <summary>
         /// the parent planet
@@ -59,48 +60,51 @@ namespace Pulsar4X.ECSLib
         public Entity PlanetEntity { get { return _planetEntity; } internal set { SetField(ref _planetEntity, value); } }
 
         [JsonProperty]
-        public List<Entity> Scientists { get; internal set; } = new List<Entity>();
+        public ObservableCollection<Entity> Scientists { get; internal set; } = new ObservableCollection<Entity>();
 
         /// <summary>
         /// Installation list for damage calculations. Colony installations are considered components.
         /// </summary>
-        public Dictionary<Entity, double> ColonyComponentDictionary { get; set; }
+        public ObservableDictionary<Entity, double> ColonyComponentDictionary { get; set; } = new ObservableDictionary<Entity, double>();
 
-        public ColonyInfoDB() { }
+        public ColonyInfoDB()
+        {
+            Population.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Population), args);
+            ComponentStockpile.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ComponentStockpile), args);
+            OrdinanceStockpile.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(OrdinanceStockpile), args);
+            FighterStockpile.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(FighterStockpile), args);
+            Scientists.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Scientists), args);
+            ColonyComponentDictionary.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ColonyComponentDictionary), args);
+        }
     
         /// <summary>
         /// 
         /// </summary>
         /// <param name="popCount">Species and population number</param>
         /// <param name="planet"> the planet entity this colony is on</param>
-        public ColonyInfoDB(Dictionary<Entity, long> popCount, Entity planet)
+        public ColonyInfoDB(IDictionary<Entity, long> popCount, Entity planet) : this()
         {
-            Population = popCount;
+            Population.Merge(popCount);
             PlanetEntity = planet;
-            
-            ComponentStockpile = new Dictionary<Guid, int>();
-            OrdinanceStockpile = new Dictionary<Guid, float>();
-            FighterStockpile = new List<Entity>();
-            Scientists = new List<Entity>();
-
-            ColonyComponentDictionary = new Dictionary<Entity, double>();
         }
 
-        public ColonyInfoDB(Entity species, long populationCount, Entity planet):this(
-            new Dictionary<Entity, long> {{species, populationCount}},
-            planet)
-        {
-        }
+        public ColonyInfoDB(Entity species, long populationCount, Entity planet) : this(new ObservableDictionary<Entity, long> {{species, populationCount}}, planet) { }
 
-        public ColonyInfoDB(ColonyInfoDB colonyInfoDB)
+        public ColonyInfoDB(ColonyInfoDB colonyInfoDB) : this()
         {
-            Population = new Dictionary<Entity, long>(colonyInfoDB.Population);
+            Population.Merge(colonyInfoDB.Population);
             PlanetEntity = colonyInfoDB.PlanetEntity;
-            ComponentStockpile = new Dictionary<Guid, int>(colonyInfoDB.ComponentStockpile);
-            OrdinanceStockpile = new Dictionary<Guid, float>(colonyInfoDB.OrdinanceStockpile);
-            FighterStockpile = new List<Entity>(colonyInfoDB.FighterStockpile);            
-            Scientists = new List<Entity>(colonyInfoDB.Scientists);
-            ColonyComponentDictionary = new Dictionary<Entity, double>(colonyInfoDB.ColonyComponentDictionary);
+            ComponentStockpile.Merge(colonyInfoDB.ComponentStockpile);
+            OrdinanceStockpile.Merge(colonyInfoDB.OrdinanceStockpile);
+            foreach (Entity entity in colonyInfoDB.FighterStockpile)
+            {
+                FighterStockpile.Add(entity);
+            }
+            foreach (Entity scientist in colonyInfoDB.Scientists)
+            {
+                Scientists.Add(scientist);
+            }
+            ColonyComponentDictionary.Merge(colonyInfoDB.ColonyComponentDictionary);
         }
 
         public override object Clone()

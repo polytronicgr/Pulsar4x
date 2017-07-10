@@ -138,7 +138,7 @@ namespace Pulsar4X.Tests
             _testGame.Game.MessagePump.EnqueueIncomingMessage(_cargoOrder);
             _testGame.Game.GameLoop.Ticklength = TimeSpan.FromHours(1);
             BaseToClientMessage message;
-            while (!_testGame.Game.MessagePump.TryPeekOutgoingMessage(Guid.Empty, out message))
+            //while (!_testGame.Game.MessagePump.TryPeekOutgoingMessage(Guid.Empty, out message))
             {
                 _testGame.Game.GameLoop.TimeStep();
                 OrderProcessor.ProcessManagerOrders(_testGame.EarthColony.Manager);

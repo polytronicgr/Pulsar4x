@@ -1,21 +1,24 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Pulsar4X.ECSLib
 {
     public class ResourceConsumptionAtbDB : BaseDataBlob
     {
         [JsonProperty]
-        public Dictionary<Guid, int> MaxUsage { get; internal set; } = new Dictionary<Guid, int>();
+        public ObservableDictionary<Guid, int> MaxUsage { get; internal set; } = new ObservableDictionary<Guid, int>();
         [JsonProperty]
-        public Dictionary<Guid, int> MinUsage { get; internal set; } = new Dictionary<Guid, int>();
+        public ObservableDictionary<Guid, int> MinUsage { get; internal set; } = new ObservableDictionary<Guid, int>();
 
         public ResourceConsumptionAtbDB()
         {
+            MaxUsage.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(MaxUsage), args);
+            MinUsage.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(MinUsage), args);
         }
 
-        public ResourceConsumptionAtbDB(Guid resourcetype, double maxUsage, double minUsage)
+        public ResourceConsumptionAtbDB(Guid resourcetype, double maxUsage, double minUsage) : this()
         {
             MaxUsage.Add(resourcetype, (int)maxUsage);
             MinUsage.Add(resourcetype, (int)minUsage);
@@ -33,17 +36,13 @@ namespace Pulsar4X.ECSLib
             }       
         }
 
-        public ResourceConsumptionAtbDB(Dictionary<Guid,int> maxUsage, Dictionary<Guid,int> minUsage)
+        public ResourceConsumptionAtbDB(IDictionary<Guid, int> maxUsage, IDictionary<Guid, int> minUsage) : this()
         {
-            MaxUsage = maxUsage;
-            MinUsage = minUsage;
+            MaxUsage.AddRange(maxUsage);
+            MinUsage.AddRange(minUsage);
         }
 
-        public ResourceConsumptionAtbDB(ResourceConsumptionAtbDB db)
-        {
-            MaxUsage = new Dictionary<Guid, int>(db.MaxUsage);
-            MinUsage = new Dictionary<Guid, int>(db.MinUsage);
-        }
+        public ResourceConsumptionAtbDB(ResourceConsumptionAtbDB db) : this(db.MaxUsage, db.MinUsage) { }
 
         public override object Clone()
         {

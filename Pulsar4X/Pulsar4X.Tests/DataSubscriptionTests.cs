@@ -111,7 +111,7 @@ namespace Pulsar4X.Tests
             _testGame.Game.MessagePump.EnqueueIncomingMessage(_cargoOrder);
             
             BaseToClientMessage message;
-            while (!_testGame.Game.MessagePump.TryPeekOutgoingMessage(Guid.Empty, out message))
+           // while (!_testGame.Game.MessagePump.TryPeekOutgoingMessage(Guid.Empty, out message))
             {
                 _testGame.Game.GameLoop.TimeStep();
             }

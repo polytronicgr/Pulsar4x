@@ -3,6 +3,7 @@ using Eto.Serialization.Xaml;
 using Pulsar4X.ViewModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Pulsar4X.ECSLib;
 
 namespace Pulsar4X.CrossPlatformUI.Views.ComponentTemplateDesigner
 {
@@ -75,7 +76,7 @@ namespace Pulsar4X.CrossPlatformUI.Views.ComponentTemplateDesigner
                 CheckBox chkbx = new CheckBox();
                 chkbx.Text = key.ToString();
                 //chkbx.CheckedBinding.BindDataContext((DictionaryVM<ECSLib.ComponentMountType, bool?, bool?> x) => x[kvp.Key], (m, val) => m[kvp.Key] = val);
-                chkbx.CheckedBinding.BindDataContext((ObservableDictionary<ECSLib.ComponentMountType, bool?> x) => x[key], (m, val) => m[key] = val);
+                chkbx.CheckedBinding.BindDataContext((ObservableDictionary<ComponentMountType, bool?> x) => x[key], (m, val) => m[key] = val);
                 chkbx.DataContext = viewModel.MountType;
                 MountTypes.Items.Add(chkbx);
             }

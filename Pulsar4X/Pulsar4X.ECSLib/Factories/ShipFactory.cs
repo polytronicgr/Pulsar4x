@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Pulsar4X.ECSLib
 {
@@ -46,10 +47,10 @@ namespace Pulsar4X.ECSLib
 
             //replace the ships references to the design's specific instances with shiny new specific instances
             ComponentInstancesDB componentInstances = shipEntity.GetDataBlob<ComponentInstancesDB>();
-            var newSpecificInstances = new PrIwObsDict<Entity, PrIwObsList<Entity>>();
+            var newSpecificInstances = new ObservableDictionary<Entity, ObservableCollection<Entity>>();
             foreach (var kvp in componentInstances.SpecificInstances)
             {
-                newSpecificInstances.Add(kvp.Key, new PrIwObsList<Entity>());
+                newSpecificInstances.Add(kvp.Key, new ObservableCollection<Entity>());
                 for (int i = 0; i < kvp.Value.Count; i++)
                 {
                     newSpecificInstances[kvp.Key].Add(ComponentInstanceFactory.NewInstanceFromDesignEntity(kvp.Key, ownerFaction));

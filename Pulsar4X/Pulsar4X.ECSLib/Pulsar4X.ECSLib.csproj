@@ -199,7 +199,6 @@
     <Compile Include="Helpers\NameLookup.cs" />
     <Compile Include="Helpers\ObjectSerializer.cs" />
     <Compile Include="Helpers\ObservableDictionary.cs" />
-    <Compile Include="Helpers\ObserviableConcurrentDictionary.cs" />
     <Compile Include="ManagerSubPulse.cs" />
     <Compile Include="Messages\IncomingMessageType.cs" />
     <Compile Include="Messages\OutgoingMessageType.cs" />

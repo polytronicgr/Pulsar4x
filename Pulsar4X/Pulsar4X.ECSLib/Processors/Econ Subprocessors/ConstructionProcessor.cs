@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 
@@ -18,7 +19,7 @@ namespace Pulsar4X.ECSLib
             var pointRates = new Dictionary<ConstructionType, int>(colonyConstruction.ConstructionRates);
             int maxPoints = colonyConstruction.PointsPerTick;
 
-            List<ConstructionJob> constructionJobs = colonyConstruction.JobBatchList;
+            IList<ConstructionJob> constructionJobs = colonyConstruction.JobBatchList;
             foreach (ConstructionJob batchJob in constructionJobs.ToArray())
             {
                 var designInfo = factionInfo.ComponentDesigns[batchJob.ItemGuid].GetDataBlob<ComponentInfoDB>();
@@ -120,7 +121,7 @@ namespace Pulsar4X.ECSLib
             
             var factories = new List<Entity>();
 
-            Dictionary<ConstructionType, int> typeRates = new Dictionary<ConstructionType, int>
+            IDictionary<ConstructionType, int> typeRates = new Dictionary<ConstructionType, int>
             {
                 {ConstructionType.Ordnance, 0},
                 {ConstructionType.Installations, 0},
@@ -129,13 +130,13 @@ namespace Pulsar4X.ECSLib
                 {ConstructionType.Ships, 0},
             };
             var instancesDB = colonyEntity.GetDataBlob<ComponentInstancesDB>();
-            List<KeyValuePair<Entity, PrIwObsList<Entity>>> factoryEntities = instancesDB.SpecificInstances.GetInternalDictionary().Where(item => item.Key.HasDataBlob<ConstructionAtbDB>()).ToList();
+            List<KeyValuePair<Entity, ObservableCollection<Entity>>> factoryEntities = instancesDB.SpecificInstances.Where(item => item.Key.HasDataBlob<ConstructionAtbDB>()).ToList();
             foreach (var factoryDesignList in factoryEntities)
             {
                 foreach (var factoryInstance in factoryDesignList.Value)
                 {
                     //todo check if it's damaged, check if it's enabled, check if there's enough workers here to.
-                    foreach (var item in factoryDesignList.Key.GetDataBlob<ConstructionAtbDB>().InternalConstructionPoints)
+                    foreach (var item in factoryDesignList.Key.GetDataBlob<ConstructionAtbDB>().ConstructionPoints)
                     {
                         typeRates.SafeValueAdd(item.Key, item.Value);
                     }
@@ -143,7 +144,7 @@ namespace Pulsar4X.ECSLib
             }
 
 
-            colonyEntity.GetDataBlob<ColonyConstructionDB>().ConstructionRates = typeRates;
+            colonyEntity.GetDataBlob<ColonyConstructionDB>().ConstructionRates.Merge(typeRates);
             int maxPoints = 0;
             foreach (int p in typeRates.Values)
             {

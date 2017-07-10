@@ -169,7 +169,7 @@ namespace Pulsar4X.ECSLib
                 }
             }
 
-            faction.InternalComponentDesigns.Add(component.Guid,component);
+            faction.ComponentDesigns.Add(component.Guid,component);
             return component;
         }        
     }

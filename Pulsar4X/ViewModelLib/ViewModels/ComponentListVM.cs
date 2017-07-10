@@ -40,7 +40,7 @@ namespace Pulsar4X.ViewModel
             {
                 foreach (var item in e.NewItems)
                 {
-                    KeyValuePair<Entity, PrIwObsList<Entity>> kvp = (KeyValuePair<Entity, PrIwObsList<Entity>>)item;
+                    KeyValuePair<Entity, ObservableCollection<Entity>> kvp = (KeyValuePair<Entity, ObservableCollection<Entity>>)item;
                     var newDesigns = new ComponentSpecificDesignVM(kvp.Key, kvp.Value);
                     Designs.Add(newDesigns);
                 }
@@ -56,7 +56,7 @@ namespace Pulsar4X.ViewModel
         private string _headerText = "";
         public string HeaderText { get { return _headerText; } set { _headerText = value; OnPropertyChanged(); } }
 
-        public ComponentSpecificDesignVM(Entity designEntity, PrIwObsList<Entity> specificInstances)
+        public ComponentSpecificDesignVM(Entity designEntity, ObservableCollection<Entity> specificInstances)
         {
             _designEntity = designEntity;
             specificInstances.CollectionChanged += SpecificInstances_CollectionChanged;

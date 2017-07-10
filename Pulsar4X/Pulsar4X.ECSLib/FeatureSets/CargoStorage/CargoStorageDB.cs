@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.Serialization;
@@ -14,13 +15,13 @@ namespace Pulsar4X.ECSLib
     public class CargoStorageDB : BaseDataBlob
     {
         [JsonProperty]
-        public PrIwObsDict<Guid, long> CargoCapicity { get; private set; } = new PrIwObsDict<Guid, long>();
+        public ObservableDictionary<Guid, long> CargoCapicity { get; private set; } = new ObservableDictionary<Guid, long>();
 
         [JsonProperty]
-        public PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>> StoredEntities { get; private set; } = new PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>>();
+        public ObservableDictionary<Guid, ObservableDictionary<Entity, ObservableCollection<Entity>>> StoredEntities { get; private set; } = new ObservableDictionary<Guid, ObservableDictionary<Entity, ObservableCollection<Entity>>>();
         
         [JsonProperty] //TODO maybe change the ICargoable key to a GUID.
-        public PrIwObsDict<Guid, PrIwObsDict<ICargoable, long>> MinsAndMatsByCargoType { get; private set;} = new PrIwObsDict<Guid, PrIwObsDict<ICargoable, long>>();
+        public ObservableDictionary<Guid, ObservableDictionary<ICargoable, long>> MinsAndMatsByCargoType { get; private set;}= new ObservableDictionary<Guid, ObservableDictionary<ICargoable, long>>();
 
         /// <summary>
         /// in tones per hour?
@@ -45,19 +46,22 @@ namespace Pulsar4X.ECSLib
 
         public CargoStorageDB()
         {
+            CargoCapicity.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(CargoCapicity), args);
+            StoredEntities.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(StoredEntities), args);
+            MinsAndMatsByCargoType.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(MinsAndMatsByCargoType), args);
         }
 
-        public CargoStorageDB(StaticDataStore staticDataStore)
+        public CargoStorageDB(StaticDataStore staticDataStore) : this()
         {
             _staticData = staticDataStore;
             ItemToTypeMap = staticDataStore.StorageTypeMap;
         }
 
-        public CargoStorageDB(CargoStorageDB cargoDB)
+        public CargoStorageDB(CargoStorageDB cargoDB) : this()
         {
-            CargoCapicity = new PrIwObsDict<Guid, long>(cargoDB.CargoCapicity);
-            MinsAndMatsByCargoType = new PrIwObsDict<Guid, PrIwObsDict<ICargoable, long>>(cargoDB.MinsAndMatsByCargoType);
-            StoredEntities = new PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>>(cargoDB.StoredEntities);
+            CargoCapicity.Merge(cargoDB.CargoCapicity);
+            MinsAndMatsByCargoType.Merge(cargoDB.MinsAndMatsByCargoType);
+            StoredEntities.Merge(cargoDB.StoredEntities);
             ItemToTypeMap = cargoDB.ItemToTypeMap; //note that this is not 'new', the dictionary referenced here is static and should be the same dictionary throughout the game.
         
             AmountToTransfer = cargoDB.AmountToTransfer;

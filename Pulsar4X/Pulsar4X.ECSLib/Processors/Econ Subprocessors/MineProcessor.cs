@@ -28,8 +28,8 @@ namespace Pulsar4X.ECSLib
     {
         internal static void MineResources(Entity colonyEntity)
         {
-            Dictionary<Guid, int> mineRates = colonyEntity.GetDataBlob<ColonyMinesDB>().MineingRate;
-            Dictionary<Guid,MineralDepositInfo> planetMinerals = colonyEntity.GetDataBlob<ColonyInfoDB>().PlanetEntity.GetDataBlob<SystemBodyInfoDB>().Minerals;
+            IDictionary<Guid, int> mineRates = colonyEntity.GetDataBlob<ColonyMinesDB>().MiningRate;
+            IDictionary<Guid,MineralDepositInfo> planetMinerals = colonyEntity.GetDataBlob<ColonyInfoDB>().PlanetEntity.GetDataBlob<SystemBodyInfoDB>().Minerals;
             //Dictionary<Guid, int> colonyMineralStockpile = colonyEntity.GetDataBlob<ColonyInfoDB>().MineralStockpile;
             CargoStorageDB stockpile = colonyEntity.GetDataBlob<CargoStorageDB>();
             float mineBonuses = 1;//colonyEntity.GetDataBlob<ColonyBonusesDB>().GetBonus(AbilityType.Mine);
@@ -62,9 +62,9 @@ namespace Pulsar4X.ECSLib
         internal static void CalcMaxRate(Entity colonyEntity)
         {
 
-            Dictionary<Guid,int> rates = new Dictionary<Guid, int>();
+            IDictionary<Guid,int> rates = new Dictionary<Guid, int>();
             var instancesDB = colonyEntity.GetDataBlob<ComponentInstancesDB>();
-            List<KeyValuePair<Entity, ObservableCollection<Entity>>> mineEntities = instancesDB.SpecificInstances.GetInternalDictionary().Where(item => item.Key.HasDataBlob<MineResourcesAtbDB>()).ToList();
+            List<KeyValuePair<Entity, ObservableCollection<Entity>>> mineEntities = instancesDB.SpecificInstances.Where(item => item.Key.HasDataBlob<MineResourcesAtbDB>()).ToList();
             foreach (var mineComponentDesignList in mineEntities)
             {
                 foreach (var mineInstance in mineComponentDesignList.Value)
@@ -76,7 +76,8 @@ namespace Pulsar4X.ECSLib
                     }                    
                 }
             }
-            colonyEntity.GetDataBlob<ColonyMinesDB>().MineingRate = rates;
+            colonyEntity.GetDataBlob<ColonyMinesDB>().MiningRate.Clear();
+            colonyEntity.GetDataBlob<ColonyMinesDB>().MiningRate.Merge(rates);
         }
     }
 }

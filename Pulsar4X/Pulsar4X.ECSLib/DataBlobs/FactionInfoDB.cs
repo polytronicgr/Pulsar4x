@@ -29,77 +29,80 @@ namespace Pulsar4X.ECSLib
     {
         [PublicAPI]
         [JsonProperty]
-        public List<Entity> Species { get; internal set; }
+        public ObservableDictionary<Guid, ObservableCollection<Entity>> KnownJumpPoints => new ObservableDictionary<Guid, ObservableCollection<Entity>>();
 
         [PublicAPI]
         [JsonProperty]
-        public List<Guid> KnownSystems { get; internal set; }
-
-        [PublicAPI]
-        public ReadOnlyDictionary<Guid, List<Entity>> KnownJumpPoints => new ReadOnlyDictionary<Guid, List<Entity>>(InternalKnownJumpPoints);
-        [JsonProperty]
-        internal Dictionary<Guid, List<Entity>> InternalKnownJumpPoints = new Dictionary<Guid, List<Entity>>();
+        public ObservableDictionary<Guid, Entity> ComponentDesigns => new ObservableDictionary<Guid, Entity>();
 
         [PublicAPI]
         [JsonProperty]
-        public List<Entity> KnownFactions { get; internal set; }
-
-
-        [PublicAPI]
-        [JsonProperty]
-        public List<Entity> Colonies { get; internal set; }
+        public ObservableDictionary<Guid, Entity> MissileDesigns => new ObservableDictionary<Guid, Entity>();
 
         [PublicAPI]
         [JsonProperty]
-        public List<Entity> ShipClasses { get; internal set; }
+        public ObservableCollection<Entity> Species { get; internal set; } = new ObservableCollection<Entity>();
 
         [PublicAPI]
-        public ReadOnlyDictionary<Guid, Entity> ComponentDesigns => new ReadOnlyDictionary<Guid, Entity>(InternalComponentDesigns);
         [JsonProperty]
-        internal Dictionary<Guid, Entity> InternalComponentDesigns = new Dictionary<Guid, Entity>();
-
+        public ObservableCollection<Guid> KnownSystems { get; internal set; } = new ObservableCollection<Guid>();
+        
+        [PublicAPI]
+        [JsonProperty]
+        public ObservableCollection<Entity> KnownFactions { get; internal set; } = new ObservableCollection<Entity>();
 
         [PublicAPI]
-        public ReadOnlyDictionary<Guid, Entity> MissileDesigns => new ReadOnlyDictionary<Guid, Entity>(InternalMissileDesigns);
         [JsonProperty]
-        internal Dictionary<Guid, Entity> InternalMissileDesigns = new Dictionary<Guid, Entity>();
+        public ObservableCollection<Entity> Colonies { get; internal set; } = new ObservableCollection<Entity>();
 
-        public FactionInfoDB() : this(new List<Entity>(), new List<Guid>(), new List<Entity>(), new List<Entity>() ) { }
+        [PublicAPI]
+        [JsonProperty]
+        public ObservableCollection<Entity> ShipClasses { get; internal set; } = new ObservableCollection<Entity>();
 
-        public FactionInfoDB(
-            List<Entity> species,
-            List<Guid> knownSystems,
-            List<Entity> colonies,
-            List<Entity> shipClasses)
+        public FactionInfoDB()
         {
-            Species = species;
-            KnownSystems = knownSystems;
-            Colonies = colonies;
-            ShipClasses = shipClasses;
-            KnownFactions = new List<Entity>();
-            InternalComponentDesigns = new Dictionary<Guid, Entity>();
+            KnownJumpPoints.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(KnownJumpPoints), args);
+            ComponentDesigns.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ComponentDesigns), args);
+            MissileDesigns.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(MissileDesigns), args);
+            Species.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Species), args);
+            KnownSystems.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(KnownSystems), args);
+            KnownFactions.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(KnownFactions), args);
+            Colonies.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Colonies), args);
+            ShipClasses.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ShipClasses), args);
         }
         
 
-        public FactionInfoDB(FactionInfoDB factionDB)
+        public FactionInfoDB(FactionInfoDB factionDB) : this()
         {
-            Species = new List<Entity>(factionDB.Species);
-            KnownSystems = new List<Guid>(factionDB.KnownSystems);
-            KnownFactions = new List<Entity>(factionDB.KnownFactions);
-            Colonies = new List<Entity>(factionDB.Colonies);
-            ShipClasses = new List<Entity>(factionDB.ShipClasses);
+            KnownJumpPoints.Merge(factionDB.KnownJumpPoints);
+            ComponentDesigns.Merge(factionDB.ComponentDesigns);
+            MissileDesigns.Merge(factionDB.MissileDesigns);
 
+            foreach (Entity value in factionDB.Species)
+            {
+                Species.Add(value);
+            }
+            foreach (Guid value in factionDB.KnownSystems)
+            {
+                KnownSystems.Add(value);
+            }
+            foreach (Entity value in factionDB.KnownFactions)
+            {
+                KnownFactions.Add(value);
+            }
+            foreach (Entity value in factionDB.Colonies)
+            {
+                Colonies.Add(value);
+            }
+            foreach (Entity value in factionDB.ShipClasses)
+            {
+                ShipClasses.Add(value);
+            }
         }
 
         public override object Clone()
         {
             return new FactionInfoDB(this);
-        }
-
-        [OnDeserialized]
-        public void OnDeserialized(StreamingContext context)
-        {
-            ((Game)context.Context).PostLoad += (sender, args) => { };
         }
     }
 }

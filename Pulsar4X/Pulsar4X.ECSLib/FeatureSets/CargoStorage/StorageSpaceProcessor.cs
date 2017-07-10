@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -45,7 +46,7 @@ namespace Pulsar4X.ECSLib
             {
                 foreach (var kvp in fromCargo.StoredEntities[typeID])
                 {
-                    entityList.AddRange(kvp.Value.GetInternalList());
+                    entityList.AddRange(kvp.Value);
                 }
             }
             return entityList;
@@ -92,7 +93,7 @@ namespace Pulsar4X.ECSLib
         public static Dictionary<ICargoable, long> GetResourcesOfCargoType(CargoStorageDB fromCargo, Guid typeID)
         {
             if (fromCargo.MinsAndMatsByCargoType.ContainsKey(typeID))
-                return new Dictionary<ICargoable, long>(fromCargo.MinsAndMatsByCargoType[typeID].GetInternalDictionary());
+                return new Dictionary<ICargoable, long>(fromCargo.MinsAndMatsByCargoType[typeID]);
             return new Dictionary<ICargoable, long>();
         }
 
@@ -106,7 +107,7 @@ namespace Pulsar4X.ECSLib
             Guid cargoTypeID = toCargo.ItemToTypeMap[item.ID];
             if (!toCargo.MinsAndMatsByCargoType.ContainsKey(cargoTypeID))
             {
-                toCargo.MinsAndMatsByCargoType.Add(cargoTypeID, new PrIwObsDict<ICargoable, long>());             
+                toCargo.MinsAndMatsByCargoType.Add(cargoTypeID, new ObservableDictionary<ICargoable, long>());
             }
             if (!toCargo.MinsAndMatsByCargoType[cargoTypeID].ContainsKey(item))
             {
@@ -267,9 +268,9 @@ namespace Pulsar4X.ECSLib
                 new Exception("entityItem does not contain ComponentInstanceInfoDB, it must be an componentInstance type entity");
             Entity design = entityItem.GetDataBlob<ComponentInstanceInfoDB>().DesignEntity;
             if (!toCargo.StoredEntities.ContainsKey(cargotypedb.CargoTypeID))
-                toCargo.StoredEntities.Add(cargotypedb.CargoTypeID, new PrIwObsDict<Entity, PrIwObsList<Entity>>());
+                toCargo.StoredEntities.Add(cargotypedb.CargoTypeID, new ObservableDictionary<Entity, ObservableCollection<Entity>>());
             if (!toCargo.StoredEntities[cargotypedb.CargoTypeID].ContainsKey(design))
-                toCargo.StoredEntities[cargotypedb.CargoTypeID].Add(design, new PrIwObsList<Entity>());
+                toCargo.StoredEntities[cargotypedb.CargoTypeID].Add(design, new ObservableCollection<Entity>());
             toCargo.StoredEntities[cargotypedb.CargoTypeID][design].Add(entityItem);
         }
 
@@ -293,20 +294,20 @@ namespace Pulsar4X.ECSLib
             return net;
         }
 
-        private static long StoredWeight(PrIwObsDict<Guid, PrIwObsDict<ICargoable, long>> dict, Guid TypeID)
-        {
+        private static long StoredWeight(ObservableDictionary<Guid, ObservableDictionary<ICargoable, long>> dict, Guid typeID)
+    {
             long storedWeight = 0;
-            foreach (var amount in dict[TypeID].Values.ToArray())
+            foreach (var amount in dict[typeID].Values.ToArray())
             {
                 storedWeight += amount;
             }
             return storedWeight;
         }
 
-        private static long StoredWeight(PrIwObsDict<Guid, PrIwObsDict<Entity, PrIwObsList<Entity>>> dict, Guid TypeID)
+        private static long StoredWeight(ObservableDictionary<Guid, ObservableDictionary<Entity, ObservableCollection<Entity>>> dict, Guid typeID)
         {
             double storedWeight = 0;
-            foreach (var itemType in dict[TypeID])
+            foreach (var itemType in dict[typeID])
             {
                 foreach (var designInstanceKVP in itemType.Value)
                 {
@@ -335,9 +336,9 @@ namespace Pulsar4X.ECSLib
         internal static void ReCalcCapacity(Entity parentEntity)
         {
             CargoStorageDB storageDB = parentEntity.GetDataBlob<CargoStorageDB>();
-            PrIwObsDict<Guid, long> totalSpace = storageDB.CargoCapicity;
+            ObservableDictionary<Guid, long> totalSpace = storageDB.CargoCapicity;
 
-            List<KeyValuePair<Entity, PrIwObsList<Entity>>> StorageComponents = parentEntity.GetDataBlob<ComponentInstancesDB>().SpecificInstances.GetInternalDictionary().Where(item => item.Key.HasDataBlob<CargoStorageAtbDB>()).ToList();
+            List<KeyValuePair<Entity, ObservableCollection<Entity>>> StorageComponents = parentEntity.GetDataBlob<ComponentInstancesDB>().SpecificInstances.Where(item => item.Key.HasDataBlob<CargoStorageAtbDB>()).ToList();
             foreach (var kvp in StorageComponents)
             {
                 Entity componentDesign = kvp.Key;
@@ -353,7 +354,7 @@ namespace Pulsar4X.ECSLib
                 {
                     totalSpace.Add(cargoTypeID, alowableSpace);
                     if (!storageDB.MinsAndMatsByCargoType.ContainsKey(cargoTypeID))
-                        storageDB.MinsAndMatsByCargoType.Add(cargoTypeID, new PrIwObsDict<ICargoable, long>());                                              
+                        storageDB.MinsAndMatsByCargoType.Add(cargoTypeID, new ObservableDictionary<ICargoable, long>());                                       
                 }
                 else if (totalSpace[cargoTypeID] != alowableSpace)
                 {

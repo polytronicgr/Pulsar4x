@@ -74,7 +74,6 @@ namespace Pulsar4X.ECSLib
         private float _radiationLevel;
         private float _atmosphericDust;
         private bool _supportsPopulations;
-        private List<Entity> _colonies;
         private TimeSpan _lengthOfDay;
         private double _gravity;
 
@@ -146,18 +145,6 @@ namespace Pulsar4X.ECSLib
         public bool SupportsPopulations { get { return _supportsPopulations; } internal set { SetField(ref _supportsPopulations, value);; } }
 
         /// <summary>
-        /// List of Colonies that reside on this body.
-        /// </summary>
-        /// <remarks>
-        /// TODO: Entity Review
-        /// We may want to remove this list and use PositionDB to link colonies to bodies.
-        /// NOTE: Not currently used?
-        /// </remarks>
-        [PublicAPI]
-        [JsonProperty]
-        public List<Entity> Colonies { get { return _colonies; } internal set { SetField(ref _colonies, value);; } }
-
-        /// <summary>
         /// Length of day for this body. Mostly fluff.
         /// </summary>
         [PublicAPI]
@@ -170,22 +157,21 @@ namespace Pulsar4X.ECSLib
         [PublicAPI]
         [JsonProperty]
         public double Gravity { get { return _gravity; } internal set { SetField(ref _gravity, value);; } }
-
-
+        
         /// <summary>
         /// Stores the amount of the variopus minerials. the guid can be used to lookup the
         /// minerial definition (MineralSD) from the StaticDataStore.
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public Dictionary<Guid, MineralDepositInfo> Minerals { get; internal set; }
+        public ObservableDictionary<Guid, MineralDepositInfo> Minerals { get; internal set; } = new ObservableDictionary<Guid, MineralDepositInfo>();
 
         public SystemBodyInfoDB()
         {
-            Minerals = new Dictionary<Guid, MineralDepositInfo>();
+            Minerals.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Minerals), args);
         }
 
-        public SystemBodyInfoDB(SystemBodyInfoDB systemBodyDB)
+        public SystemBodyInfoDB(SystemBodyInfoDB systemBodyDB) : this()
         {
             BodyType = systemBodyDB.BodyType;
             Tectonics = systemBodyDB.Tectonics;
@@ -197,7 +183,7 @@ namespace Pulsar4X.ECSLib
             SupportsPopulations = systemBodyDB.SupportsPopulations;
             LengthOfDay = systemBodyDB.LengthOfDay;
             Gravity = systemBodyDB.Gravity;
-            Minerals = new Dictionary<Guid, MineralDepositInfo>(systemBodyDB.Minerals);
+            Minerals.Merge(systemBodyDB.Minerals);
         }
 
         public override object Clone()
