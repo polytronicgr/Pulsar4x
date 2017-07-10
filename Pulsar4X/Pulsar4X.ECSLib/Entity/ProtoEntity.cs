@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,34 @@ using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
+    public class EntityEventArgs
+    {
+        #region Types
+        public enum EntityEventType
+        {
+            EntityCreated,      // Entity was freshly created.
+            EntityDestroyed,    // Entity has been destroyed and is no longer valid.
+            EntityMovedIn,      // Entity moved into an EntityManager from another.
+            EntityMovedOut      // Entity moved out of an EntityManager to another.
+        }
+        #endregion
+
+        #region Fields
+        public Guid EntityGuid;
+        public EntityEventType Type;
+        #endregion
+
+        #region Constructors
+        public EntityEventArgs(EntityEventType type, Guid entityGuid)
+        {
+            Type = type;
+            EntityGuid = entityGuid;
+        }
+        #endregion
+    }
+
+    public delegate void EntityEventHandler(object sender, EntityEventArgs args);
+
     /// <summary>
     /// A ProtoEntity is an entity that is not stored in an EntityManager.
     /// It holds its own datablobs and provides all other functionality (but not performance) of the EntityManager.
@@ -94,6 +123,10 @@ namespace Pulsar4X.ECSLib
         public ComparableBitArray DataBlobMask => _protectedDataBlobMask_;
         #endregion
 
+        #region Events
+        public event EntityEventHandler EntityDestroyed;
+        #endregion
+
         #region Interfaces, Overrides, and Operators
         [PublicAPI]
         public virtual T GetDataBlob<T>()
@@ -135,6 +168,14 @@ namespace Pulsar4X.ECSLib
         {
             DataBlobs[typeIndex] = null;
             _protectedDataBlobMask_[typeIndex] = false;
+        }
+
+        [PublicAPI]
+        public virtual void Destroy()
+        {
+            _protectedDataBlobMask_ = EntityManager.BlankDataBlobMask();
+            EntityDestroyed?.Invoke(this, new EntityEventArgs(EntityEventArgs.EntityEventType.EntityDestroyed, Guid));
+            EntityDestroyed = null; // Remove any handlers.
         }
         #endregion
 

@@ -142,6 +142,7 @@ namespace Pulsar4X.ECSLib
                     SetDataBlob(dataBlob);
                 }
             }
+            Manager.OnEntityCreated(this);
         }
 
         internal Entity([NotNull] EntityManager manager, [NotNull] ProtoEntity protoEntity) : this(manager, protoEntity.Guid, protoEntity.DataBlobs) { }
@@ -181,6 +182,7 @@ namespace Pulsar4X.ECSLib
 
             // Add myself the the new manager.
             ID = newManager.SetupEntity(this);
+            EntityManager oldManager = Manager;
             Manager = newManager;
             _protectedDataBlobMask_ = Manager.EntityMasks[ID];
 
@@ -188,6 +190,8 @@ namespace Pulsar4X.ECSLib
             {
                 SetDataBlob(dataBlob);
             }
+            oldManager.OnEntityMoved(this);
+            Manager.OnEntityMoved(this);
         }
         #endregion
 
@@ -215,8 +219,11 @@ namespace Pulsar4X.ECSLib
 
         public static Entity Create(EntityManager manager, ProtoEntity protoEntity) => new Entity(manager, protoEntity.Guid, protoEntity.DataBlobs);
 
+        /// <summary>
+        /// Destroys this entity. SHould be called when entity is no longer needed.
+        /// </summary>
         [PublicAPI]
-        public void Destroy()
+        public override void Destroy()
         {
             if (!IsValid)
             {
@@ -226,6 +233,7 @@ namespace Pulsar4X.ECSLib
             Manager.RemoveEntity(this);
             Manager = InvalidManager;
             _protectedDataBlobMask_ = EntityManager.BlankDataBlobMask();
+            base.Destroy();
         }
 
         /// <summary>

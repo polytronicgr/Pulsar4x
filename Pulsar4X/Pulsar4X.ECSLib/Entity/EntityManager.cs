@@ -70,6 +70,11 @@ namespace Pulsar4X.ECSLib
         public ManagerSubPulse ManagerSubpulses { get; private set; }
         #endregion
 
+        #region Events
+        public EntityEventHandler EntityCreated;
+        public EntityEventHandler EntityMoved;
+        #endregion
+
         #region Constructors
         internal EntityManager(Game game, bool isGlobalManager = false)
         {
@@ -293,6 +298,29 @@ namespace Pulsar4X.ECSLib
             _dataBlobMap[typeIndex][entityID].OwningEntity = null;
             _dataBlobMap[typeIndex][entityID] = null;
             EntityMasks[entityID][typeIndex] = false;
+        }
+
+        /// <summary>
+        /// This should ONLY be called from Entity.cs
+        /// </summary>
+        internal void OnEntityCreated(Entity entity)
+        {
+            EntityCreated?.Invoke(this, new EntityEventArgs(EntityEventArgs.EntityEventType.EntityCreated, entity.Guid));
+        }
+
+        /// <summary>
+        /// This should ONLY be called from Entity.cs
+        /// </summary>
+        internal void OnEntityMoved(Entity entity)
+        {
+            if (_localEntityDictionary.ContainsKey(entity.Guid))
+            {
+                EntityMoved?.Invoke(this, new EntityEventArgs(EntityEventArgs.EntityEventType.EntityMovedIn, entity.Guid));
+            }
+            else
+            {
+                EntityMoved?.Invoke(this, new EntityEventArgs(EntityEventArgs.EntityEventType.EntityMovedOut, entity.Guid));
+            }
         }
         #endregion
 
