@@ -17,44 +17,43 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
-
     public class ComponentInstanceInfoDB : BaseDataBlob
     {
-        private Entity _parentEntity;
-        private Entity _designEntity;
-        private bool _isEnabled;
+        #region Fields
         private PercentValue _componentLoadPercent;
+        private Entity _designEntity;
         private int _htkRemaining;
-        private readonly int _htkMax;
+        private bool _isEnabled;
+        private Entity _parentEntity;
+        #endregion
+
+        #region Properties
+        [JsonProperty]
+        public Entity ParentEntity { get { return _parentEntity; } set { SetField(ref _parentEntity, value); } }
 
         [JsonProperty]
-        public Entity ParentEntity { get { return _parentEntity; } internal set { SetField(ref _parentEntity, value); } }
+        public Entity DesignEntity { get { return _designEntity; } set { SetField(ref _designEntity, value); } }
 
         [JsonProperty]
-        public Entity DesignEntity { get { return _designEntity; } internal set { SetField(ref _designEntity, value); } }
+        public bool IsEnabled { get { return _isEnabled; } set { SetField(ref _isEnabled, value); } }
 
         [JsonProperty]
-        public bool IsEnabled { get { return _isEnabled; } internal set { SetField(ref _isEnabled, value); } }
+        public PercentValue ComponentLoadPercent { get { return _componentLoadPercent; } set { SetField(ref _componentLoadPercent, value); } }
 
         [JsonProperty]
-        public PercentValue ComponentLoadPercent { get { return _componentLoadPercent; } internal set { SetField(ref _componentLoadPercent, value); } }
+        public int HTKRemaining { get { return _htkRemaining; } set { SetField(ref _htkRemaining, value); } }
 
         [JsonProperty]
-        public int HTKRemaining { get { return _htkRemaining; } internal set { SetField(ref _htkRemaining, value); } }
+        public int HTKMax { get; }
+        #endregion
 
-        [JsonProperty]
-        public int HTKMax { get { return _htkMax; } }
-
-
+        #region Constructors
         public ComponentInstanceInfoDB() { }
 
         /// <summary>
@@ -67,14 +66,16 @@ namespace Pulsar4X.ECSLib
         {
             if (designEntity.HasDataBlob<ComponentInfoDB>())
             {
-                ComponentInfoDB componentInfo = designEntity.GetDataBlob<ComponentInfoDB>();
+                var componentInfo = designEntity.GetDataBlob<ComponentInfoDB>();
                 DesignEntity = designEntity;
                 IsEnabled = isEnabled;
                 HTKRemaining = componentInfo.HTK;
-                _htkMax = componentInfo.HTK;
+                HTKMax = componentInfo.HTK;
             }
             else
+            {
                 throw new Exception("designEntity Must contain a ComponentInfoDB");
+            }
         }
 
 
@@ -84,16 +85,16 @@ namespace Pulsar4X.ECSLib
             IsEnabled = instance.IsEnabled;
             ComponentLoadPercent = instance.ComponentLoadPercent;
             HTKRemaining = instance.HTKRemaining;
-            _htkMax = instance.HTKMax;
-
+            HTKMax = instance.HTKMax;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new ComponentInstanceInfoDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new ComponentInstanceInfoDB(this);
+        #endregion
 
-        public float HealthPercent()
-        { return HTKRemaining / HTKMax; }
+        #region Public Methods
+        public float HealthPercent() => HTKRemaining / HTKMax;
+        #endregion
     }
 }

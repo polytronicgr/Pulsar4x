@@ -17,38 +17,32 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     public class FormationDB : TreeHierarchyDB
     {
+        #region Fields
         private Entity _commandingOfficer;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// The Commander of this Formation (or ship if it is a single ship)
         /// </summary>
-        public Entity CommandingOfficer { get { return _commandingOfficer; } internal set { SetField(ref _commandingOfficer, value); } }
+        public Entity CommandingOfficer { get { return _commandingOfficer; } set { SetField(ref _commandingOfficer, value); } }
+        #endregion
 
-        public FormationDB() 
-            : base(null)
-        {
-            
-        }
+        #region Constructors
+        public FormationDB() : base(null) { }
 
-        public FormationDB(Entity parent)
-            : base(parent)
-        {
-            
-        }
+        public FormationDB(Entity parent) : base(parent) { }
 
-        public FormationDB(FormationDB toCopy)
-            : base(toCopy.Parent)
-        {
-            CommandingOfficer = toCopy.CommandingOfficer;
-        }
+        public FormationDB(FormationDB toCopy) : base(toCopy.Parent) { CommandingOfficer = toCopy.CommandingOfficer; }
+        #endregion
 
-        public override object Clone()
-        {
-            return new FormationDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new FormationDB(this);
+        #endregion
     }
 }

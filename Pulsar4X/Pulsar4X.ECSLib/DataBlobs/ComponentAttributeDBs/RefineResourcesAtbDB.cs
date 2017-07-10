@@ -17,27 +17,31 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class RefineResourcesAtbDB : BaseDataBlob
     {
+        #region Fields
         private List<Guid> _refinableMatsList;
         private int _refineryPoints;
+        #endregion
+
+        #region Properties
+        [JsonProperty]
+        public List<Guid> RefinableMatsList { get { return _refinableMatsList; } set { SetField(ref _refinableMatsList, value); } }
 
         [JsonProperty]
-        public List<Guid> RefinableMatsList { get { return _refinableMatsList; } internal set { SetField(ref _refinableMatsList, value); } }
+        public int RefineryPoints { get { return _refineryPoints; } set { SetField(ref _refineryPoints, value); } }
+        #endregion
 
-        [JsonProperty]
-        public int RefineryPoints { get { return _refineryPoints; } internal set { SetField(ref _refineryPoints, value); } }
-
-        public RefineResourcesAtbDB()
-        {
-        }
+        #region Constructors
+        public RefineResourcesAtbDB() { }
 
         /// <summary>
         /// this is for the parser, it takes a dictionary but turns it into a list of keys, ignoring the values.
@@ -61,10 +65,10 @@ namespace Pulsar4X.ECSLib
             RefinableMatsList = new List<Guid>(db.RefinableMatsList);
             RefineryPoints = db.RefineryPoints;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new RefineResourcesAtbDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new RefineResourcesAtbDB(this);
+        #endregion
     }
 }

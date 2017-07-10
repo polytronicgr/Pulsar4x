@@ -17,17 +17,23 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class MSPCapacityAtbDB : BaseDataBlob
     {
+        #region Fields
         private int _mspCapacity;
+        #endregion
 
+        #region Properties
         [JsonProperty]
-        public int MSPCapacity { get { return _mspCapacity; } internal set { SetField(ref _mspCapacity, value); } }
+        public int MSPCapacity { get { return _mspCapacity; } set { SetField(ref _mspCapacity, value); } }
+        #endregion
 
+        #region Constructors
         public MSPCapacityAtbDB(double mspCapacity) : this((int)mspCapacity) { }
 
         [JsonConstructor]
@@ -35,10 +41,10 @@ namespace Pulsar4X.ECSLib
         {
             MSPCapacity = mspCapacity;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new MSPCapacityAtbDB(MSPCapacity);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new MSPCapacityAtbDB(MSPCapacity);
+        #endregion
     }
 }

@@ -17,25 +17,28 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pulsar4X.ECSLib
 {
     public class FireControlInstanceAbilityDB : BaseDataBlob
     {
-        private Entity _target;
+        #region Fields
         private List<Entity> _assignedWeapons = new List<Entity>();
-        private bool _isEngaging = false;
+        private bool _isEngaging;
+        private Entity _target;
+        #endregion
+
+        #region Properties
         public Entity Target { get { return _target; } set { SetField(ref _target, value); } }
 
-        public List<Entity> AssignedWeapons { get { return _assignedWeapons; } internal set { SetField(ref _assignedWeapons, value); } }
+        public List<Entity> AssignedWeapons { get { return _assignedWeapons; } set { SetField(ref _assignedWeapons, value); } }
 
-        public bool IsEngaging { get { return _isEngaging; } internal set { SetField(ref _isEngaging, value); } }
+        public bool IsEngaging { get { return _isEngaging; } set { SetField(ref _isEngaging, value); } }
+        #endregion
 
+        #region Constructors
         public FireControlInstanceAbilityDB() { }
 
         public FireControlInstanceAbilityDB(FireControlInstanceAbilityDB db)
@@ -44,10 +47,10 @@ namespace Pulsar4X.ECSLib
             AssignedWeapons = new List<Entity>(db.AssignedWeapons);
             IsEngaging = db.IsEngaging;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new FireControlInstanceAbilityDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new FireControlInstanceAbilityDB(this);
+        #endregion
     }
 }

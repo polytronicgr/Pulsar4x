@@ -17,31 +17,32 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using System;
 
 namespace Pulsar4X.ECSLib
 {
     public class JumpPointStabilizationAtbDB : BaseDataBlob
     {
+        #region Fields
         private int _stabilizationTime;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Number of days to stabilize a jump point
         /// </summary>
-        public int StabilizationTime { get { return _stabilizationTime; } internal set { SetField(ref _stabilizationTime, value); } }
+        public int StabilizationTime { get { return _stabilizationTime; } set { SetField(ref _stabilizationTime, value); } }
+        #endregion
 
+        #region Constructors
         public JumpPointStabilizationAtbDB() { }
 
         public JumpPointStabilizationAtbDB(double stabilizationTime) : this((int)stabilizationTime) { }
 
-        public JumpPointStabilizationAtbDB(int stabilizationTime)
-        {
-            StabilizationTime = stabilizationTime;
-        }
+        public JumpPointStabilizationAtbDB(int stabilizationTime) { StabilizationTime = stabilizationTime; }
+        #endregion
 
-        public override object Clone()
-        {
-            return new JumpPointStabilizationAtbDB(StabilizationTime);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new JumpPointStabilizationAtbDB(StabilizationTime);
+        #endregion
     }
 }

@@ -17,31 +17,42 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     [JsonObject(MemberSerialization.OptIn)]
     public abstract class BaseDataBlob : ICloneable, INotifyPropertyChanged, INotifySubCollectionChanged
     {
-        [NotNull]
-        public virtual Entity OwningEntity { get { return _owningEntity; } internal set { SetField(ref _owningEntity, value); } }
+        #region Fields
         private Entity _owningEntity = Entity.InvalidEntity;
+        #endregion
 
-        public abstract object Clone();
+        #region Properties
+        [NotNull]
+        public virtual Entity OwningEntity { get { return _owningEntity; } set { SetField(ref _owningEntity, value); } }
+        #endregion
 
+        #region Events
         public event PropertyChangedEventHandler PropertyChanged;
         public event SubCollectionChangedEventHandler SubCollectionChanged;
+        #endregion
 
+        #region Interfaces, Overrides, and Operators
+        public abstract object Clone();
+        #endregion
+
+        #region Public Methods
         /// <summary>
         /// Sets the field's value while firing PropertyChanged events.
         /// </summary>
-        /// <remarks>        
+        /// <remarks>
         /// This function reduces (but not eliminates) the amount of boilerplate code for INotifyPropertyChanged in every other datablob.
         /// </remarks>
         /// <typeparam name="T">Type of field value</typeparam>
@@ -63,6 +74,7 @@ namespace Pulsar4X.ECSLib
             // Fire the PropertyChanged event.
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
 
         /// <summary>
         /// Allows derived classes to fire the SubCollectionChanged event.

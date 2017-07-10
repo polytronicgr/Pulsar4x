@@ -17,24 +17,30 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using System;
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class PowerGeneratorAtbDB : BaseDataBlob
     {
+        #region Fields
         private float _powerOutput;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// PowerOutput per second
         /// </summary>
         [JsonProperty]
-        public float PowerOutput { get { return _powerOutput; } internal set { SetField(ref _powerOutput, value); } }
+        public float PowerOutput { get { return _powerOutput; } set { SetField(ref _powerOutput, value); } }
+        #endregion
 
-        public override object Clone()
-        {
-            return new PowerGeneratorAtbDB {PowerOutput = PowerOutput};
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new PowerGeneratorAtbDB
+                                          {
+                                              PowerOutput = PowerOutput
+                                          };
+        #endregion
     }
 }

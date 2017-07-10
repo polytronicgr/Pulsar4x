@@ -17,31 +17,37 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class ActiveSensorAtbDB : BaseDataBlob
     {
-        private int _gravSensorStrength;
+        #region Fields
         private int _emSensitivity;
-        private int _resolution;
+        private int _gravSensorStrength;
         private bool _isSearchSensor;
+        private int _resolution;
+        #endregion
+
+        #region Properties
+        [JsonProperty]
+        public int GravSensorStrength { get { return _gravSensorStrength; } set { SetField(ref _gravSensorStrength, value); } }
 
         [JsonProperty]
-        public int GravSensorStrength { get { return _gravSensorStrength; } internal set { SetField(ref _gravSensorStrength, value); } }
+        public int EMSensitivity { get { return _emSensitivity; } set { SetField(ref _emSensitivity, value); } }
 
         [JsonProperty]
-        public int EMSensitivity { get { return _emSensitivity; } internal set { SetField(ref _emSensitivity, value); } }
+        public int Resolution { get { return _resolution; } set { SetField(ref _resolution, value); } }
 
         [JsonProperty]
-        public int Resolution { get { return _resolution; } internal set { SetField(ref _resolution, value); } }
-
-        [JsonProperty]
-        public bool IsSearchSensor { get { return _isSearchSensor; } internal set { SetField(ref _isSearchSensor, value); } }
+        public bool IsSearchSensor { get { return _isSearchSensor; } set { SetField(ref _isSearchSensor, value); } }
 
         public bool IsTrackingSensor => !IsSearchSensor;
-        
+        #endregion
+
+        #region Constructors
         [JsonConstructor]
         public ActiveSensorAtbDB(int gravStrength = 0, int emSensitivity = 0, int resolution = 0, bool isSearchSensor = true)
         {
@@ -50,12 +56,17 @@ namespace Pulsar4X.ECSLib
             Resolution = resolution;
             IsSearchSensor = isSearchSensor;
         }
+        #endregion
 
+        #region Interfaces, Overrides, and Operators
         public override object Clone() => new ActiveSensorAtbDB(GravSensorStrength, EMSensitivity, Resolution, IsSearchSensor);
+        #endregion
     }
 
     public class ActiveSensorStateInfo
     {
-        public Entity Target { get; internal set; } = Entity.InvalidEntity;
+        #region Properties
+        public Entity Target { get; set; } = Entity.InvalidEntity;
+        #endregion
     }
 }

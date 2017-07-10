@@ -17,29 +17,32 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class ElectronicDACAtbDB : BaseDataBlob
     {
+        #region Fields
         private int _electronicDamageChance;
+        #endregion
 
+        #region Properties
         [JsonProperty]
-        public int ElectronicDamageChance { get { return _electronicDamageChance; } internal set { SetField(ref _electronicDamageChance, value); } }
+        public int ElectronicDamageChance { get { return _electronicDamageChance; } set { SetField(ref _electronicDamageChance, value); } }
+        #endregion
 
+        #region Constructors
         public ElectronicDACAtbDB() { }
 
         public ElectronicDACAtbDB(double electronicDamageChance) : this((int)electronicDamageChance) { }
 
-        public ElectronicDACAtbDB(int electronicDamageChance)
-        {
-            ElectronicDamageChance = electronicDamageChance;
-        }
+        public ElectronicDACAtbDB(int electronicDamageChance) { ElectronicDamageChance = electronicDamageChance; }
+        #endregion
 
-        public override object Clone()
-        {
-            return new ElectronicDACAtbDB(ElectronicDamageChance);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new ElectronicDACAtbDB(ElectronicDamageChance);
+        #endregion
     }
 }

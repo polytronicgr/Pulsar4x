@@ -17,33 +17,32 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pulsar4X.ECSLib
 {
     public class NewtonBalisticDB : BaseDataBlob
     {
+        #region Fields
+        private DateTime _collisionDate;
         private Vector4 _currentSpeed;
         private Guid _targetGuid;
-        private DateTime _collisionDate;
+        #endregion
 
+        #region Properties
         public Vector4 CurrentSpeed { get { return _currentSpeed; } set { SetField(ref _currentSpeed, value); } }
         public Guid TargetGuid { get { return _targetGuid; } set { SetField(ref _targetGuid, value); } }
         public DateTime CollisionDate { get { return _collisionDate; } set { SetField(ref _collisionDate, value); } }
-        
+        #endregion
+
+        #region Constructors
         /// <summary>
         /// necessary for serializer
         /// </summary>
-        public NewtonBalisticDB()
-        {
+        public NewtonBalisticDB() { }
 
-        }
-
-        public NewtonBalisticDB(Guid TgtGuid,DateTime cDate)
+        public NewtonBalisticDB(Guid TgtGuid, DateTime cDate)
         {
             TargetGuid = TgtGuid;
             CollisionDate = cDate;
@@ -56,10 +55,10 @@ namespace Pulsar4X.ECSLib
             TargetGuid = db.TargetGuid;
             CollisionDate = db.CollisionDate;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new NewtonBalisticDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new NewtonBalisticDB(this);
+        #endregion
     }
 }

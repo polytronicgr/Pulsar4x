@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     /// <summary>
@@ -24,21 +25,22 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class PowerDB : BaseDataBlob
     {
+        #region Fields
         private double _totalPowerOutput;
+        #endregion
+
+        #region Properties
         public double TotalPowerOutput { get { return _totalPowerOutput; } set { SetField(ref _totalPowerOutput, value); } }
+        #endregion
 
-        public PowerDB()
-        {
-        }
+        #region Constructors
+        public PowerDB() { }
 
-        public PowerDB(PowerDB powerDB)
-        {
-            TotalPowerOutput = powerDB.TotalPowerOutput;
-        }
+        public PowerDB(PowerDB powerDB) { TotalPowerOutput = powerDB.TotalPowerOutput; }
+        #endregion
 
-        public override object Clone()
-        {
-            return new PowerDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new PowerDB(this);
+        #endregion
     }
 }

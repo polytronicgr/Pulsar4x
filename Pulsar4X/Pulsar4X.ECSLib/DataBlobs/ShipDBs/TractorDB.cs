@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,13 +25,16 @@ using System.Collections.ObjectModel;
 namespace Pulsar4X.ECSLib
 {
     /// <summary>
-    /// This datablob contains information on a ships ability to tractor other ships 
+    /// This datablob contains information on a ships ability to tractor other ships
     /// and references to any ships it has tractored.
     /// </summary>
     public class TractorDB : BaseDataBlob
     {
+        #region Fields
         private int _noOfTractors;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// The number of tractors this ship has, which will determine how many ships it can tractor at once (1 ship per tractor)
         /// Will be 0 by default.
@@ -38,11 +42,10 @@ namespace Pulsar4X.ECSLib
         public int NoOfTractors { get { return _noOfTractors; } set { SetField(ref _noOfTractors, value); } }
 
         public ObservableCollection<Guid> TractoredShips { get; set; } = new ObservableCollection<Guid>();
+        #endregion
 
-        public TractorDB()
-        {
-            TractoredShips.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(TractoredShips), args);
-        }
+        #region Constructors
+        public TractorDB() { TractoredShips.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(TractoredShips), args); }
 
         public TractorDB(int noOfTractors, IEnumerable<Guid> tractoredShips) : this()
         {
@@ -57,10 +60,10 @@ namespace Pulsar4X.ECSLib
         }
 
         public TractorDB(TractorDB tractorDB) : this(tractorDB.NoOfTractors, tractorDB.TractoredShips) { }
+        #endregion
 
-        public override object Clone()
-        {
-            return new TractorDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new TractorDB(this);
+        #endregion
     }
 }

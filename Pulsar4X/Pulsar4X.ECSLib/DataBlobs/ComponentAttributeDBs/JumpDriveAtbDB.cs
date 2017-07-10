@@ -17,29 +17,35 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     public class JumpDriveAtbDB : BaseDataBlob
     {
+        #region Fields
+        private int _maxDisplacement;
         private int _maxShipSize;
         private int _maxSquadronSize;
+        #endregion
 
-        public int MaxShipSize { get { return _maxShipSize; } internal set { SetField(ref _maxShipSize, value); } }
-        public int MaxSquadronSize { get { return _maxSquadronSize; } internal set { SetField(ref _maxSquadronSize, value); } }
+        #region Properties
+        public int MaxShipSize { get { return _maxShipSize; } set { SetField(ref _maxShipSize, value); } }
+        public int MaxSquadronSize { get { return _maxSquadronSize; } set { SetField(ref _maxSquadronSize, value); } }
+
         /// <summary>
         /// Max distance from JP when arriving. Measured in KM
         /// </summary>
-        public int MaxDisplacement { get; internal set; }
+        public int MaxDisplacement { get { return _maxDisplacement; } set { SetField(ref _maxDisplacement, value); } }
+        #endregion
 
-        public override object Clone()
-        {
-            return new JumpDriveAtbDB
-            {
-                MaxShipSize = MaxShipSize,
-                MaxSquadronSize = MaxSquadronSize,
-                MaxDisplacement = MaxDisplacement,
-                OwningEntity = OwningEntity
-            };
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new JumpDriveAtbDB
+                                          {
+                                              MaxShipSize = MaxShipSize,
+                                              MaxSquadronSize = MaxSquadronSize,
+                                              MaxDisplacement = MaxDisplacement,
+                                              OwningEntity = OwningEntity
+                                          };
+        #endregion
     }
 }

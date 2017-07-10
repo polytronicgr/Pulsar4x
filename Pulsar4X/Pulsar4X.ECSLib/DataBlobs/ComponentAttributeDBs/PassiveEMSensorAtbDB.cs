@@ -17,16 +17,25 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     public class PassiveEMSensorAtbDB : BaseDataBlob
     {
+        #region Fields
         private int _emSensitivity;
-        public int EMSensitivity { get { return _emSensitivity; } internal set { SetField(ref _emSensitivity, value); } }
+        #endregion
 
-        public override object Clone()
-        {
-            return new PassiveEMSensorAtbDB {EMSensitivity = EMSensitivity, OwningEntity = OwningEntity};
-        }
+        #region Properties
+        public int EMSensitivity { get { return _emSensitivity; } set { SetField(ref _emSensitivity, value); } }
+        #endregion
+
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new PassiveEMSensorAtbDB
+                                          {
+                                              EMSensitivity = EMSensitivity,
+                                              OwningEntity = OwningEntity
+                                          };
+        #endregion
     }
 }

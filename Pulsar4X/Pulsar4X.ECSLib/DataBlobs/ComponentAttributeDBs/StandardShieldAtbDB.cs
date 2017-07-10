@@ -17,21 +17,27 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class StandardShieldAtbDB : BaseDataBlob
     {
+        #region Fields
         private int _shieldHP;
         private int _shieldRechargeRate;
+        #endregion
+
+        #region Properties
+        [JsonProperty]
+        public int ShieldHP { get { return _shieldHP; } set { SetField(ref _shieldHP, value); } }
 
         [JsonProperty]
-        public int ShieldHP { get { return _shieldHP; } internal set { SetField(ref _shieldHP, value); } }
+        public int ShieldRechargeRate { get { return _shieldRechargeRate; } set { SetField(ref _shieldRechargeRate, value); } }
+        #endregion
 
-        [JsonProperty]
-        public int ShieldRechargeRate { get { return _shieldRechargeRate; } internal set { SetField(ref _shieldRechargeRate, value); } }
-
+        #region Constructors
         public StandardShieldAtbDB() { }
 
         public StandardShieldAtbDB(double shieldHP, double shieldRechargeRate) : this((int)shieldHP, (int)shieldRechargeRate) { }
@@ -41,10 +47,10 @@ namespace Pulsar4X.ECSLib
             ShieldHP = shieldHP;
             ShieldRechargeRate = shieldRechargeRate;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new StandardShieldAtbDB(ShieldHP, ShieldRechargeRate);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new StandardShieldAtbDB(ShieldHP, ShieldRechargeRate);
+        #endregion
     }
 }

@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     /// <summary>
@@ -24,21 +25,24 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class IndustryDB : BaseDataBlob
     {
-        private double _miningRate;
+        #region Fields
         private double _fuelHarvestingRate;
+        private double _jumpGateConstructionRate;
+        private double _miningRate;
         private double _salvageRate;
         private double _terraformingRate;
-        private double _jumpGateConstructionRate;
+        #endregion
 
+        #region Properties
         public double MiningRate { get { return _miningRate; } set { SetField(ref _miningRate, value); } }
         public double FuelHarvestingRate { get { return _fuelHarvestingRate; } set { SetField(ref _fuelHarvestingRate, value); } }
         public double SalvageRate { get { return _salvageRate; } set { SetField(ref _salvageRate, value); } }
         public double TerraformingRate { get { return _terraformingRate; } set { SetField(ref _terraformingRate, value); } }
         public double JumpGateConstructionRate { get { return _jumpGateConstructionRate; } set { SetField(ref _jumpGateConstructionRate, value); } }
+        #endregion
 
-        public IndustryDB()
-        {
-        }
+        #region Constructors
+        public IndustryDB() { }
 
         public IndustryDB(IndustryDB indusrtyDB)
         {
@@ -48,10 +52,10 @@ namespace Pulsar4X.ECSLib
             TerraformingRate = indusrtyDB.TerraformingRate;
             JumpGateConstructionRate = indusrtyDB.JumpGateConstructionRate;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new IndustryDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new IndustryDB(this);
+        #endregion
     }
 }

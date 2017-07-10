@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     /// <summary>
@@ -24,22 +25,25 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class MaintenanceDB : BaseDataBlob
     {
-        private int _maintenanceStorageCapicity;
-        private int _currentMSP;
-        private int _maximumRepairCost;
+        #region Fields
         private double _annualFailureRate;
+        private int _currentMSP;
         private double _incrementalFailureRate;
+        private int _maintenanceStorageCapicity;
+        private int _maximumRepairCost;
+        #endregion
 
+        #region Properties
         public int MaintenanceStorageCapicity { get { return _maintenanceStorageCapicity; } set { SetField(ref _maintenanceStorageCapicity, value); } }
         public int CurrentMSP { get { return _currentMSP; } set { SetField(ref _currentMSP, value); } }
 
         public int MaximumRepairCost { get { return _maximumRepairCost; } set { SetField(ref _maximumRepairCost, value); } }
         public double AnnualFailureRate { get { return _annualFailureRate; } set { SetField(ref _annualFailureRate, value); } }
         public double IncrementalFailureRate { get { return _incrementalFailureRate; } set { SetField(ref _incrementalFailureRate, value); } }
+        #endregion
 
-        public MaintenanceDB()
-        {
-        }
+        #region Constructors
+        public MaintenanceDB() { }
 
         public MaintenanceDB(MaintenanceDB maintenanceDB)
         {
@@ -49,10 +53,10 @@ namespace Pulsar4X.ECSLib
             AnnualFailureRate = maintenanceDB.AnnualFailureRate;
             IncrementalFailureRate = maintenanceDB.IncrementalFailureRate;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new MaintenanceDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new MaintenanceDB(this);
+        #endregion
     }
 }

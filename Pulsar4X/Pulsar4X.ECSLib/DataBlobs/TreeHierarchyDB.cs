@@ -17,11 +17,12 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
-using NUnit.Framework;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using NUnit.Framework;
 
 namespace Pulsar4X.ECSLib
 {
@@ -31,140 +32,12 @@ namespace Pulsar4X.ECSLib
     /// <remarks>
     /// An example of this is our 2-body OrbitDB's.
     /// Earth's OrbitDB is a child of the Sun's OrbitDB in the tree hierarchy.
-    /// 
     /// Another example would be a subordinate fleet is a child to a higher-level fleet in the fleet heirarchy
-    /// 
     /// DataBlobs that derive from this type have functions to maintain the tree hierarchy as changes are made.
     /// </remarks>
     public abstract class TreeHierarchyDB : BaseDataBlob
     {
-        protected Entity _owningEntity_ = Entity.InvalidEntity;
-        private Entity _parent;
-
-        [PublicAPI]
-        public override Entity OwningEntity
-        {
-            get { return _owningEntity_; }
-            internal set
-            {
-                ParentDB?.RemoveChild(_owningEntity_);
-                SetField(ref _owningEntity_, value);
-
-                if (OwningEntity != Entity.InvalidEntity)
-                {
-                    ParentDB?.AddChild(value);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Parent node to this node.
-        /// </summary>
-        [CanBeNull]
-        [PublicAPI]
-        [JsonProperty]
-        public virtual Entity Parent
-        {
-            get { return _parent; }
-            set
-            {
-                ParentDB?.RemoveChild(OwningEntity);
-                SetField(ref _parent, value);
-                ParentDB?.AddChild(OwningEntity);
-            }
-        }
-
-        /// <summary>
-        /// Same type DataBlob of my parent node. 
-        /// </summary>
-        /// <example>
-        /// EarthOrbitDB.ParentDB == SunOrbitDB;
-        /// </example>
-        [CanBeNull]
-        [PublicAPI]
-        public virtual TreeHierarchyDB ParentDB
-        {
-            get
-            {
-                if (Parent == null)
-                {
-                    return null;
-                }
-                return Parent == Entity.InvalidEntity ? null : GetSameTypeDB(Parent);
-            }
-        }
-
-        /// <summary>
-        /// Root node of this tree hierachy.
-        /// </summary>
-        /// <example>
-        /// LunaOrbitDB.Parent == Earth;
-        /// LunaOrbitDB.Root = Sun;
-        /// </example>
-        [NotNull]
-        [PublicAPI]
-        public Entity Root => ParentDB?.Root ?? OwningEntity;
-
-        /// <summary>
-        /// Same type DataBlob of my root node. 
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public TreeHierarchyDB RootDB => GetSameTypeDB(Root);
-
-        /// <summary>
-        /// All child nodes to this node.
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public List<Entity> Children => _children;
-        [JsonProperty]
-        private readonly List<Entity> _children;
-        
-        /// <summary>
-        /// All node nodeDB's to this node.
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public List<TreeHierarchyDB> ChildrenDBs => Children.Select(GetSameTypeDB).ToList();
-
-        /// <summary>
-        /// Creates a new TreeHierarchyDB with the provided parent.
-        /// </summary>
-        /// <param name="parent"></param>
-        protected TreeHierarchyDB(Entity parent)
-        {
-            Parent = parent;
-            _children = new List<Entity>();
-        }
-
-        private void AddChild(Entity child)
-        {
-            if (child.Guid == Guid.Empty)
-            {
-                return;
-            }
-            if (Children.Contains(child))
-            {
-                return;
-            }
-            Children.Add(child);
-            Children.Sort((entity1, entity2) => entity1.Guid.CompareTo(entity2.Guid));
-        }
-
-        private void RemoveChild(Entity child)
-        {
-            Children.Remove(child);
-        }
-
-        private TreeHierarchyDB GetSameTypeDB(Entity entity)
-        {
-            int typeIndex;
-            EntityManager.TryGetTypeIndex(GetType(), out typeIndex);
-
-            return !entity.IsValid ? null : entity.GetDataBlob<TreeHierarchyDB>(typeIndex);
-        }
-
+        #region Types
         [TestFixture]
         [Description("TreeHierarchyDB Tests")]
         internal class TreeHierarchyTests
@@ -172,17 +45,28 @@ namespace Pulsar4X.ECSLib
             [TestUseOnly]
             private class ConcreteTreeHierarchyDB : TreeHierarchyDB
             {
-                public ConcreteTreeHierarchyDB(Entity parent) : base(parent)
-                {
-                }
+                #region Constructors
+                public ConcreteTreeHierarchyDB(Entity parent) : base(parent) { }
+                #endregion
 
-                public override object Clone()
-                {
-                    throw new NotImplementedException();
-                }
+                #region Interfaces, Overrides, and Operators
+                public override object Clone() { throw new NotImplementedException(); }
+                #endregion
             }
 
             private readonly EntityManager _manager = new EntityManager(new Game(), true);
+
+            /// <summary>
+            /// Helper function for TreeHierarchyTest
+            /// </summary>
+            private Entity CreateNode(Entity parentEntity)
+            {
+                var nodeDB = new ConcreteTreeHierarchyDB(parentEntity);
+                var nodeEntity = new Entity(_manager);
+                nodeEntity.SetDataBlob(nodeDB);
+
+                return nodeEntity;
+            }
 
             /// <summary>
             /// This test verifies the integrity of the TreeHierarchy datablob to maintain it's hierarchy during switches.
@@ -192,7 +76,7 @@ namespace Pulsar4X.ECSLib
             {
                 // Create the "Root" entity.
                 Entity rootNode = CreateNode(null);
-                ConcreteTreeHierarchyDB rootDB = rootNode.GetDataBlob<ConcreteTreeHierarchyDB>();
+                var rootDB = rootNode.GetDataBlob<ConcreteTreeHierarchyDB>();
 
                 // Make sure the root has a root, itself.
                 Assert.AreSame(rootDB, rootDB.RootDB);
@@ -205,7 +89,11 @@ namespace Pulsar4X.ECSLib
                 Entity parent1Child2 = CreateNode(parent1Node);
 
                 // Store a list of children for later comparison.
-                var parent1ChildEntities = new List<Entity> { parent1Child1, parent1Child2 };
+                var parent1ChildEntities = new List<Entity>
+                                           {
+                                               parent1Child1,
+                                               parent1Child2
+                                           };
 
                 // Create a second set of children.
                 Entity parent2Node = CreateNode(rootNode);
@@ -213,16 +101,20 @@ namespace Pulsar4X.ECSLib
                 Entity parent2Child2 = CreateNode(parent2Node);
 
                 // Store the second set of children.
-                var parent2ChildEntities = new List<Entity> { parent2Child1, parent2Child2 };
+                var parent2ChildEntities = new List<Entity>
+                                           {
+                                               parent2Child1,
+                                               parent2Child2
+                                           };
 
                 // Get the dataBlobs of each child.
-                ConcreteTreeHierarchyDB parent1DB = parent1Node.GetDataBlob<ConcreteTreeHierarchyDB>();
-                ConcreteTreeHierarchyDB parent1Child1DB = parent1Child1.GetDataBlob<ConcreteTreeHierarchyDB>();
-                ConcreteTreeHierarchyDB parent1Child2DB = parent1Child2.GetDataBlob<ConcreteTreeHierarchyDB>();
+                var parent1DB = parent1Node.GetDataBlob<ConcreteTreeHierarchyDB>();
+                var parent1Child1DB = parent1Child1.GetDataBlob<ConcreteTreeHierarchyDB>();
+                var parent1Child2DB = parent1Child2.GetDataBlob<ConcreteTreeHierarchyDB>();
 
-                ConcreteTreeHierarchyDB parent2DB = parent2Node.GetDataBlob<ConcreteTreeHierarchyDB>();
-                ConcreteTreeHierarchyDB parent2Child1DB = parent2Child1.GetDataBlob<ConcreteTreeHierarchyDB>();
-                ConcreteTreeHierarchyDB parent2Child2DB = parent2Child2.GetDataBlob<ConcreteTreeHierarchyDB>();
+                var parent2DB = parent2Node.GetDataBlob<ConcreteTreeHierarchyDB>();
+                var parent2Child1DB = parent2Child1.GetDataBlob<ConcreteTreeHierarchyDB>();
+                var parent2Child2DB = parent2Child2.GetDataBlob<ConcreteTreeHierarchyDB>();
 
                 // Ensure the root is the same across the branches.
                 Assert.AreSame(rootDB, parent1Child1DB.RootDB);
@@ -233,8 +125,16 @@ namespace Pulsar4X.ECSLib
                 Assert.AreSame(parent2DB, parent2Child1DB.ParentDB);
 
                 // Store a list of dataBlobs for later comparison.
-                var parent1Children = new List<ConcreteTreeHierarchyDB> { parent1Child1DB, parent1Child2DB };
-                var parent2Children = new List<ConcreteTreeHierarchyDB> { parent2Child1DB, parent2Child2DB };
+                var parent1Children = new List<ConcreteTreeHierarchyDB>
+                                      {
+                                          parent1Child1DB,
+                                          parent1Child2DB
+                                      };
+                var parent2Children = new List<ConcreteTreeHierarchyDB>
+                                      {
+                                          parent2Child1DB,
+                                          parent2Child2DB
+                                      };
 
                 parent1ChildEntities.Sort((entity1, entity2) => entity1.Guid.CompareTo(entity2.Guid));
                 parent2ChildEntities.Sort((entity1, entity2) => entity1.Guid.CompareTo(entity2.Guid));
@@ -266,26 +166,147 @@ namespace Pulsar4X.ECSLib
 
                 // Create a new root.
                 Entity root2Node = CreateNode(null);
-                ConcreteTreeHierarchyDB root2DB = root2Node.GetDataBlob<ConcreteTreeHierarchyDB>();
+                var root2DB = root2Node.GetDataBlob<ConcreteTreeHierarchyDB>();
 
                 // Assign P2 to the new root.
                 parent2DB.Parent = root2Node;
                 // Make sure P2's child has a new RootDB.
                 Assert.AreEqual(root2DB.OwningEntity, parent2Child2DB.RootDB.OwningEntity);
-
-            }
-
-            /// <summary>
-            /// Helper function for TreeHierarchyTest
-            /// </summary>
-            private Entity CreateNode(Entity parentEntity)
-            {
-                ConcreteTreeHierarchyDB nodeDB = new ConcreteTreeHierarchyDB(parentEntity);
-                Entity nodeEntity = new Entity(_manager);
-                nodeEntity.SetDataBlob(nodeDB);
-
-                return nodeEntity;
             }
         }
+        #endregion
+
+        #region Fields
+        [JsonProperty]
+        private readonly List<Entity> _children;
+
+        protected Entity _owningEntity_ = Entity.InvalidEntity;
+        private Entity _parent;
+        #endregion
+
+        #region Properties
+        [PublicAPI]
+        public override Entity OwningEntity
+        {
+            get { return _owningEntity_; }
+            set
+            {
+                ParentDB?.RemoveChild(_owningEntity_);
+                SetField(ref _owningEntity_, value);
+
+                if (OwningEntity != Entity.InvalidEntity)
+                {
+                    ParentDB?.AddChild(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Parent node to this node.
+        /// </summary>
+        [CanBeNull]
+        [PublicAPI]
+        [JsonProperty]
+        public virtual Entity Parent
+        {
+            get { return _parent; }
+            set
+            {
+                ParentDB?.RemoveChild(OwningEntity);
+                SetField(ref _parent, value);
+                ParentDB?.AddChild(OwningEntity);
+            }
+        }
+
+        /// <summary>
+        /// Same type DataBlob of my parent node.
+        /// </summary>
+        /// <example>
+        /// EarthOrbitDB.ParentDB == SunOrbitDB;
+        /// </example>
+        [CanBeNull]
+        [PublicAPI]
+        public virtual TreeHierarchyDB ParentDB
+        {
+            get
+            {
+                if (Parent == null)
+                {
+                    return null;
+                }
+                return Parent == Entity.InvalidEntity ? null : GetSameTypeDB(Parent);
+            }
+        }
+
+        /// <summary>
+        /// Root node of this tree hierachy.
+        /// </summary>
+        /// <example>
+        /// LunaOrbitDB.Parent == Earth;
+        /// LunaOrbitDB.Root = Sun;
+        /// </example>
+        [NotNull]
+        [PublicAPI]
+        public Entity Root => ParentDB?.Root ?? OwningEntity;
+
+        /// <summary>
+        /// Same type DataBlob of my root node.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public TreeHierarchyDB RootDB => GetSameTypeDB(Root);
+
+        /// <summary>
+        /// All child nodes to this node.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public List<Entity> Children => _children;
+
+        /// <summary>
+        /// All node nodeDB's to this node.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public List<TreeHierarchyDB> ChildrenDBs => Children.Select(GetSameTypeDB).ToList();
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Creates a new TreeHierarchyDB with the provided parent.
+        /// </summary>
+        /// <param name="parent"></param>
+        protected TreeHierarchyDB(Entity parent)
+        {
+            Parent = parent;
+            _children = new List<Entity>();
+        }
+        #endregion
+
+        #region Private Methods
+        private void AddChild(Entity child)
+        {
+            if (child.Guid == Guid.Empty)
+            {
+                return;
+            }
+            if (Children.Contains(child))
+            {
+                return;
+            }
+            Children.Add(child);
+            Children.Sort((entity1, entity2) => entity1.Guid.CompareTo(entity2.Guid));
+        }
+
+        private void RemoveChild(Entity child) { Children.Remove(child); }
+
+        private TreeHierarchyDB GetSameTypeDB(Entity entity)
+        {
+            int typeIndex;
+            EntityManager.TryGetTypeIndex(GetType(), out typeIndex);
+
+            return !entity.IsValid ? null : entity.GetDataBlob<TreeHierarchyDB>(typeIndex);
+        }
+        #endregion
     }
 }

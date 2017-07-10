@@ -17,17 +17,25 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     public class PassiveThermalSensorAtbDB : BaseDataBlob
     {
+        #region Fields
         private int _thermalSensitivity;
+        #endregion
 
-        public int ThermalSensitivity { get { return _thermalSensitivity; } internal set { SetField(ref _thermalSensitivity, value); } }
+        #region Properties
+        public int ThermalSensitivity { get { return _thermalSensitivity; } set { SetField(ref _thermalSensitivity, value); } }
+        #endregion
 
-        public override object Clone()
-        {
-            return new PassiveThermalSensorAtbDB { ThermalSensitivity = ThermalSensitivity, OwningEntity = OwningEntity };
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new PassiveThermalSensorAtbDB
+                                          {
+                                              ThermalSensitivity = ThermalSensitivity,
+                                              OwningEntity = OwningEntity
+                                          };
+        #endregion
     }
 }

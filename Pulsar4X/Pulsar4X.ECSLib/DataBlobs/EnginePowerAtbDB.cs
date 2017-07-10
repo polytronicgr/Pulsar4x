@@ -17,37 +17,34 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class EnginePowerAtbDB : BaseDataBlob
     {
+        #region Fields
+        private int _enginePower;
+        #endregion
+
+        #region Properties
         [JsonProperty]
-        public int EnginePower { get; internal set; }
+        public int EnginePower { get { return _enginePower; } set { SetField(ref _enginePower, value); } }
+        #endregion
 
-        public EnginePowerAtbDB()
-        {
-        }
+        #region Constructors
+        public EnginePowerAtbDB() { }
 
-        public EnginePowerAtbDB(double power)
-        {
-            EnginePower = (int)power;
-        }
+        public EnginePowerAtbDB(double power) { EnginePower = (int)power; }
 
-        public EnginePowerAtbDB(int enginePower)
-        {
-            EnginePower = enginePower;
-        }
+        public EnginePowerAtbDB(int enginePower) { EnginePower = enginePower; }
 
-        public EnginePowerAtbDB(EnginePowerAtbDB abilityDB)
-        {
-            EnginePower = abilityDB.EnginePower;
-        }
+        public EnginePowerAtbDB(EnginePowerAtbDB abilityDB) { EnginePower = abilityDB.EnginePower; }
+        #endregion
 
-        public override object Clone()
-        {
-            return new EnginePowerAtbDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new EnginePowerAtbDB(this);
+        #endregion
     }
 }

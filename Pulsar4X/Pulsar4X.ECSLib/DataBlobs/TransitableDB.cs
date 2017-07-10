@@ -17,9 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Runtime.Remoting.Messaging;
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
@@ -29,14 +27,25 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class TransitableDB : BaseDataBlob
     {
+        #region Fields
         private Entity _destination;
         private bool _isStabilized;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Destination that this jump point goes to.
         /// </summary>
         [JsonProperty]
-        public Entity Destination { get { return _destination; } internal set { SetField(ref _destination, value);; } }
+        public Entity Destination
+        {
+            get { return _destination; }
+            set
+            {
+                SetField(ref _destination, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// Determination if this jump point has a "gate" on it.
@@ -46,8 +55,18 @@ namespace Pulsar4X.ECSLib
         /// We might want to use a TransitType enum, to allow different types of FTL using the same type of DB
         /// </remarks>
         [JsonProperty]
-        public bool IsStabilized { get { return _isStabilized; } internal set { SetField(ref _isStabilized, value);; } }
+        public bool IsStabilized
+        {
+            get { return _isStabilized; }
+            set
+            {
+                SetField(ref _isStabilized, value);
+                ;
+            }
+        }
+        #endregion
 
+        #region Constructors
         public TransitableDB() { }
 
         public TransitableDB(Entity destination) : this(destination, false) { }
@@ -57,10 +76,10 @@ namespace Pulsar4X.ECSLib
             Destination = destination;
             IsStabilized = isStabilized;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new TransitableDB(Destination, IsStabilized);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new TransitableDB(Destination, IsStabilized);
+        #endregion
     }
 }

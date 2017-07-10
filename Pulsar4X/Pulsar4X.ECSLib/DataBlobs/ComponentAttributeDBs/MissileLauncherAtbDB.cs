@@ -17,38 +17,36 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class MissileLauncherAtbDB : BaseDataBlob
     {
+        #region Fields
         private double _missileSize;
         private double _reloadRate;
+        #endregion
+
+        #region Properties
+        [JsonProperty]
+        public double MissileSize { get { return _missileSize; } set { SetField(ref _missileSize, value); } }
 
         [JsonProperty]
-        public double MissileSize { get { return _missileSize; } internal set { SetField(ref _missileSize, value); } }
+        public double ReloadRate { get { return _reloadRate; } set { SetField(ref _reloadRate, value); } }
+        #endregion
 
-        [JsonProperty]
-        public double ReloadRate { get { return _reloadRate; } internal set { SetField(ref _reloadRate, value); } }
+        #region Constructors
+        public MissileLauncherAtbDB() { }
 
-        public MissileLauncherAtbDB()
-        {
-        }
+        public MissileLauncherAtbDB(double missileSize) { MissileSize = missileSize; }
 
-        public MissileLauncherAtbDB(double missileSize)
-        {
-            MissileSize = missileSize;
-        }
+        public MissileLauncherAtbDB(MissileLauncherAtbDB db) { MissileSize = db.MissileSize; }
+        #endregion
 
-        public MissileLauncherAtbDB(MissileLauncherAtbDB db)
-        {
-            MissileSize = db.MissileSize;
-        }
-
-        public override object Clone()
-        {
-            return new MissileLauncherAtbDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new MissileLauncherAtbDB(this);
+        #endregion
     }
 }

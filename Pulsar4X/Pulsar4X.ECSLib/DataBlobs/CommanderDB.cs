@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
@@ -30,19 +31,24 @@ namespace Pulsar4X.ECSLib
 
     public class CommanderDB : BaseDataBlob
     {
+        #region Fields
         private CommanderNameSD _name;
         private int _rank;
         private CommanderTypes _type;
+        #endregion
+
+        #region Properties
+        [JsonProperty]
+        public CommanderNameSD Name { get { return _name; } set { SetField(ref _name, value); } }
 
         [JsonProperty]
-        public CommanderNameSD Name { get { return _name; } internal set { SetField(ref _name, value); } }
+        public int Rank { get { return _rank; } set { SetField(ref _rank, value); } }
 
         [JsonProperty]
-        public int Rank { get { return _rank; } internal set { SetField(ref _rank, value); } }
+        public CommanderTypes Type { get { return _type; } set { SetField(ref _type, value); } }
+        #endregion
 
-        [JsonProperty]
-        public CommanderTypes Type { get { return _type; } internal set { SetField(ref _type, value); } }
-
+        #region Constructors
         public CommanderDB() { }
 
         public CommanderDB(CommanderNameSD name, int rank, CommanderTypes type)
@@ -60,10 +66,10 @@ namespace Pulsar4X.ECSLib
             Rank = commanderDB.Rank;
             Type = commanderDB.Type;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new CommanderDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new CommanderDB(this);
+        #endregion
     }
 }

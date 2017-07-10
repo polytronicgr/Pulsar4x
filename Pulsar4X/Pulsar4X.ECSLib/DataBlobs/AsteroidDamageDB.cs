@@ -17,34 +17,31 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.Serialization;
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class AsteroidDamageDB : BaseDataBlob
     {
+        #region Fields
         /// <summary>
         /// Asteroids are damageable and need to store their health value.
         /// </summary>
         [JsonProperty]
-        private Int32 _health = 100;
+        private int _health = 100;
+        #endregion
 
+        #region Properties
         [PublicAPI]
-        public int Health { get { return _health; } internal set { SetField(ref _health, value); } }
+        public int Health { get { return _health; } set { SetField(ref _health, value); } }
+        #endregion
 
-
+        #region Constructors
         /// <summary>
         /// Default constructor.
         /// </summary>
-        public AsteroidDamageDB()
-        {
-        }
+        public AsteroidDamageDB() { }
 
         /// <summary>
         /// Deep copy constructor
@@ -54,12 +51,12 @@ namespace Pulsar4X.ECSLib
         {
             _health = clone._health;
         }
+        #endregion
 
+        #region Interfaces, Overrides, and Operators
         // Datablobs must implement the IClonable interface.
         // Most datablobs simply call their own constructor like so:
-        public override object Clone()
-        {
-            return new AsteroidDamageDB(this);
-        }
+        public override object Clone() => new AsteroidDamageDB(this);
+        #endregion
     }
 }

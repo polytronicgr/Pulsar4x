@@ -17,25 +17,36 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     // All datablobs must be public.
-    public class BasicExampleDB
-        : BaseDataBlob
-    // All datablobs MUST derive from BaseDataBlob
-    // If they don't they wont work with the EntityManager.
-    // EntityManager does quite a bit of work to shift things around
-    // and it's not easy to understand everything the EntityManager does. So just derive from BaseDataBlob.
+    public class BasicExampleDB : BaseDataBlob
+        // All datablobs MUST derive from BaseDataBlob
+        // If they don't they wont work with the EntityManager.
+        // EntityManager does quite a bit of work to shift things around
+        // and it's not easy to understand everything the EntityManager does. So just derive from BaseDataBlob.
     {
+        #region Fields
+        [JsonProperty]
+        private ICloneable _cloneableObj;
+
         // Any value you want to save must be marked with [JsonProperty] attribute.
         [JsonProperty]
         private int _importantNumber;
-        [JsonProperty]
-        private ICloneable _cloneableObj;
+        #endregion
+
+        #region Constructors
+        // Datablobs need to implement a deep-copy constructor.
+        public BasicExampleDB(BasicExampleDB clone)
+        {
+            _importantNumber = clone._importantNumber;
+            _cloneableObj = (ICloneable)_cloneableObj.Clone();
+        }
 
         private BasicExampleDB()
         {
@@ -44,27 +55,26 @@ namespace Pulsar4X.ECSLib
             // It doesn't need to actually do anything, it just has to exist. See: ComponentDB
             // This is AKA the "JSON Constructor"
         }
+        #endregion
 
-        // Datablobs need to implement a deep-copy constructor.
-        public BasicExampleDB(BasicExampleDB clone)
-        {
-            _importantNumber = clone._importantNumber;
-            _cloneableObj = (ICloneable)_cloneableObj.Clone();
-        }
-
+        #region Interfaces, Overrides, and Operators
         // Datablobs must implement the IClonable interface.
         // Most datablobs simply call their own constructor like so:
-        public override object Clone()
-        {
-            return new BasicExampleDB(this);
-        }
+        public override object Clone() => new BasicExampleDB(this);
+        #endregion
     }
 
     public class IntermediateExampleDB : BaseDataBlob
     {
+        #region Fields
         // Any non-private variables need to be encapsulated with a Property.
         private int _viewableInt;
 
+        // The above is actually equivilent to this, use this format for reabibility.
+        private int _viewableInt2;
+        #endregion
+
+        #region Properties
         [JsonProperty]
         public int ViewableInt
         {
@@ -73,13 +83,13 @@ namespace Pulsar4X.ECSLib
             set { SetField(ref _viewableInt, value); }
         }
 
-        // The above is actually equivilent to this, use this format for reabibility.
-        private int _viewableInt2;
         [PublicAPI]
         [JsonProperty]
         public int ViewableInt2 { get { return _viewableInt2; } set { SetField(ref _viewableInt2, value); } }
+        #endregion
 
-    [PublicAPI]
+        #region Public Methods
+        [PublicAPI]
         public void BadFunction()
         {
             // DataBlobs are DATA, not LOGIC. You should have MINIMAL logic in datablobs.
@@ -88,12 +98,10 @@ namespace Pulsar4X.ECSLib
 
             // So where do you put the logic? In the Processors! See OrbitProcessor for a great example!
         }
+        #endregion
 
         #region Stuff we already talked about.
-
-        private IntermediateExampleDB()
-        {
-        }
+        private IntermediateExampleDB() { }
 
         public IntermediateExampleDB(IntermediateExampleDB clone)
         {
@@ -101,26 +109,18 @@ namespace Pulsar4X.ECSLib
             ViewableInt2 = clone.ViewableInt2;
         }
 
-        public override object Clone()
-        {
-            return new IntermediateExampleDB(this);
-        }
-
+        public override object Clone() => new IntermediateExampleDB(this);
         #endregion
     }
 
     public class AdvancedExampleDB : BaseDataBlob
     {
-        // References to other entities are ok. The EntityManager will handle serializing and deserializing the references properly.
-        [PublicAPI]
-        public Entity FriendEntity
-        {
-            get { return _friendEntity; }
-            internal set { SetField(ref _friendEntity, value); }
-        }
-
+        #region Fields
         [JsonProperty]
         private Entity _friendEntity;
+
+        // Or if you want to get really fancy, use a deserialization callback to resolve the star system after load-time.
+        public StarSystem MyStarSystem;
 
         // References to StarSystems that are SERIALIZED are NOT ok.
         [JsonProperty]
@@ -129,24 +129,33 @@ namespace Pulsar4X.ECSLib
         // Instead, either store the guid and look up the system when needed (from the Game.Systems dictionary)
         [JsonProperty]
         public Guid MySystemGuid;
+        #endregion
 
-        // Or if you want to get really fancy, use a deserialization callback to resolve the star system after load-time.
-        public StarSystem MyStarSystem;
+        #region Properties
+        // References to other entities are ok. The EntityManager will handle serializing and deserializing the references properly.
+        [PublicAPI]
+        public Entity FriendEntity { get { return _friendEntity; } set { SetField(ref _friendEntity, value); } }
+        #endregion
 
+        #region Private Methods
         // JSON deserialization callback.
         [OnDeserialized]
         private void Deserialized(StreamingContext context)
         {
             // Star system resolver loads myStarSystem from mySystemGuid after the game is done loading.
             var game = (Game)context.Context;
-            game.PostLoad += (sender, args) => { if (!game.Systems.TryGetValue(MySystemGuid, out MyStarSystem)) throw new GuidNotFoundException(MySystemGuid); };
+            game.PostLoad += (sender, args) =>
+                             {
+                                 if (!game.Systems.TryGetValue(MySystemGuid, out MyStarSystem))
+                                 {
+                                     throw new GuidNotFoundException(MySystemGuid);
+                                 }
+                             };
         }
+        #endregion
 
         #region Stuff we already talked about.
-
-        private AdvancedExampleDB()
-        {
-        }
+        private AdvancedExampleDB() { }
 
         public AdvancedExampleDB(AdvancedExampleDB clone)
         {
@@ -154,11 +163,7 @@ namespace Pulsar4X.ECSLib
             _friendEntity = clone.FriendEntity;
         }
 
-        public override object Clone()
-        {
-            return new AdvancedExampleDB(this);
-        }
-
+        public override object Clone() => new AdvancedExampleDB(this);
         #endregion
     }
 }

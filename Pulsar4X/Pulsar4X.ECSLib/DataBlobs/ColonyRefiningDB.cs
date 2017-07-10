@@ -17,32 +17,38 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class RefineingJob : JobBase
     {
-        public RefineingJob(Guid matGuid, ushort numberOrderd, int jobPoints, bool auto): base(matGuid, numberOrderd, jobPoints, auto)
-        {
-        }
+        #region Constructors
+        public RefineingJob(Guid matGuid, ushort numberOrderd, int jobPoints, bool auto) : base(matGuid, numberOrderd, jobPoints, auto) { }
+        #endregion
     }
 
     public class ColonyRefiningDB : BaseDataBlob
     {
+        #region Fields
         private int _pointsPerTick;
+        #endregion
 
-        public int PointsPerTick { get { return _pointsPerTick; } internal set { SetField(ref _pointsPerTick, value); } }
+        #region Properties
+        public int PointsPerTick { get { return _pointsPerTick; } set { SetField(ref _pointsPerTick, value); } }
 
         //recalc this on game load todo implement this in the processor. 
-        public ObservableDictionary<Guid, int> RefiningRates{ get; internal set; } = new ObservableDictionary<Guid, int>();
-        
-        [JsonProperty]
-        public ObservableCollection<RefineingJob> JobBatchList { get; internal set; } = new ObservableCollection<RefineingJob>();
+        public ObservableDictionary<Guid, int> RefiningRates { get; set; } = new ObservableDictionary<Guid, int>();
 
+        [JsonProperty]
+        public ObservableCollection<RefineingJob> JobBatchList { get; set; } = new ObservableCollection<RefineingJob>();
+        #endregion
+
+        #region Constructors
         public ColonyRefiningDB()
         {
             RefiningRates.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(RefiningRates), args);
@@ -63,10 +69,10 @@ namespace Pulsar4X.ECSLib
         }
 
         public ColonyRefiningDB(ColonyRefiningDB db) : this(db.RefiningRates, db.JobBatchList) { }
-        
-        public override object Clone()
-        {
-            return new ColonyRefiningDB(this);
-        }
+        #endregion
+
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new ColonyRefiningDB(this);
+        #endregion
     }
 }

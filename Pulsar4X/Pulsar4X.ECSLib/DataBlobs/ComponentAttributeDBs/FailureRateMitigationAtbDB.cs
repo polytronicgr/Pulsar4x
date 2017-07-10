@@ -17,17 +17,23 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class FailureRateMitigationAtbDB : BaseDataBlob
     {
+        #region Fields
         private int _failureRateMitigation;
+        #endregion
 
+        #region Properties
         [JsonProperty]
-        public int FailureRateMitigation { get { return _failureRateMitigation; } internal set { SetField(ref _failureRateMitigation, value); } }
+        public int FailureRateMitigation { get { return _failureRateMitigation; } set { SetField(ref _failureRateMitigation, value); } }
+        #endregion
 
+        #region Constructors
         public FailureRateMitigationAtbDB(double failureRateMitigation) : this((int)failureRateMitigation) { }
 
         [JsonConstructor]
@@ -35,10 +41,10 @@ namespace Pulsar4X.ECSLib
         {
             FailureRateMitigation = failureRateMitigation;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new FailureRateMitigationAtbDB(FailureRateMitigation);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new FailureRateMitigationAtbDB(FailureRateMitigation);
+        #endregion
     }
 }

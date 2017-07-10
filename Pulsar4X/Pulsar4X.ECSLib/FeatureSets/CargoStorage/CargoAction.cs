@@ -1,6 +1,6 @@
 ﻿namespace Pulsar4X.ECSLib
 {
-    internal class CargoAction : BaseAction
+    public class CargoAction : BaseAction
     {
         internal CargoStorageDB CargoFrom { get; set; }
         internal CargoStorageDB CargoTo { get; set; }

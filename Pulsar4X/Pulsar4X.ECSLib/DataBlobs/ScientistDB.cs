@@ -17,10 +17,11 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
@@ -34,27 +35,47 @@ namespace Pulsar4X.ECSLib
     /// </remarks>
     public class ScientistDB : BaseDataBlob
     {
-        private byte _maxLabs;
+        #region Fields
         private byte _assignedLabs;
+        private byte _maxLabs;
+        #endregion
+
+        #region Properties
         /// <summary>
         /// Bonuses that this scentist imparts.
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public ObservableDictionary<ResearchCategories, float> Bonuses { get; internal set; } = new ObservableDictionary<ResearchCategories, float>();
+        public ObservableDictionary<ResearchCategories, float> Bonuses { get; set; } = new ObservableDictionary<ResearchCategories, float>();
 
         /// <summary>
         /// Max number of labs this scientist can manage.
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public byte MaxLabs { get { return _maxLabs; } internal set { SetField(ref _maxLabs, value);; } }
+        public byte MaxLabs
+        {
+            get { return _maxLabs; }
+            set
+            {
+                SetField(ref _maxLabs, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// Current number of labs assigned to this scientist.
         /// </summary>
         [JsonProperty]
-        public byte AssignedLabs { get { return _assignedLabs; } internal set { SetField(ref _assignedLabs, value);; } }
+        public byte AssignedLabs
+        {
+            get { return _assignedLabs; }
+            set
+            {
+                SetField(ref _assignedLabs, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// Queue of projects currently being worked on by this scientist.
@@ -63,15 +84,17 @@ namespace Pulsar4X.ECSLib
         /// TODO: Pre-release Review
         /// Why is ProjectQueue not a queue?
         /// </remarks>
-        public ObservableCollection<Guid> ProjectQueue { get; internal set; } = new ObservableCollection<Guid>();
+        public ObservableCollection<Guid> ProjectQueue { get; set; } = new ObservableCollection<Guid>();
+        #endregion
 
+        #region Constructors
         public ScientistDB()
         {
             Bonuses.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Bonuses), args);
             ProjectQueue.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ProjectQueue), args);
         }
 
-        public ScientistDB(IDictionary<ResearchCategories,float> bonuses, byte maxLabs ) : this()
+        public ScientistDB(IDictionary<ResearchCategories, float> bonuses, byte maxLabs) : this()
         {
             Bonuses.Merge(bonuses);
             MaxLabs = maxLabs;
@@ -86,7 +109,10 @@ namespace Pulsar4X.ECSLib
                 ProjectQueue.Add(guid);
             }
         }
+        #endregion
 
+        #region Interfaces, Overrides, and Operators
         public override object Clone() => new ScientistDB(this);
+        #endregion
     }
 }

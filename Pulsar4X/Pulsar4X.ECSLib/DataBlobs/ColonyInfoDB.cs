@@ -17,21 +17,46 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class ColonyInfoDB : BaseDataBlob
     {
+        #region Fields
+        private ObservableDictionary<Entity, double> _colonyComponentDictionary;
+        private ObservableDictionary<Guid, int> _componentStockpile;
+        private ObservableCollection<Entity> _fighterStockpile;
+        private ObservableDictionary<Guid, float> _ordinanceStockpile;
         private Entity _planetEntity = Entity.InvalidEntity;
+        private ObservableDictionary<Entity, long> _population = new ObservableDictionary<Entity, long>();
+        private ObservableCollection<Entity> _scientists;
+        #endregion
+
+        #region Properties
+        /// <summary>
+        /// the parent planet
+        /// </summary>
+        [JsonProperty]
+        public Entity PlanetEntity { get { return _planetEntity; } set { SetField(ref _planetEntity, value); } }
+
         /// <summary>
         /// Species Entity and amount
         /// </summary>
         [JsonProperty]
-        public ObservableDictionary<Entity, long> Population { get; internal set; } = new ObservableDictionary<Entity, long>();
+        public ObservableDictionary<Entity, long> Population
+        {
+            get { return _population; }
+            set
+            {
+                SetField(ref _population, value);
+                Population.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Population), args);
+            }
+        }
 
 
         /// <summary>
@@ -39,46 +64,81 @@ namespace Pulsar4X.ECSLib
         /// Construction pulls and pushes from here.
         /// </summary>
         [JsonProperty]
-        public ObservableDictionary<Guid, int> ComponentStockpile { get; internal set; } = new ObservableDictionary<Guid, int>();
+        public ObservableDictionary<Guid, int> ComponentStockpile
+        {
+            get { return _componentStockpile; }
+            set
+            {
+                SetField(ref _componentStockpile, value);
+                ComponentStockpile.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ComponentStockpile), args);
+            }
+        }
 
         /// <summary>
         /// Construction pushes here.
         /// </summary>
         [JsonProperty]
-        public ObservableDictionary<Guid, float> OrdinanceStockpile { get; internal set; } = new ObservableDictionary<Guid, float>();
+        public ObservableDictionary<Guid, float> OrdinanceStockpile
+        {
+            get { return _ordinanceStockpile; }
+            set
+            {
+                SetField(ref _ordinanceStockpile, value);
+                OrdinanceStockpile.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(OrdinanceStockpile), args);
+            }
+        }
 
         /// <summary>
         /// Construction *adds* to this list. damaged and partialy constructed fighters will go here too, but shouldnt launch.
         /// </summary>
         [JsonProperty]
-        public ObservableCollection<Entity> FighterStockpile { get; internal set; } = new ObservableCollection<Entity>();
+        public ObservableCollection<Entity> FighterStockpile
+        {
+            get { return _fighterStockpile; }
+            set
+            {
+                SetField(ref _fighterStockpile, value);
+                FighterStockpile.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(FighterStockpile), args);
+            }
+        }
 
-        /// <summary>
-        /// the parent planet
-        /// </summary>
         [JsonProperty]
-        public Entity PlanetEntity { get { return _planetEntity; } internal set { SetField(ref _planetEntity, value); } }
-
-        [JsonProperty]
-        public ObservableCollection<Entity> Scientists { get; internal set; } = new ObservableCollection<Entity>();
+        public ObservableCollection<Entity> Scientists
+        {
+            get { return _scientists; }
+            set
+            {
+                SetField(ref _scientists, value);
+                Scientists.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Scientists), args);
+            }
+        }
 
         /// <summary>
         /// Installation list for damage calculations. Colony installations are considered components.
         /// </summary>
-        public ObservableDictionary<Entity, double> ColonyComponentDictionary { get; set; } = new ObservableDictionary<Entity, double>();
+        public ObservableDictionary<Entity, double> ColonyComponentDictionary
+        {
+            get { return _colonyComponentDictionary; }
+            set
+            {
+                SetField(ref _colonyComponentDictionary, value);
+                ColonyComponentDictionary.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ColonyComponentDictionary), args);
+            }
+        }
+        #endregion
 
+        #region Constructors
         public ColonyInfoDB()
         {
-            Population.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Population), args);
-            ComponentStockpile.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ComponentStockpile), args);
-            OrdinanceStockpile.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(OrdinanceStockpile), args);
-            FighterStockpile.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(FighterStockpile), args);
-            Scientists.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Scientists), args);
-            ColonyComponentDictionary.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ColonyComponentDictionary), args);
+            Population = new ObservableDictionary<Entity, long>();
+            ComponentStockpile = new ObservableDictionary<Guid, int>();
+            OrdinanceStockpile = new ObservableDictionary<Guid, float>();
+            FighterStockpile = new ObservableCollection<Entity>();
+            Scientists = new ObservableCollection<Entity>();
+            ColonyComponentDictionary = new ObservableDictionary<Entity, double>();
         }
-    
+
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="popCount">Species and population number</param>
         /// <param name="planet"> the planet entity this colony is on</param>
@@ -88,7 +148,11 @@ namespace Pulsar4X.ECSLib
             PlanetEntity = planet;
         }
 
-        public ColonyInfoDB(Entity species, long populationCount, Entity planet) : this(new ObservableDictionary<Entity, long> {{species, populationCount}}, planet) { }
+        public ColonyInfoDB(Entity species, long populationCount, Entity planet) : this(new ObservableDictionary<Entity, long>
+                                                                                        {
+                                                                                            {species, populationCount}
+                                                                                        },
+                                                                                        planet) { }
 
         public ColonyInfoDB(ColonyInfoDB colonyInfoDB) : this()
         {
@@ -106,10 +170,10 @@ namespace Pulsar4X.ECSLib
             }
             ColonyComponentDictionary.Merge(colonyInfoDB.ColonyComponentDictionary);
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new ColonyInfoDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new ColonyInfoDB(this);
+        #endregion
     }
 }

@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     /// <summary>
@@ -24,11 +25,14 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class TroopTransportDB : BaseDataBlob
     {
-        private int _normalCapicity;
+        #region Fields
         private int _cryoCapicity;
-        private int _normalCombatDropCapicity;
         private int _cryoCombatDropCapicity;
+        private int _normalCapicity;
+        private int _normalCombatDropCapicity;
+        #endregion
 
+        #region Properties
         public int TotalCapicity => CryoCapicity + NormalCapicity;
 
         public int NormalCapicity { get { return _normalCapicity; } set { SetField(ref _normalCapicity, value); } } // from normal Troop Transport Bays
@@ -38,10 +42,10 @@ namespace Pulsar4X.ECSLib
 
         public int NormalCombatDropCapicity { get { return _normalCombatDropCapicity; } set { SetField(ref _normalCombatDropCapicity, value); } }
         public int CryoCombatDropCapicity { get { return _cryoCombatDropCapicity; } set { SetField(ref _cryoCombatDropCapicity, value); } }
+        #endregion
 
-        public TroopTransportDB()
-        {
-        }
+        #region Constructors
+        public TroopTransportDB() { }
 
         public TroopTransportDB(TroopTransportDB troopTransportDB)
         {
@@ -50,10 +54,10 @@ namespace Pulsar4X.ECSLib
             NormalCombatDropCapicity = troopTransportDB.NormalCombatDropCapicity;
             CryoCombatDropCapicity = troopTransportDB.CryoCombatDropCapicity;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new TroopTransportDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new TroopTransportDB(this);
+        #endregion
     }
 }

@@ -17,35 +17,57 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class OwnedDB : BaseDataBlob
     {
+        #region Fields
         private Entity _entityOwner = Entity.InvalidEntity;
         private Entity _objectOwner = Entity.InvalidEntity;
+        #endregion
+
+        #region Properties
+        [JsonProperty]
+        public Entity EntityOwner
+        {
+            get { return _entityOwner; }
+            set
+            {
+                SetField(ref _entityOwner, value);
+                ;
+            }
+        }
 
         [JsonProperty]
-        public Entity EntityOwner { get { return _entityOwner; } internal set { SetField(ref _entityOwner, value);; } }
+        public Entity ObjectOwner
+        {
+            get { return _objectOwner; }
+            set
+            {
+                SetField(ref _objectOwner, value);
+                ;
+            }
+        }
+        #endregion
 
-        [JsonProperty]
-        public Entity ObjectOwner { get { return _objectOwner; } internal set { SetField(ref _objectOwner, value);; } }
-
+        #region Constructors
         // Json Constructor
         public OwnedDB() { }
-        
+
         public OwnedDB(Entity ownerFaction) : this(ownerFaction, ownerFaction) { }
 
-        internal OwnedDB(Entity entityOwner, Entity objectOwner)
+        public OwnedDB(Entity entityOwner, Entity objectOwner)
         {
             EntityOwner = entityOwner;
             ObjectOwner = objectOwner;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new OwnedDB(EntityOwner, ObjectOwner);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new OwnedDB(EntityOwner, ObjectOwner);
+        #endregion
     }
 }

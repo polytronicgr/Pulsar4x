@@ -17,21 +17,27 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class SensorSignatureAtbDB : BaseDataBlob
     {
-        private int _thermalSig;
+        #region Fields
         private int _electroMagneticSig;
+        private int _thermalSig;
+        #endregion
+
+        #region Properties
+        [JsonProperty]
+        public int ThermalSig { get { return _thermalSig; } set { SetField(ref _thermalSig, value); } }
 
         [JsonProperty]
-        public int ThermalSig { get { return _thermalSig; } internal set { SetField(ref _thermalSig, value); } }
+        public int ElectroMagneticSig { get { return _electroMagneticSig; } set { SetField(ref _electroMagneticSig, value); } }
+        #endregion
 
-        [JsonProperty]
-        public int ElectroMagneticSig { get { return _electroMagneticSig; } internal set { SetField(ref _electroMagneticSig, value); } }
-
+        #region Constructors
         public SensorSignatureAtbDB() { }
 
         public SensorSignatureAtbDB(double thermalSig, double electroMagneticSig) : this((int)thermalSig, (int)electroMagneticSig) { }
@@ -41,10 +47,10 @@ namespace Pulsar4X.ECSLib
             ThermalSig = thermalSig;
             ElectroMagneticSig = electroMagneticSig;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new SensorSignatureAtbDB(ThermalSig, ElectroMagneticSig);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new SensorSignatureAtbDB(ThermalSig, ElectroMagneticSig);
+        #endregion
     }
 }

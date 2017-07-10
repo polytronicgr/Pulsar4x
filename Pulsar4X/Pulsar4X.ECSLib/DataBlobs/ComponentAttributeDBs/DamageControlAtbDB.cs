@@ -17,29 +17,32 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class DamageControlAtbDB : BaseDataBlob
     {
+        #region Fields
         private int _repairChance;
+        #endregion
 
+        #region Properties
         [JsonProperty]
-        public int RepairChance { get { return _repairChance; } internal set { SetField(ref _repairChance, value); } }
+        public int RepairChance { get { return _repairChance; } set { SetField(ref _repairChance, value); } }
+        #endregion
 
+        #region Constructors
         public DamageControlAtbDB() { }
 
         public DamageControlAtbDB(double repairChance) : this((int)repairChance) { }
 
-        public DamageControlAtbDB(int repairChance)
-        {
-            RepairChance = repairChance;
-        }
+        public DamageControlAtbDB(int repairChance) { RepairChance = repairChance; }
+        #endregion
 
-        public override object Clone()
-        {
-            return new DamageControlAtbDB(RepairChance);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new DamageControlAtbDB(RepairChance);
+        #endregion
     }
 }

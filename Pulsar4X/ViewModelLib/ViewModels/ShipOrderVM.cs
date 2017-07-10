@@ -438,7 +438,7 @@ namespace Pulsar4X.ViewModel
         {
             if (SelectedShip == null)
                 return;
-            List<BaseAction> actions = SelectedShip.GetDataBlob<OrderableDB>().ActionQueue;
+            ObservableCollection<BaseAction> actions = SelectedShip.GetDataBlob<OrderableDB>().ActionQueue;
             
             List<GenericActionVM> actionVMs = actions.Select(item => new GenericActionVM(item)).ToList();
 

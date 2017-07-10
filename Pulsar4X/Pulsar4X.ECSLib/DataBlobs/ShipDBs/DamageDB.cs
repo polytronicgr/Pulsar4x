@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     /// <summary>
@@ -24,22 +25,22 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class DamageDB : BaseDataBlob
     {
+        #region Fields
         private int _damageControlRating;
+        #endregion
 
-        public int DamageControlRating { get { return _damageControlRating; } internal set { SetField(ref _damageControlRating, value); } }
+        #region Properties
+        public int DamageControlRating { get { return _damageControlRating; } set { SetField(ref _damageControlRating, value); } }
+        #endregion
 
-        public DamageDB()
-        {
-        }
+        #region Constructors
+        public DamageDB() { }
 
-        public DamageDB(DamageDB damageDB)
-        {
-            DamageControlRating = damageDB.DamageControlRating;
-        }
+        public DamageDB(DamageDB damageDB) { DamageControlRating = damageDB.DamageControlRating; }
+        #endregion
 
-        public override object Clone()
-        {
-            return new DamageDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new DamageDB(this);
+        #endregion
     }
 }

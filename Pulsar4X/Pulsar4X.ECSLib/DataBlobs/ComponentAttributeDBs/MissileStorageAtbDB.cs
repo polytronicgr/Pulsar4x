@@ -17,20 +17,27 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class MissileStorageAtbDB : BaseDataBlob
     {
+        #region Fields
         private int _storageCapacity;
+        #endregion
 
+        #region Properties
         [JsonProperty]
-        public int StorageCapacity { get { return _storageCapacity; } internal set { SetField(ref _storageCapacity, value); } }
+        public int StorageCapacity { get { return _storageCapacity; } set { SetField(ref _storageCapacity, value); } }
+        #endregion
 
-        public override object Clone()
-        {
-            return new MissileStorageAtbDB { StorageCapacity = StorageCapacity};
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new MissileStorageAtbDB
+                                          {
+                                              StorageCapacity = StorageCapacity
+                                          };
+        #endregion
     }
 }

@@ -76,10 +76,10 @@ namespace Pulsar4X.ECSLib
         }
     }
 
-    internal struct OrderEntities
+    public struct OrderEntities
     {
-        internal Entity ThisEntity;
-        internal Entity FactionEntity;
-        internal Entity TargetEntity;
+        public Entity ThisEntity;
+        public Entity FactionEntity;
+        public Entity TargetEntity;
     }
 }

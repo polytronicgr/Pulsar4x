@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
@@ -26,79 +27,146 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class SpeciesDB : BaseDataBlob
     {
+        #region Fields
         private double _baseGravity;
-        private double _minimumGravityConstraint;
-        private double _maximumGravityConstraint;
         private double _basePressure;
-        private double _minimumPressureConstraint;
-        private double _maximumPressureConstraint;
         private double _baseTemperature;
-        private double _minimumTemperatureConstraint;
+        private double _maximumGravityConstraint;
+        private double _maximumPressureConstraint;
         private double _maximumTemperatureConstraint;
+        private double _minimumGravityConstraint;
+        private double _minimumPressureConstraint;
+        private double _minimumTemperatureConstraint;
         private double _temperatureToleranceRange;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// The ideal gravity for this species.
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double BaseGravity { get { return _baseGravity; } internal set { SetField(ref _baseGravity, value);; } }
+        public double BaseGravity
+        {
+            get { return _baseGravity; }
+            set
+            {
+                SetField(ref _baseGravity, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// The minimum gravity the species can tolerate
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double MinimumGravityConstraint { get { return _minimumGravityConstraint; } internal set { SetField(ref _minimumGravityConstraint, value); } }
+        public double MinimumGravityConstraint { get { return _minimumGravityConstraint; } set { SetField(ref _minimumGravityConstraint, value); } }
 
         /// <summary>
         /// The maximum gravity the species can tolerate
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double MaximumGravityConstraint { get { return _maximumGravityConstraint; } internal set { SetField(ref _maximumGravityConstraint, value);; } }
+        public double MaximumGravityConstraint
+        {
+            get { return _maximumGravityConstraint; }
+            set
+            {
+                SetField(ref _maximumGravityConstraint, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// The ideal atmospheric pressure for the species
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double BasePressure { get { return _basePressure; } internal set { SetField(ref _basePressure, value);; } }
+        public double BasePressure
+        {
+            get { return _basePressure; }
+            set
+            {
+                SetField(ref _basePressure, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// The minimum atmospheric pressure the species can tolerate
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double MinimumPressureConstraint { get { return _minimumPressureConstraint; } internal set { SetField(ref _minimumPressureConstraint, value);; } }
+        public double MinimumPressureConstraint
+        {
+            get { return _minimumPressureConstraint; }
+            set
+            {
+                SetField(ref _minimumPressureConstraint, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// The maximum atmospheric pressure the species can tolerate
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double MaximumPressureConstraint { get { return _maximumPressureConstraint; } internal set { SetField(ref _maximumPressureConstraint, value);; } }
+        public double MaximumPressureConstraint
+        {
+            get { return _maximumPressureConstraint; }
+            set
+            {
+                SetField(ref _maximumPressureConstraint, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// The ideal temperature for the species
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double BaseTemperature { get { return _baseTemperature; } internal set { SetField(ref _baseTemperature, value);; } }
+        public double BaseTemperature
+        {
+            get { return _baseTemperature; }
+            set
+            {
+                SetField(ref _baseTemperature, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// The minimum temperature the species can tolerate
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double MinimumTemperatureConstraint { get { return _minimumTemperatureConstraint; } internal set { SetField(ref _minimumTemperatureConstraint, value);; } }
+        public double MinimumTemperatureConstraint
+        {
+            get { return _minimumTemperatureConstraint; }
+            set
+            {
+                SetField(ref _minimumTemperatureConstraint, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// The maximum temperature the species can tolerate
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public double MaximumTemperatureConstraint { get { return _maximumTemperatureConstraint; } internal set { SetField(ref _maximumTemperatureConstraint, value);; } }
+        public double MaximumTemperatureConstraint
+        {
+            get { return _maximumTemperatureConstraint; }
+            set
+            {
+                SetField(ref _maximumTemperatureConstraint, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// Range of temperatures this species can withstand?
@@ -110,8 +178,18 @@ namespace Pulsar4X.ECSLib
         /// </remarks>
         [PublicAPI]
         [JsonProperty]
-        public double TemperatureToleranceRange { get { return _temperatureToleranceRange; } internal set { SetField(ref _temperatureToleranceRange, value);; } }
+        public double TemperatureToleranceRange
+        {
+            get { return _temperatureToleranceRange; }
+            set
+            {
+                SetField(ref _temperatureToleranceRange, value);
+                ;
+            }
+        }
+        #endregion
 
+        #region Constructors
         public SpeciesDB() { }
 
         public SpeciesDB(double baseGravity, double minGravity, double maxGravity, double basePressure, double minPressure, double maxPressure, double baseTemp, double minTemp, double maxTemp)
@@ -125,14 +203,11 @@ namespace Pulsar4X.ECSLib
             BaseTemperature = baseTemp;
             MinimumTemperatureConstraint = minTemp;
             MaximumTemperatureConstraint = maxTemp;
-
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new SpeciesDB(BaseGravity, MinimumGravityConstraint, MaximumGravityConstraint,
-                BasePressure, MinimumPressureConstraint, MaximumPressureConstraint,
-                BaseTemperature, MinimumTemperatureConstraint, MaximumTemperatureConstraint);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new SpeciesDB(BaseGravity, MinimumGravityConstraint, MaximumGravityConstraint, BasePressure, MinimumPressureConstraint, MaximumPressureConstraint, BaseTemperature, MinimumTemperatureConstraint, MaximumTemperatureConstraint);
+        #endregion
     }
 }

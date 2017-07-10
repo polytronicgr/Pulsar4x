@@ -17,34 +17,40 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class BeamFireControlAtbDB : BaseDataBlob
     {
+        #region Fields
+        private bool _finalFireOnly;
         private int _range;
         private int _trackingSpeed;
-        private bool _finalFireOnly;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Max range of this Beam Fire Control
         /// </summary>
         [JsonProperty]
-        public int Range { get { return _range; } internal set { SetField(ref _range, value); } }
+        public int Range { get { return _range; } set { SetField(ref _range, value); } }
 
         /// <summary>
         /// Tracking Speed of this Beam Fire Control
         /// </summary>
         [JsonProperty]
-        public int TrackingSpeed { get { return _trackingSpeed; } internal set { SetField(ref _trackingSpeed, value); } }
+        public int TrackingSpeed { get { return _trackingSpeed; } set { SetField(ref _trackingSpeed, value); } }
 
         /// <summary>
         /// Determines if this Beam Fire Control is only capable of FinalDefensiveFire (Like CIWS)
         /// </summary>
         [JsonProperty]
-        public bool FinalFireOnly { get { return _finalFireOnly; } internal set { SetField(ref _finalFireOnly, value); } }
+        public bool FinalFireOnly { get { return _finalFireOnly; } set { SetField(ref _finalFireOnly, value); } }
+        #endregion
 
+        #region Constructors
         public BeamFireControlAtbDB(double range, double trackingSpeed) : this((int)range, (int)trackingSpeed) { }
 
         [JsonConstructor]
@@ -54,10 +60,10 @@ namespace Pulsar4X.ECSLib
             TrackingSpeed = trackingSpeed;
             FinalFireOnly = finalFireOnly;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new BeamFireControlAtbDB(Range, TrackingSpeed, FinalFireOnly);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new BeamFireControlAtbDB(Range, TrackingSpeed, FinalFireOnly);
+        #endregion
     }
 }

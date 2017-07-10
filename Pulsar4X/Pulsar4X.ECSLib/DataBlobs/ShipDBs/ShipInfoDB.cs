@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using System;
 using System.Collections.Generic;
 
@@ -27,10 +28,25 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class ShipInfoDB : BaseDataBlob
     {
+        #region Fields
+        private bool _collier;
+        private bool _conscript;
+        private int _internalHTK;
+        private bool _isMilitary;
+        private bool _obsolete;
+
+        private Guid _shipClassDefinition;
+        private bool _supplyShip;
+        private bool _tanker;
+        private float _tonnage;
+
+        /// Ship orders.
+        public Queue<BaseOrder> Orders;
+        #endregion
 
         #region Properties
         /// <summary>
-        /// The guid of the ship class, if this is a ship class then the Guid will be empty. 
+        /// The guid of the ship class, if this is a ship class then the Guid will be empty.
         /// use IsClassDefinition() to determin if this is a ship class definmition
         /// </summary>
         public Guid ShipClassDefinition { get { return _shipClassDefinition; } set { SetField(ref _shipClassDefinition, value); } }
@@ -53,35 +69,22 @@ namespace Pulsar4X.ECSLib
 
         public float Tonnage { get { return _tonnage; } set { SetField(ref _tonnage, value); } }
 
-        public double TCS { get {return Tonnage * 0.02;} }
-
-        ///  Ship orders.  
-        public Queue<BaseOrder> Orders;
-
-        private Guid _shipClassDefinition;
-        private bool _obsolete;
-        private bool _conscript;
-        private bool _tanker;
-        private bool _collier;
-        private bool _supplyShip;
-        private int _internalHTK;
-        private bool _isMilitary;
-        private float _tonnage;
+        public double TCS => Tonnage * 0.02;
         #endregion
 
         #region Constructors
-
-        public ShipInfoDB()
-        {
-            Orders = new Queue<BaseOrder>();
-        }
+        public ShipInfoDB() { Orders = new Queue<BaseOrder>(); }
 
         public ShipInfoDB(ShipInfoDB shipInfoDB)
         {
             if (shipInfoDB.ShipClassDefinition == Guid.Empty) //Class
+            {
                 ShipClassDefinition = shipInfoDB.OwningEntity.Guid;
+            }
             else //Ship
+            {
                 ShipClassDefinition = shipInfoDB.ShipClassDefinition;
+            }
             Obsolete = shipInfoDB.Obsolete;
             Conscript = shipInfoDB.Conscript;
             Tanker = shipInfoDB.Tanker;
@@ -92,28 +95,33 @@ namespace Pulsar4X.ECSLib
             IsMilitary = shipInfoDB.IsMilitary;
 
             if (shipInfoDB.Orders == null)
+            {
                 Orders = null;
+            }
             else
+            {
                 Orders = new Queue<BaseOrder>(shipInfoDB.Orders);
+            }
         }
-
         #endregion
 
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new ShipInfoDB(this);
+        #endregion
+
+        #region Public Methods
         /// <summary>
         /// Returns true if this is a definition of a class.
         /// </summary>
         public bool IsClassDefinition()
         {
             if (ShipClassDefinition != Guid.Empty)
+            {
                 return false;
+            }
 
             return true;
         }
-
-        public override object Clone()
-        {
-            return new ShipInfoDB(this);
-        }
-
+        #endregion
     }
 }

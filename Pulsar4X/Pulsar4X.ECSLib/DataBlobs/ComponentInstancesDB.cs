@@ -17,34 +17,55 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
-using System;
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class ComponentInstancesDB : BaseDataBlob
     {
+        #region Fields
+        private ObservableDictionary<Entity, double> _componentDictionary;
+        private ObservableDictionary<Entity, ObservableCollection<Entity>> _specificInstances;
+        #endregion
+
+        #region Properties
         /// <summary>
         /// Key is the component design entity
         /// Value is a list of specific instances of that component design, that entity will hold info on damage, cooldown etc.
         /// </summary>
         [JsonProperty]
         [PublicAPI]
-        public ObservableDictionary<Entity, ObservableCollection<Entity>> SpecificInstances { get; internal set; } = new ObservableDictionary<Entity, ObservableCollection<Entity>>();
+        public ObservableDictionary<Entity, ObservableCollection<Entity>> SpecificInstances
+        {
+            get { return _specificInstances; }
+            set
+            {
+                SetField(ref _specificInstances, value);
+                SpecificInstances.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(SpecificInstances), args);
+            }
+        }
 
 
         // list of components and where in the ship they are.
-        public ObservableDictionary<Entity, double> ComponentDictionary { get; set; } = new ObservableDictionary<Entity, double>();
+        public ObservableDictionary<Entity, double> ComponentDictionary
+        {
+            get { return _componentDictionary; }
+            set
+            {
+                SetField(ref _componentDictionary, value);
+                ComponentDictionary.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ComponentDictionary), args);
+            }
+        }
+        #endregion
 
+        #region Constructors
         public ComponentInstancesDB()
         {
-            SpecificInstances.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(SpecificInstances), args);
-            ComponentDictionary.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ComponentDictionary), args);
+            SpecificInstances = new ObservableDictionary<Entity, ObservableCollection<Entity>>();
+            ComponentDictionary = new ObservableDictionary<Entity, double>();
         }
 
         public ComponentInstancesDB(IDictionary<Entity, ObservableCollection<Entity>> specificInstances, IDictionary<Entity, double> componentDiectory) : this()
@@ -52,16 +73,16 @@ namespace Pulsar4X.ECSLib
             SpecificInstances.Merge(specificInstances);
             ComponentDictionary.Merge(componentDiectory);
         }
-        
-        public ComponentInstancesDB(ComponentInstancesDB db) : this(db.SpecificInstances, db.ComponentDictionary) { }
 
+        public ComponentInstancesDB(ComponentInstancesDB db) : this(db.SpecificInstances, db.ComponentDictionary) { }
+        #endregion
+
+        #region Interfaces, Overrides, and Operators
         /// <summary>
         /// this is a shallow clone. it does not clone the referenced component instance entities!!!
         /// </summary>
         /// <returns></returns>
-        public override object Clone()
-        {
-            return new ComponentInstancesDB(this);
-        }
+        public override object Clone() => new ComponentInstancesDB(this);
+        #endregion
     }
 }

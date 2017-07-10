@@ -17,31 +17,42 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using System.Collections.Generic;
+
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     /// <summary>
-    /// this datablob allows an entity to be orderable. 
+    /// this datablob allows an entity to be orderable.
     /// </summary>
     public class OrderableDB : BaseDataBlob
-    {        
+    {
+        #region Fields
+        private ObservableCollection<BaseAction> _actionQueue;
+        #endregion
+
+        #region Properties
         [JsonProperty]
-        public List<BaseAction> ActionQueue { get; } = new List<BaseAction>();
-        
-        public OrderableDB()
+        public ObservableCollection<BaseAction> ActionQueue
         {
+            get { return _actionQueue; }
+            set
+            {
+                _actionQueue = value;
+                ActionQueue.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ActionQueue), args);
+            }
         }
+        #endregion
 
-        public OrderableDB(OrderableDB db)
-        {
-            ActionQueue = new List<BaseAction>(db.ActionQueue);
-        }
+        #region Constructors
+        public OrderableDB() { ActionQueue = new ObservableCollection<BaseAction>(); }
 
-        public override object Clone()
-        {
-            return new OrderableDB(this);
-        }
+        public OrderableDB(OrderableDB db) { ActionQueue = new ObservableCollection<BaseAction>(db.ActionQueue); }
+        #endregion
+
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new OrderableDB(this);
+        #endregion
     }
 }

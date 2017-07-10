@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     /// <summary>
@@ -24,25 +25,25 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class HangerDB : BaseDataBlob
     {
+        #region Fields
         private int _hangerSpace;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Total amount of hanger space in the ship, in tons.
         /// </summary>
         public int HangerSpace { get { return _hangerSpace; } set { SetField(ref _hangerSpace, value); } }
+        #endregion
 
-        public HangerDB()
-        {
-        }
+        #region Constructors
+        public HangerDB() { }
 
-        public HangerDB(HangerDB hangerDB)
-        {
-            HangerSpace = hangerDB.HangerSpace;
-        }
+        public HangerDB(HangerDB hangerDB) { HangerSpace = hangerDB.HangerSpace; }
+        #endregion
 
-        public override object Clone()
-        {
-            return new HangerDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new HangerDB(this);
+        #endregion
     }
 }

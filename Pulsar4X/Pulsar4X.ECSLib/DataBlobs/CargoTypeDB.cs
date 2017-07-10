@@ -17,10 +17,10 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
@@ -28,16 +28,19 @@ namespace Pulsar4X.ECSLib
     /// Contains info on how an entitiy can be stored.
     /// NOTE an entity with this datablob must also have a MassVolumeDB
     /// </summary>
-    public class CargoAbleTypeDB : BaseDataBlob , ICargoable
+    public class CargoAbleTypeDB : BaseDataBlob, ICargoable
     {
-        private string _itemName;
+        #region Fields
         private Guid _cargoTypeID;
+        private string _itemName;
+        #endregion
 
+        #region Properties
         [JsonIgnore]
         public string ItemName { get { return _itemName; } private set { SetField(ref _itemName, value); } }
 
         [JsonProperty]
-        public Guid CargoTypeID { get { return _cargoTypeID; } internal set { SetField(ref _cargoTypeID, value); } }
+        public Guid CargoTypeID { get { return _cargoTypeID; } set { SetField(ref _cargoTypeID, value); } }
 
         [JsonIgnore]
         public Guid ID => OwningEntity.Guid;
@@ -47,26 +50,21 @@ namespace Pulsar4X.ECSLib
 
         [JsonIgnore]
         public string Name => OwningEntity.GetDataBlob<NameDB>()?.GetName(OwningEntity.GetDataBlob<OwnedDB>()?.ObjectOwner) ?? "Unknown Object";
+        #endregion
 
-        public CargoAbleTypeDB()
-        {
-        }
+        #region Constructors
+        public CargoAbleTypeDB() { }
 
-        public CargoAbleTypeDB(Guid cargoTypeID)
-        {
-            CargoTypeID = cargoTypeID;
-        }
+        public CargoAbleTypeDB(Guid cargoTypeID) { CargoTypeID = cargoTypeID; }
 
-        public CargoAbleTypeDB(CargoAbleTypeDB cargoTypeDB)
-        {
-            CargoTypeID = cargoTypeDB.CargoTypeID;
-        }
+        public CargoAbleTypeDB(CargoAbleTypeDB cargoTypeDB) { CargoTypeID = cargoTypeDB.CargoTypeID; }
+        #endregion
 
-        public override object Clone()
-        {
-            return new CargoAbleTypeDB(this);
-        }
-        
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new CargoAbleTypeDB(this);
+        #endregion
+
+        #region Private Methods
         // JSON deserialization callback.
         [OnDeserialized]
         private void Deserialized(StreamingContext context)
@@ -75,5 +73,6 @@ namespace Pulsar4X.ECSLib
             var game = (Game)context.Context;
             game.PostLoad += (sender, args) => { ItemName = OwningEntity.GetDataBlob<DesignInfoDB>()?.DesignEntity.GetDataBlob<NameDB>()?.DefaultName ?? Name; };
         }
+        #endregion
     }
 }

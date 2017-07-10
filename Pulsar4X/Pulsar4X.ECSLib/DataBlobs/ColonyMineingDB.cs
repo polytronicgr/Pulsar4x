@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using System;
 using System.Collections.Generic;
 
@@ -24,24 +25,32 @@ namespace Pulsar4X.ECSLib
 {
     public class ColonyMinesDB : BaseDataBlob
     {
-        public ObservableDictionary<Guid, int> MiningRate { get; set; } = new ObservableDictionary<Guid, int>();
+        #region Fields
+        private ObservableDictionary<Guid, int> _miningRate;
+        #endregion
 
-        public ColonyMinesDB()
+        #region Properties
+        public ObservableDictionary<Guid, int> MiningRate
         {
-            MiningRate.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(MiningRate), args);
+            get { return _miningRate; }
+            set
+            {
+                SetField(ref _miningRate, value);
+                MiningRate.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(MiningRate), args);
+            }
         }
+        #endregion
 
-        public ColonyMinesDB(IDictionary<Guid, int> miningRate) : this()
-        {
-            MiningRate.Merge(miningRate);
-        }
+        #region Constructors
+        public ColonyMinesDB() { MiningRate = new ObservableDictionary<Guid, int>(); }
+
+        public ColonyMinesDB(IDictionary<Guid, int> miningRate) : this() { MiningRate.Merge(miningRate); }
 
         public ColonyMinesDB(ColonyMinesDB db) : this(db.MiningRate) { }
+        #endregion
 
-
-        public override object Clone()
-        {
-            return new ColonyMinesDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new ColonyMinesDB(this);
+        #endregion
     }
 }

@@ -17,30 +17,31 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pulsar4X.ECSLib
 {
     public class SimpleBeamWeaponAtbDB : BaseDataBlob
     {
-        private double _maxRange;
+        #region Fields
         private double _damageAmount;
+        private double _maxRange;
         private double _reloadRate;
+        #endregion
+
+        #region Properties
+        [JsonProperty]
+        public double MaxRange { get { return _maxRange; } set { SetField(ref _maxRange, value); } }
 
         [JsonProperty]
-        public double MaxRange { get { return _maxRange; } internal set { SetField(ref _maxRange, value); } }
+        public double DamageAmount { get { return _damageAmount; } set { SetField(ref _damageAmount, value); } }
 
         [JsonProperty]
-        public double DamageAmount { get { return _damageAmount; } internal set { SetField(ref _damageAmount, value); } }
+        public double ReloadRate { get { return _reloadRate; } set { SetField(ref _reloadRate, value); } }
+        #endregion
 
-        [JsonProperty]
-        public double ReloadRate { get { return _reloadRate; } internal set { SetField(ref _reloadRate, value); } }
-
+        #region Constructors
         public SimpleBeamWeaponAtbDB() { }
 
         public SimpleBeamWeaponAtbDB(double maxRange, double damageAmount, double reloadRate)
@@ -56,10 +57,10 @@ namespace Pulsar4X.ECSLib
             DamageAmount = db.DamageAmount;
             ReloadRate = db.ReloadRate;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new SimpleBeamWeaponAtbDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new SimpleBeamWeaponAtbDB(this);
+        #endregion
     }
 }

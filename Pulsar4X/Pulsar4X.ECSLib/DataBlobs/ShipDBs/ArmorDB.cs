@@ -17,53 +17,60 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using System.Collections;
 
 namespace Pulsar4X.ECSLib
 {
-    public class ArmorDefDB 
+    public class ArmorDefDB
     {
+        #region Fields
         public string Name;
 
         public double Strength;
+        #endregion
 
-        public ArmorDefDB()
-        {
-        }
+        #region Constructors
+        #endregion
     }
 
     public class ArmorDB : BaseDataBlob
     {
+        #region Fields
         public ArmorDefDB _armorDef;
         public BitArray[] _armorStatus;
+        #endregion
 
+        #region Properties
         public ArmorDefDB ArmorDef { get { return _armorDef; } set { SetField(ref _armorDef, value); } }
         public BitArray[] ArmorStatus { get { return _armorStatus; } set { SetField(ref _armorStatus, value); } }
+        #endregion
 
-        public ArmorDB(ArmorDefDB armorDef, BitArray[] armorStatus)
-        {
-        }
+        #region Constructors
+        public ArmorDB(ArmorDefDB armorDef, BitArray[] armorStatus) { }
 
-        public ArmorDB()
-        {
-            
-        }
+        public ArmorDB() { }
 
         public ArmorDB(ArmorDB armorDB)
         {
-            if(armorDB.ArmorDef != null)
-                ArmorDef = new ArmorDefDB() {Name = armorDB.ArmorDef.Name, Strength = armorDB.ArmorDef.Strength};
+            if (armorDB.ArmorDef != null)
+            {
+                ArmorDef = new ArmorDefDB
+                           {
+                               Name = armorDB.ArmorDef.Name,
+                               Strength = armorDB.ArmorDef.Strength
+                           };
+            }
             if (armorDB.ArmorStatus != null)
             {
                 ArmorStatus = new BitArray[armorDB.ArmorStatus.Length];
                 armorDB.ArmorStatus.CopyTo(ArmorStatus, 0);
             }
         }
+        #endregion
 
-
-        public override object Clone()
-        {
-            return new ArmorDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new ArmorDB(this);
+        #endregion
     }
 }

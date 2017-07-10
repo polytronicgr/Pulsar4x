@@ -21,7 +21,7 @@ namespace Pulsar4X.ECSLib
 
         public CargoStorageUIData(StaticDataStore staticData, CargoStorageDB db)
         {
-            foreach (var kvp in db.CargoCapicity)
+            foreach (var kvp in db.CargoCapacity)
             {
                 string cargoTypeName = staticData.CargoTypes[kvp.Key].Name;
                 Capacities.Add(new CargoTypeAmount(){TypeName = cargoTypeName, Amount = kvp.Value});

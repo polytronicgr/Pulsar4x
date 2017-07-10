@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
@@ -26,25 +27,27 @@ namespace Pulsar4X.ECSLib
     //
     public class PopulationSupportAtbDB : BaseDataBlob
     {
+        #region Fields
         private int _populationCapacity;
+        #endregion
 
+        #region Properties
         [JsonProperty]
         // Population capacity at 1.0 colony cost
         // Infrastructure = 10000
-        public int PopulationCapacity { get { return _populationCapacity; } internal set { SetField(ref _populationCapacity, value); } }
+        public int PopulationCapacity { get { return _populationCapacity; } set { SetField(ref _populationCapacity, value); } }
+        #endregion
 
+        #region Constructors
         public PopulationSupportAtbDB() { }
 
         public PopulationSupportAtbDB(double popSupportCapacity) : this((int)popSupportCapacity) { }
 
-        public PopulationSupportAtbDB(int popSupportCapacity)
-        {
-            PopulationCapacity = popSupportCapacity;
-        }
+        public PopulationSupportAtbDB(int popSupportCapacity) { PopulationCapacity = popSupportCapacity; }
+        #endregion
 
-        public override object Clone()
-        {
-            return new PopulationSupportAtbDB(PopulationCapacity);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new PopulationSupportAtbDB(PopulationCapacity);
+        #endregion
     }
 }

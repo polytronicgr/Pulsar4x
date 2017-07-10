@@ -17,17 +17,14 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class RuinsDB : BaseDataBlob
     {
-        private uint _ruinCount;
-        private int _ruinTechLevel;
-        private RSize _ruinSize;
-        private RQuality _ruinQuality;
-
+        #region Types
         /// <summary>
         /// Ruins size descriptors
         /// </summary>
@@ -53,31 +50,74 @@ namespace Pulsar4X.ECSLib
             MultipleIntact,
             Count
         }
+        #endregion
 
+        #region Fields
+        private uint _ruinCount;
+        private RQuality _ruinQuality;
+        private RSize _ruinSize;
+        private int _ruinTechLevel;
+        #endregion
+
+        #region Properties
         /// <summary>
         /// How many ruins are on this world. or something.
         /// </summary>
         [JsonProperty]
-        public uint RuinCount { get { return _ruinCount; } internal set { SetField(ref _ruinCount, value);; } }
+        public uint RuinCount
+        {
+            get { return _ruinCount; }
+            set
+            {
+                SetField(ref _ruinCount, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// What kinds of things should be found in this ruin? including sophistication of killbots?
         /// </summary>
         [JsonProperty]
-        public int RuinTechLevel { get { return _ruinTechLevel; } internal set { SetField(ref _ruinTechLevel, value);; } }
+        public int RuinTechLevel
+        {
+            get { return _ruinTechLevel; }
+            set
+            {
+                SetField(ref _ruinTechLevel, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// How big are these ruins?
         /// </summary>
         [JsonProperty]
-        public RSize RuinSize { get { return _ruinSize; } internal set { SetField(ref _ruinSize, value);; } }
+        public RSize RuinSize
+        {
+            get { return _ruinSize; }
+            set
+            {
+                SetField(ref _ruinSize, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// What shape are these ruins in?
         /// </summary>
         [JsonProperty]
-        public RQuality RuinQuality { get { return _ruinQuality; } internal set { SetField(ref _ruinQuality, value);; } }
+        public RQuality RuinQuality
+        {
+            get { return _ruinQuality; }
+            set
+            {
+                SetField(ref _ruinQuality, value);
+                ;
+            }
+        }
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Empty constructor for RuinsDataBlob.
         /// </summary>
@@ -103,10 +143,10 @@ namespace Pulsar4X.ECSLib
             RuinSize = ruinSize;
             RuinQuality = ruinQuality;
         }
-        
-        public override object Clone()
-        {
-            return new RuinsDB(RuinCount, RuinTechLevel, RuinSize, RuinQuality);
-        }
+        #endregion
+
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new RuinsDB(RuinCount, RuinTechLevel, RuinSize, RuinQuality);
+        #endregion
     }
 }

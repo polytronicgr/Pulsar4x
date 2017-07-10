@@ -17,35 +17,43 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Pulsar4X.ECSLib
 {
     public class ColonyBonusesDB : BaseDataBlob
     {
-       
-        private ObservableDictionary<AbilityType, float> FactionBonus = new ObservableDictionary<AbilityType, float>();
+        #region Fields
+        private ObservableDictionary<AbilityType, float> _factionBonus;
+        #endregion
 
-        public float GetBonus(AbilityType type) => FactionBonus[type];
-
-        public ColonyBonusesDB()
+        #region Properties
+        public ObservableDictionary<AbilityType, float> FactionBonus
         {
-            FactionBonus.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(FactionBonus), args);
+            get { return _factionBonus; }
+            set
+            {
+                SetField(ref _factionBonus, value);
+                FactionBonus.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(_factionBonus), args);
+            }
         }
+        #endregion
 
-        public ColonyBonusesDB(IDictionary<AbilityType, float> bonuses) : this()
-        {
-            FactionBonus.Merge(bonuses);
-        }
+        #region Constructors
+        public ColonyBonusesDB() { FactionBonus = new ObservableDictionary<AbilityType, float>(); }
+
+        public ColonyBonusesDB(IDictionary<AbilityType, float> bonuses) : this() { FactionBonus.Merge(bonuses); }
 
         public ColonyBonusesDB(ColonyBonusesDB db) : this(db.FactionBonus) { }
+        #endregion
 
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new ColonyBonusesDB(this);
+        #endregion
 
-
-        public override object Clone()
-        {
-            return new ColonyBonusesDB(this);
-        }
+        #region Public Methods
+        public float GetBonus(AbilityType type) => FactionBonus[type];
+        #endregion
     }
 }

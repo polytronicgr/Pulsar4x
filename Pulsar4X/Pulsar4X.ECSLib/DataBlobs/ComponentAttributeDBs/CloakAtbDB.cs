@@ -17,28 +17,39 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using System.Dynamic;
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class CloakAtbDB : BaseDataBlob
     {
+        #region Fields
         private float _cloakMultiplier;
         private int _maxShipSize;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Max ship size this cloak can handle.
         /// </summary>
         [JsonProperty]
-        public int MaxShipSize { get { return _maxShipSize; } internal set { SetField(ref _maxShipSize, value); } }
+        public int MaxShipSize { get { return _maxShipSize; } set { SetField(ref _maxShipSize, value); } }
 
         /// <summary>
         /// TCS = ShipTonnage * CloakMultiplier
         /// </summary>
         [JsonProperty]
-        public float CloakMultiplier { get { return _cloakMultiplier; } internal set { SetField(ref _cloakMultiplier, value); } }
+        public float CloakMultiplier { get { return _cloakMultiplier; } set { SetField(ref _cloakMultiplier, value); } }
+        #endregion
 
-        public override object Clone() => new CloakAtbDB {MaxShipSize = MaxShipSize, CloakMultiplier = CloakMultiplier, OwningEntity = OwningEntity};
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new CloakAtbDB
+                                          {
+                                              MaxShipSize = MaxShipSize,
+                                              CloakMultiplier = CloakMultiplier,
+                                              OwningEntity = OwningEntity
+                                          };
+        #endregion
     }
 }

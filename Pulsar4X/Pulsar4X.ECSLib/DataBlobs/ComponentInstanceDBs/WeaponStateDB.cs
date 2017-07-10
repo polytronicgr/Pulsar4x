@@ -17,56 +17,62 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
-using System;
 
+using System;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class WeaponStateDB : BaseDataBlob
     {
+        #region Fields
         private TimeSpan _coolDown;
 
         [JsonProperty]
-        public TimeSpan CoolDown { get { return _coolDown; } internal set { SetField(ref _coolDown, value); } }
-
-        [JsonProperty]
         private Entity _fireControl;
+        #endregion
+
+        #region Properties
+        [JsonProperty]
+        public TimeSpan CoolDown { get { return _coolDown; } set { SetField(ref _coolDown, value); } }
 
 
         public Entity FireControl
         {
-            get
-            {
-                return _fireControl;
-            }
-
-            // Needs to be accessible from outside ECSLib, so no internal set
+            get { return _fireControl; }
             set
             {
                 if (value == null)
+                {
                     _fireControl = null;
-                else if (value.HasDataBlob<FireControlInstanceAbilityDB>())
-                    _fireControl = value;
+                }
                 else
-                    _fireControl = null;
+                {
+                    if (value.HasDataBlob<FireControlInstanceAbilityDB>())
+                    {
+                        _fireControl = value;
+                    }
+                    else
+                    {
+                        _fireControl = null;
+                    }
+                }
             }
         }
+        #endregion
 
-        public WeaponStateDB()
-        {
-            FireControl = null;
-        }
+        #region Constructors
+        public WeaponStateDB() { FireControl = null; }
 
         public WeaponStateDB(WeaponStateDB db)
         {
             CoolDown = db.CoolDown;
             FireControl = db.FireControl;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new WeaponStateDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new WeaponStateDB(this);
+        #endregion
     }
 }

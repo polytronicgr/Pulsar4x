@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     /// <summary>
@@ -24,17 +25,20 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class ShieldsDB : BaseDataBlob
     {
-        private int _maximumShieldStrength;
+        #region Fields
         private int _currentShieldStrength;
+        private int _maximumShieldStrength;
         private int _rechargeRate;
+        #endregion
 
+        #region Properties
         public int MaximumShieldStrength { get { return _maximumShieldStrength; } set { SetField(ref _maximumShieldStrength, value); } }
         public int CurrentShieldStrength { get { return _currentShieldStrength; } set { SetField(ref _currentShieldStrength, value); } }
         public int RechargeRate { get { return _rechargeRate; } set { SetField(ref _rechargeRate, value); } }
+        #endregion
 
-        public ShieldsDB()
-        {
-        }
+        #region Constructors
+        public ShieldsDB() { }
 
         public ShieldsDB(ShieldsDB shieldsDB)
         {
@@ -42,10 +46,10 @@ namespace Pulsar4X.ECSLib
             CurrentShieldStrength = shieldsDB.CurrentShieldStrength;
             RechargeRate = shieldsDB.RechargeRate;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new ShieldsDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new ShieldsDB(this);
+        #endregion
     }
 }

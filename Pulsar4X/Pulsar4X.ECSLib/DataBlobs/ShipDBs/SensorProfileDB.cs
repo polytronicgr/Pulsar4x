@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     /// <summary>
@@ -24,17 +25,20 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class SensorProfileDB : BaseDataBlob
     {
-        private int _totalCrossSection;
-        private int _thermalSignature;
+        #region Fields
         private int _emSignature;
+        private int _thermalSignature;
+        private int _totalCrossSection;
+        #endregion
 
+        #region Properties
         public int TotalCrossSection { get { return _totalCrossSection; } set { SetField(ref _totalCrossSection, value); } }
         public int ThermalSignature { get { return _thermalSignature; } set { SetField(ref _thermalSignature, value); } }
         public int EMSignature { get { return _emSignature; } set { SetField(ref _emSignature, value); } }
+        #endregion
 
-        public SensorProfileDB()
-        {
-        }
+        #region Constructors
+        public SensorProfileDB() { }
 
         public SensorProfileDB(SensorProfileDB sensorProfileDB)
         {
@@ -42,10 +46,10 @@ namespace Pulsar4X.ECSLib
             ThermalSignature = sensorProfileDB.ThermalSignature;
             EMSignature = sensorProfileDB.EMSignature;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new SensorProfileDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new SensorProfileDB(this);
+        #endregion
     }
 }

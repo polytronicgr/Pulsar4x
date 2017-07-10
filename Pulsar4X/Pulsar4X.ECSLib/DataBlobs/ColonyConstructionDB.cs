@@ -17,34 +17,36 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     [Flags]
     public enum ConstructionType
     {
-        None            = 0,
-        Installations   = 1 << 0,
-        ShipComponents  = 1 << 1,
-        Ships           = 1 << 2,
-        Fighters        = 1 << 3,
-        Ordnance        = 1 << 4,
+        None = 0,
+        Installations = 1 << 0,
+        ShipComponents = 1 << 1,
+        Ships = 1 << 2,
+        Fighters = 1 << 3,
+        Ordnance = 1 << 4
     }
 
     public class JobBase
     {
-        public Guid ItemGuid { get; private set; }
-        //yes this can be public set just fine. no reason not to here...
+        #region Properties
+        public Guid ItemGuid { get; }
         public ushort NumberOrdered { get; set; }
-        public ushort NumberCompleted { get; internal set; }
-        public int PointsLeft { get; internal set; }
-        //again no reason this can't be public set
+        public ushort NumberCompleted { get; set; }
+        public int PointsLeft { get; set; }
         public bool Auto { get; set; }
+        #endregion
 
+        #region Constructors
         public JobBase(Guid guid, ushort numberOrderd, int jobPoints, bool auto)
         {
             ItemGuid = guid;
@@ -53,52 +55,79 @@ namespace Pulsar4X.ECSLib
             PointsLeft = jobPoints;
             Auto = auto;
         }
+        #endregion
     }
 
 
     public class ConstructionJob : JobBase
     {
-        
-        public ConstructionType ConstructionType { get; internal set; }
+        #region Properties
+        public ConstructionType ConstructionType { get; set; }
         public Entity InstallOn { get; internal set; }
-        public Dictionary<Guid, int> MineralsRequired { get; internal set; }
-        public Dictionary<Guid, int> MaterialsRequired { get; internal set; }
-        public Dictionary<Guid, int> ComponentsRequired { get; internal set; }
+        public Dictionary<Guid, int> MineralsRequired { get; set; }
+        public Dictionary<Guid, int> MaterialsRequired { get; set; }
+        public Dictionary<Guid, int> ComponentsRequired { get; set; }
+        #endregion
 
-        public ConstructionJob(Guid designGuid, ConstructionType constructionType, ushort numberOrderd, int jobPoints, bool auto, 
-            Dictionary<Guid,int> mineralCost, Dictionary<Guid, int> matCost, Dictionary<Guid,int> componentCost  ): 
-            base(designGuid, numberOrderd, jobPoints, auto)
+        #region Constructors
+        public ConstructionJob(Guid designGuid, ConstructionType constructionType, ushort numberOrderd, int jobPoints, bool auto, IDictionary<Guid, int> mineralCost, IDictionary<Guid, int> matCost, IDictionary<Guid, int> componentCost) : base(designGuid, numberOrderd, jobPoints, auto)
         {
             ConstructionType = constructionType;
             MineralsRequired = new Dictionary<Guid, int>(mineralCost);
             MaterialsRequired = new Dictionary<Guid, int>(matCost);
             ComponentsRequired = new Dictionary<Guid, int>(componentCost);
         }
+        #endregion
     }
 
-    public class  ColonyConstructionDB : BaseDataBlob
+    public class ColonyConstructionDB : BaseDataBlob
     {
+        #region Fields
+        private ObservableDictionary<ConstructionType, int> _constructionRates;
+        private ObservableCollection<ConstructionJob> _jobBatchList;
         private int _pointsPerTick;
-        public int PointsPerTick { get { return _pointsPerTick; } internal set { SetField(ref _pointsPerTick, value); } }
+        #endregion
+
+        #region Properties
+        public int PointsPerTick { get { return _pointsPerTick; } set { SetField(ref _pointsPerTick, value); } }
 
         [JsonProperty]
-        public ObservableDictionary<ConstructionType, int> ConstructionRates { get; internal set; } = new ObservableDictionary<ConstructionType, int>
-                                                                                                      {
-                                                                                                          {ConstructionType.Ordnance, 0},
-                                                                                                          {ConstructionType.Installations, 0},
-                                                                                                          {ConstructionType.Fighters, 0},
-                                                                                                          {ConstructionType.ShipComponents, 0},
-                                                                                                          {ConstructionType.Ships, 0},
-                                                                                                      };
-        [JsonProperty]
-        public ObservableCollection<ConstructionJob> JobBatchList { get; internal set; } = new ObservableCollection<ConstructionJob>();
+        public ObservableDictionary<ConstructionType, int> ConstructionRates
+        {
+            get { return _constructionRates; }
+            set
+            {
+                SetField(ref _constructionRates, value);
+                ConstructionRates.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ConstructionRates), args);
+            }
+        }
 
+        [JsonProperty]
+        public ObservableCollection<ConstructionJob> JobBatchList
+        {
+            get { return _jobBatchList; }
+            set
+            {
+                SetField(ref _jobBatchList, value);
+                JobBatchList.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(JobBatchList), args);
+            }
+        }
+        #endregion
+
+        #region Constructors
         public ColonyConstructionDB()
         {
-            ConstructionRates.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ConstructionRates), args);
-            JobBatchList.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(JobBatchList), args);
+            ConstructionRates = new ObservableDictionary<ConstructionType, int>
+                                {
+                                    {ConstructionType.Ordnance, 0},
+                                    {ConstructionType.Installations, 0},
+                                    {ConstructionType.Fighters, 0},
+                                    {ConstructionType.ShipComponents, 0},
+                                    {ConstructionType.Ships, 0}
+                                };
+            JobBatchList = new ObservableCollection<ConstructionJob>();
         }
-        
+
         public ColonyConstructionDB(IDictionary<ConstructionType, int> rates, IEnumerable<ConstructionJob> jobBatchList) : this()
         {
             if (rates != null)
@@ -117,10 +146,10 @@ namespace Pulsar4X.ECSLib
         }
 
         public ColonyConstructionDB(ColonyConstructionDB db) : this(db.ConstructionRates, db.JobBatchList) { }
+        #endregion
 
-        public override object Clone()
-        {
-            return new ColonyConstructionDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new ColonyConstructionDB(this);
+        #endregion
     }
 }

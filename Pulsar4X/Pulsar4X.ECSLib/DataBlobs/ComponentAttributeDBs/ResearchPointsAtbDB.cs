@@ -17,19 +17,24 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class ResearchPointsAtbDB : BaseDataBlob
     {
+        #region Fields
         [JsonProperty]
-        private int _pointsPerEconTick;        
-        public int PointsPerEconTick { get { return _pointsPerEconTick; } internal set { SetField(ref _pointsPerEconTick, value); } }
+        private int _pointsPerEconTick;
+        #endregion
 
-        public ResearchPointsAtbDB()
-        {
-        }
+        #region Properties
+        public int PointsPerEconTick { get { return _pointsPerEconTick; } set { SetField(ref _pointsPerEconTick, value); } }
+        #endregion
+
+        #region Constructors
+        public ResearchPointsAtbDB() { }
 
         /// <summary>
         /// Casts to int.
@@ -40,14 +45,11 @@ namespace Pulsar4X.ECSLib
             _pointsPerEconTick = (int)pointsPerEconTick;
         }
 
-        public ResearchPointsAtbDB(ResearchPointsAtbDB db)
-        {
+        public ResearchPointsAtbDB(ResearchPointsAtbDB db) { }
+        #endregion
 
-        }
-
-        public override object Clone()
-        {
-            return new ResearchPointsAtbDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new ResearchPointsAtbDB(this);
+        #endregion
     }
 }

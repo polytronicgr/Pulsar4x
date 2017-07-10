@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     /// <summary>
@@ -24,17 +25,20 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class CrewDB : BaseDataBlob
     {
-        private double _deploymentTime;
+        #region Fields
         private int _crewBerths;
-        private int _requiredCrew;
-        private int _currentCrew;
-        private int _spareBerths;
-        private int _cryoCrewberths;
-        private int _crewInCryo;
         private int _crewGrade;
+        private int _crewInCryo;
+        private int _cryoCrewberths;
+        private int _currentCrew;
+        private double _deploymentTime;
         private bool _hasBridge;
         private bool _hasFlagBridge;
+        private int _requiredCrew;
+        private int _spareBerths;
+        #endregion
 
+        #region Properties
         public double DeploymentTime { get { return _deploymentTime; } set { SetField(ref _deploymentTime, value); } } // in months
         public int CrewBerths { get { return _crewBerths; } set { SetField(ref _crewBerths, value); } }
         public int RequiredCrew { get { return _requiredCrew; } set { SetField(ref _requiredCrew, value); } }
@@ -47,10 +51,10 @@ namespace Pulsar4X.ECSLib
 
         public bool HasBridge { get { return _hasBridge; } set { SetField(ref _hasBridge, value); } }
         public bool HasFlagBridge { get { return _hasFlagBridge; } set { SetField(ref _hasFlagBridge, value); } }
+        #endregion
 
-        public CrewDB()
-        {
-        }
+        #region Constructors
+        public CrewDB() { }
 
         public CrewDB(CrewDB crewDB)
         {
@@ -67,10 +71,10 @@ namespace Pulsar4X.ECSLib
             HasBridge = crewDB.HasBridge;
             HasFlagBridge = crewDB.HasFlagBridge;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new CrewDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new CrewDB(this);
+        #endregion
     }
 }

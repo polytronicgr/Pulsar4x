@@ -66,9 +66,9 @@ namespace Pulsar4X.ECSLib
             var colonyConstruction = colonyEntity.GetDataBlob<ColonyConstructionDB>();
             batchJob.NumberCompleted++;
             batchJob.PointsLeft = designInfo.BuildPointCost;
-            batchJob.MineralsRequired = designInfo.MinerialCosts;
-            batchJob.MineralsRequired = designInfo.MaterialCosts;
-            batchJob.MineralsRequired = designInfo.ComponentCosts;
+            batchJob.MineralsRequired = new Dictionary<Guid, int>(designInfo.MinerialCosts);
+            batchJob.MaterialsRequired = new Dictionary<Guid, int>(designInfo.MaterialCosts);
+            batchJob.ComponentsRequired = new Dictionary<Guid, int>(designInfo.ComponentCosts);
             var factionInfo = colonyEntity.GetDataBlob<OwnedDB>().ObjectOwner.GetDataBlob<FactionInfoDB>();
             Entity designEntity = factionInfo.ComponentDesigns[batchJob.ItemGuid];
             Entity specificComponent = ComponentInstanceFactory.NewInstanceFromDesignEntity(designEntity, colonyEntity.GetDataBlob<OwnedDB>().ObjectOwner);

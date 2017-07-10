@@ -17,60 +17,137 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class FactionInfoDB : BaseDataBlob
     {
+        #region Fields
+        private ObservableCollection<Entity> _colonies;
+        private ObservableDictionary<Guid, Entity> _componentDesigns;
+        private ObservableCollection<Entity> _knownFactions;
+        private ObservableDictionary<Guid, ObservableCollection<Entity>> _knownJumpPoints;
+        private ObservableCollection<Guid> _knownSystems;
+        private ObservableDictionary<Guid, Entity> _missileDesigns;
+        private ObservableCollection<Entity> _shipClasses;
+        private ObservableCollection<Entity> _species;
+        #endregion
+
+        #region Properties
         [PublicAPI]
         [JsonProperty]
-        public ObservableDictionary<Guid, ObservableCollection<Entity>> KnownJumpPoints => new ObservableDictionary<Guid, ObservableCollection<Entity>>();
+        public ObservableDictionary<Guid, ObservableCollection<Entity>> KnownJumpPoints
+        {
+            get { return _knownJumpPoints; }
+            set
+            {
+                SetField(ref _knownJumpPoints, value);
+                KnownJumpPoints.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(_knownJumpPoints), args);
+            }
+        }
 
         [PublicAPI]
         [JsonProperty]
-        public ObservableDictionary<Guid, Entity> ComponentDesigns => new ObservableDictionary<Guid, Entity>();
+        public ObservableDictionary<Guid, Entity> ComponentDesigns
+        {
+            get { return _componentDesigns; }
+            set
+            {
+                SetField(ref _componentDesigns, value);
+                ComponentDesigns.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ComponentDesigns), args);
+            }
+        }
 
         [PublicAPI]
         [JsonProperty]
-        public ObservableDictionary<Guid, Entity> MissileDesigns => new ObservableDictionary<Guid, Entity>();
+        public ObservableDictionary<Guid, Entity> MissileDesigns
+        {
+            get { return _missileDesigns; }
+            set
+            {
+                SetField(ref _missileDesigns, value);
+                MissileDesigns.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(MissileDesigns), args);
+            }
+        }
 
         [PublicAPI]
         [JsonProperty]
-        public ObservableCollection<Entity> Species { get; internal set; } = new ObservableCollection<Entity>();
+        public ObservableCollection<Entity> Species
+        {
+            get { return _species; }
+            set
+            {
+                SetField(ref _species, value);
+                Species.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Species), args);
+            }
+        }
 
         [PublicAPI]
         [JsonProperty]
-        public ObservableCollection<Guid> KnownSystems { get; internal set; } = new ObservableCollection<Guid>();
-        
-        [PublicAPI]
-        [JsonProperty]
-        public ObservableCollection<Entity> KnownFactions { get; internal set; } = new ObservableCollection<Entity>();
+        public ObservableCollection<Guid> KnownSystems
+        {
+            get { return _knownSystems; }
+            set
+            {
+                SetField(ref _knownSystems, value);
+                KnownSystems.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(KnownSystems), args);
+            }
+        }
 
         [PublicAPI]
         [JsonProperty]
-        public ObservableCollection<Entity> Colonies { get; internal set; } = new ObservableCollection<Entity>();
+        public ObservableCollection<Entity> KnownFactions
+        {
+            get { return _knownFactions; }
+            set
+            {
+                SetField(ref _knownFactions, value);
+                KnownFactions.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(KnownFactions), args);
+            }
+        }
 
         [PublicAPI]
         [JsonProperty]
-        public ObservableCollection<Entity> ShipClasses { get; internal set; } = new ObservableCollection<Entity>();
+        public ObservableCollection<Entity> Colonies
+        {
+            get { return _colonies; }
+            set
+            {
+                SetField(ref _colonies, value);
+                Colonies.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Colonies), args);
+            }
+        }
 
+        [PublicAPI]
+        [JsonProperty]
+        public ObservableCollection<Entity> ShipClasses
+        {
+            get { return _shipClasses; }
+            set
+            {
+                SetField(ref _shipClasses, value);
+                ShipClasses.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ShipClasses), args);
+            }
+        }
+        #endregion
+
+        #region Constructors
         public FactionInfoDB()
         {
-            KnownJumpPoints.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(KnownJumpPoints), args);
-            ComponentDesigns.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ComponentDesigns), args);
-            MissileDesigns.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(MissileDesigns), args);
-            Species.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Species), args);
-            KnownSystems.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(KnownSystems), args);
-            KnownFactions.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(KnownFactions), args);
-            Colonies.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(Colonies), args);
-            ShipClasses.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ShipClasses), args);
+            KnownJumpPoints = new ObservableDictionary<Guid, ObservableCollection<Entity>>();
+            ComponentDesigns = new ObservableDictionary<Guid, Entity>();
+            MissileDesigns = new ObservableDictionary<Guid, Entity>();
+            Species = new ObservableCollection<Entity>();
+            KnownSystems = new ObservableCollection<Guid>();
+            KnownFactions = new ObservableCollection<Entity>();
+            Colonies = new ObservableCollection<Entity>();
+            ShipClasses = new ObservableCollection<Entity>();
         }
-        
+
 
         public FactionInfoDB(FactionInfoDB factionDB) : this()
         {
@@ -99,10 +176,10 @@ namespace Pulsar4X.ECSLib
                 ShipClasses.Add(value);
             }
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new FactionInfoDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new FactionInfoDB(this);
+        #endregion
     }
 }

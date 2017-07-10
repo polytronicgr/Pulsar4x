@@ -25,9 +25,9 @@ namespace Pulsar4X.ViewModel
         {
             ComponentInfoDB componentInfo = FactionInfo.ComponentDesigns[NewJobSelectedItem].GetDataBlob<ComponentInfoDB>();
             int buildpointCost = componentInfo.BuildPointCost;
-            Dictionary<Guid, int> mineralCost = componentInfo.MinerialCosts;
-            Dictionary<Guid, int> materialCost = componentInfo.MaterialCosts;
-            Dictionary<Guid, int> componentCost = componentInfo.ComponentCosts;
+            IDictionary<Guid, int> mineralCost = componentInfo.MinerialCosts;
+            IDictionary<Guid, int> materialCost = componentInfo.MaterialCosts;
+            IDictionary<Guid, int> componentCost = componentInfo.ComponentCosts;
 
             ConstructionJob newjob = new ConstructionJob(NewJobSelectedItem, componentInfo.ConstructionType, NewJobBatchCount, buildpointCost, NewJobRepeat,
                 mineralCost, materialCost, componentCost);

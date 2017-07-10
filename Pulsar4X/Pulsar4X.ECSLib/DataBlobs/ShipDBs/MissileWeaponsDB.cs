@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 namespace Pulsar4X.ECSLib
 {
     /// <summary>
@@ -24,25 +25,28 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class MissileWeaponsDB : BaseDataBlob
     {
+        #region Fields
         private int _maximumMagazineCapicity;
         private int _usedMagazineCapicity;
+        #endregion
 
+        #region Properties
         public int MaximumMagazineCapicity { get { return _maximumMagazineCapicity; } set { SetField(ref _maximumMagazineCapicity, value); } } // in MSP
         public int UsedMagazineCapicity { get { return _usedMagazineCapicity; } set { SetField(ref _usedMagazineCapicity, value); } }
+        #endregion
 
-        public MissileWeaponsDB()
-        {
-        }
+        #region Constructors
+        public MissileWeaponsDB() { }
 
         public MissileWeaponsDB(MissileWeaponsDB missleWeaponDB)
         {
             MaximumMagazineCapicity = missleWeaponDB.MaximumMagazineCapicity;
             UsedMagazineCapicity = missleWeaponDB.UsedMagazineCapicity;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new MissileWeaponsDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new MissileWeaponsDB(this);
+        #endregion
     }
 }

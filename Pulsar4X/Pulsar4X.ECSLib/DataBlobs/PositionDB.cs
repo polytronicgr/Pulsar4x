@@ -17,16 +17,23 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class PositionDB : TreeHierarchyDB
     {
+        #region Fields
+        [JsonProperty]
+        private Vector4 _position;
+
         [JsonProperty]
         private Guid _systemGuid;
+        #endregion
 
+        #region Properties
         public override Entity Parent
         {
             get { return base.Parent; }
@@ -36,7 +43,7 @@ namespace Pulsar4X.ECSLib
                 {
                     throw new Exception("newParent must have a PositionDB");
                 }
-                Vector4 currentAbsolute = this.AbsolutePosition;
+                Vector4 currentAbsolute = AbsolutePosition;
                 Vector4 newRelative;
                 if (value == null)
                 {
@@ -68,14 +75,14 @@ namespace Pulsar4X.ECSLib
                 }
 
                 var parentpos = (PositionDB)ParentDB;
-                if(parentpos == this)
+                if (parentpos == this)
                 {
                     throw new Exception("Infinite loop triggered");
                 }
 
                 return parentpos.AbsolutePosition + _position;
             }
-            internal set
+            set
             {
                 if (Parent == null)
                 {
@@ -88,95 +95,62 @@ namespace Pulsar4X.ECSLib
                 }
             }
         }
-        [JsonProperty]
-        private Vector4 _position;
 
         /// <summary>
         /// Get or Set the position relative to the parent Entity's abolutePositon
         /// </summary>
-        public Vector4 RelativePosition
-        {
-            get { return _position; }
-            internal set { SetField(ref _position, value);; }
-        }
+        public Vector4 RelativePosition { get { return _position; } set { SetField(ref _position, value); } }
 
 
         /// <summary>
         /// System X coordinate in AU
         /// </summary>
-        public double X
-        {
-            get { return AbsolutePosition.X; }
-            internal set { SetField(ref _position.X, value);; }
-        }
+        public double X { get { return AbsolutePosition.X; } set { SetField(ref _position.X, value); } }
 
         /// <summary>
         /// System Y coordinate in AU
         /// </summary>
-        public double Y
-        {
-            get { return AbsolutePosition.Y; }
-            internal set { SetField(ref _position.Y, value);; }
-        }
+        public double Y { get { return AbsolutePosition.Y; } set { SetField(ref _position.Y, value); } }
 
         /// <summary>
         /// System Z coordinate in AU
         /// </summary>
-        public double Z
-        {
-            get { return AbsolutePosition.Z; }
-            internal set { SetField(ref _position.Z, value);; }
-        }
-
-        #region Unit Conversion Properties
+        public double Z { get { return AbsolutePosition.Z; } set { SetField(ref _position.Z, value); } }
 
         /// <summary>
         /// Position as a vec4. This is a utility property that converts Position to Km on get and to AU on set.
         /// </summary>
-        public Vector4 PositionInKm
-        {
-            get { return new Vector4(Distance.AuToKm(AbsolutePosition.X), Distance.AuToKm(AbsolutePosition.Y), Distance.AuToKm(AbsolutePosition.Z), 0); }
-            set { AbsolutePosition = new Vector4(Distance.KmToAU(value.X), Distance.KmToAU(value.Y), Distance.KmToAU(value.Z), 0); }
-        }
+        public Vector4 PositionInKm { get { return new Vector4(Distance.AuToKm(AbsolutePosition.X), Distance.AuToKm(AbsolutePosition.Y), Distance.AuToKm(AbsolutePosition.Z), 0); } set { AbsolutePosition = new Vector4(Distance.KmToAU(value.X), Distance.KmToAU(value.Y), Distance.KmToAU(value.Z), 0); } }
 
         /// <summary>
         /// System X coordinante. This is a utility property that converts the X Coord. to Km on get and to AU on set.
         /// </summary>
-        public double XInKm
-        {
-            get { return Distance.AuToKm(AbsolutePosition.X); }
-            set { _position.X = Distance.KmToAU(value); }
-        }
+        public double XInKm { get { return Distance.AuToKm(AbsolutePosition.X); } set { _position.X = Distance.KmToAU(value); } }
 
         /// <summary>
         /// System Y coordinante. This is a utility property that converts the Y Coord. to Km on get and to AU on set.
         /// </summary>
-        public double YInKm
-        {
-            get { return Distance.AuToKm(AbsolutePosition.Y); }
-            set { _position.Y = Distance.KmToAU(value); }
-        }
+        public double YInKm { get { return Distance.AuToKm(AbsolutePosition.Y); } set { _position.Y = Distance.KmToAU(value); } }
 
         /// <summary>
         /// System Z coordinate. This is a utility property that converts the Z Coord. to Km on get and to AU on set.
         /// </summary>
-        public double ZInKm
+        public double ZInKm { get { return Distance.AuToKm(AbsolutePosition.Z); } set { _position.Z = Distance.KmToAU(value); } }
+
+        public Guid SystemGuid
         {
-            get { return Distance.AuToKm(AbsolutePosition.Z); }
-            set { _position.Z = Distance.KmToAU(value); }
+            get { return _systemGuid; }
+            set
+            {
+                SetField(ref _systemGuid, value);
+                ;
+            }
         }
-
-        public Guid SystemGuid { get { return _systemGuid; } set { SetField(ref _systemGuid, value);; } }
-
-        public void AddMeters(Vector4 addVector)
-        {
-            _position += Distance.MToAU(addVector);
-        }
-
         #endregion
 
+        #region Constructors
         /// <summary>
-        /// Initialized 
+        /// Initialized
         /// .
         /// </summary>
         /// <param name="x">X value.</param>
@@ -201,17 +175,44 @@ namespace Pulsar4X.ECSLib
             SystemGuid = systemGuid;
         }
 
-        public PositionDB(PositionDB positionDB)
-            : base(positionDB.Parent)
+        public PositionDB(PositionDB positionDB) : base(positionDB.Parent)
         {
-            this.X = positionDB.X;
-            this.Y = positionDB.Y;
-            this.Z = positionDB.Z;
-            this.SystemGuid = positionDB.SystemGuid;
+            X = positionDB.X;
+            Y = positionDB.Y;
+            Z = positionDB.Z;
+            SystemGuid = positionDB.SystemGuid;
         }
 
         [UsedImplicitly]
         private PositionDB() : this(Guid.Empty) { }
+        #endregion
+
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new PositionDB(this);
+
+        public static PositionDB operator +(PositionDB posA, PositionDB posB)
+        {
+            throw new NotSupportedException("Do not add two PositionDBs. See comments in PositonDB.cs");
+
+            /* Operator not supported as it can lead to unintended consequences,
+             * especially when trying to do "posA += posB;"
+             * Instead of posA += posB, do "posA.Position += posB.Position;"
+             * 
+             * Datablobs are stored in an entity manager, and contain important metadata.
+             * posA += posB evaluates to posA = posA + posB;
+             * This operator has to return a "new" datablob. This new datablob is not the
+             * one current stored in the EntityManager. Further requests to get the positionDB
+             * will return the old positionDB after a += operation.
+             * 
+             * Ask a senior developer for further clarification if required.
+             * 
+             * Explicitly thrown to prevent new developers from adding this.
+            */
+        }
+        #endregion
+
+        #region Public Methods
+        public void AddMeters(Vector4 addVector) { _position += Distance.MToAU(addVector); }
 
         /// <summary>
         /// Static function to find the distance between two positions.
@@ -234,27 +235,6 @@ namespace Pulsar4X.ECSLib
         /// Instance function for those who don't like static functions.
         /// </summary>
         public double GetDistanceToSqrd(PositionDB otherPos) => GetDistanceBetweenSqrd(this, otherPos);
-
-        public static PositionDB operator +(PositionDB posA, PositionDB posB)
-        {
-            throw new NotSupportedException("Do not add two PositionDBs. See comments in PositonDB.cs");
-
-            /* Operator not supported as it can lead to unintended consequences,
-             * especially when trying to do "posA += posB;"
-             * Instead of posA += posB, do "posA.Position += posB.Position;"
-             * 
-             * Datablobs are stored in an entity manager, and contain important metadata.
-             * posA += posB evaluates to posA = posA + posB;
-             * This operator has to return a "new" datablob. This new datablob is not the
-             * one current stored in the EntityManager. Further requests to get the positionDB
-             * will return the old positionDB after a += operation.
-             * 
-             * Ask a senior developer for further clarification if required.
-             * 
-             * Explicitly thrown to prevent new developers from adding this.
-            */
-        }
-
-        public override object Clone() => new PositionDB(this);
+        #endregion
     }
 }

@@ -17,70 +17,121 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class MassVolumeDB : BaseDataBlob
     {
-        private double _mass;
-        private double _volume;
+        #region Fields
         private double _density;
+        private double _mass;
         private double _radius;
+        private double _volume;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Mass in KG of this entity.
         /// </summary>
         [JsonProperty]
-        public double Mass { get { return _mass; } internal set { SetField(ref _mass, value);; } }
+        public double Mass
+        {
+            get { return _mass; }
+            set
+            {
+                SetField(ref _mass, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// Volume of this entity in Km^3.
         /// </summary>
         [JsonProperty]
-        public double Volume { get { return _volume; } internal set { SetField(ref _volume, value);; } }
+        public double Volume
+        {
+            get { return _volume; }
+            set
+            {
+                SetField(ref _volume, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// The density of the body in kg/cm^3
-        /// </summary> 
+        /// </summary>
         [JsonProperty]
-        public double Density { get { return _density; } internal set { SetField(ref _density, value);; } }
+        public double Density
+        {
+            get { return _density; }
+            set
+            {
+                SetField(ref _density, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// The Average Radius in AU.
         /// </summary>
         [JsonProperty]
-        public double Radius { get { return _radius; } internal set { SetField(ref _radius, value);; } }
+        public double Radius
+        {
+            get { return _radius; }
+            set
+            {
+                SetField(ref _radius, value);
+                ;
+            }
+        }
 
         /// <summary>
         /// The Average Radius in Km.
         /// </summary>
-        public double RadiusInKM
-        {
-            get { return Distance.AuToKm(Radius); }
-            internal set { Radius = Distance.KmToAU(value); }
-        }
+        public double RadiusInKM { get { return Distance.AuToKm(Radius); } set { Radius = Distance.KmToAU(value); } }
 
         /// <summary>
         /// Measure on the gravity of a planet at its surface.
         /// In Earth Gravities (Gs).
         /// </summary>
         public double SurfaceGravity => GMath.GetStandardGravitationAttraction(Mass, RadiusInKM * 1000);
+        #endregion
 
-        public MassVolumeDB()
+        #region Constructors
+        public MassVolumeDB() { }
+
+        public MassVolumeDB(MassVolumeDB massVolumeDB)
         {
+            Mass = massVolumeDB.Mass;
+            Density = massVolumeDB.Density;
+            Radius = massVolumeDB.Radius;
+            Volume = massVolumeDB.Volume;
         }
+        #endregion
 
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new MassVolumeDB(this);
+        #endregion
+
+        #region Public Methods
         /// <summary>
         /// Generates a new MassVolumeDB from mass and radius, calculating density and volume.
         /// </summary>
         /// <param name="mass">Mass in Kg.</param>
         /// <param name="radius">Radius in AU</param>
         /// <returns></returns>
-        internal static MassVolumeDB NewFromMassAndRadius(double mass, double radius)
+        public static MassVolumeDB NewFromMassAndRadius(double mass, double radius)
         {
-            var mvDB = new MassVolumeDB {Mass = mass, Radius = radius, Volume = CalculateVolume(radius)};
+            var mvDB = new MassVolumeDB
+                       {
+                           Mass = mass,
+                           Radius = radius,
+                           Volume = CalculateVolume(radius)
+                       };
             mvDB.Density = CalculateDensity(mass, mvDB.Volume);
 
             return mvDB;
@@ -92,9 +143,15 @@ namespace Pulsar4X.ECSLib
         /// <param name="mass">Mass in Kg</param>
         /// <param name="density">Density in Kg/cm^3</param>
         /// <returns></returns>
-        internal static MassVolumeDB NewFromMassAndDensity(double mass, double density)
+        public static MassVolumeDB NewFromMassAndDensity(double mass, double density)
         {
-            var mvDB = new MassVolumeDB {Mass = mass, Density = density, Volume = CalculateVolume(mass, density), Radius = CalculateRadius(mass, density)};
+            var mvDB = new MassVolumeDB
+                       {
+                           Mass = mass,
+                           Density = density,
+                           Volume = CalculateVolume(mass, density),
+                           Radius = CalculateRadius(mass, density)
+                       };
 
             return mvDB;
         }
@@ -105,32 +162,22 @@ namespace Pulsar4X.ECSLib
         /// <param name="mass">Mass in Kg</param>
         /// <param name="density">Density in Kg/cm^3</param>
         /// <returns></returns>
-        internal static MassVolumeDB NewFromMassAndVolume(double mass, double volume)
+        public static MassVolumeDB NewFromMassAndVolume(double mass, double volume)
         {
-            var density = CalculateDensity(mass, volume);
-            var rad = CalculateRadius(mass, density);
-            var mvDB = new MassVolumeDB { Mass = mass, Volume = volume, Density = density, Radius = rad };
+            double density = CalculateDensity(mass, volume);
+            double rad = CalculateRadius(mass, density);
+            var mvDB = new MassVolumeDB
+                       {
+                           Mass = mass,
+                           Volume = volume,
+                           Density = density,
+                           Radius = rad
+                       };
 
             return mvDB;
         }
 
-        public MassVolumeDB(MassVolumeDB massVolumeDB)
-        {
-            Mass = massVolumeDB.Mass;
-            Density = massVolumeDB.Density;
-            Radius = massVolumeDB.Radius;
-            Volume = massVolumeDB.Volume;
-        }
-
-        public override object Clone()
-        {
-            return new MassVolumeDB(this);
-        }
-
-        public static double CalculateMass(double volume, double density)
-        {
-            return density * volume;
-        }
+        public static double CalculateMass(double volume, double density) => density * volume;
 
         /// <summary>
         /// Calculates the volume given mass and density.
@@ -151,10 +198,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <param name="radius">Radius in AU</param>
         /// <returns>Volume in Km^3</returns>
-        public static double CalculateVolume(double radius)
-        {
-            return (4.0 / 3.0) * Math.PI * Math.Pow(Distance.AuToKm(radius), 3);
-        }
+        public static double CalculateVolume(double radius) => 4.0 / 3.0 * Math.PI * Math.Pow(Distance.AuToKm(radius), 3);
 
         /// <summary>
         /// Calculate density from mass and volume
@@ -171,7 +215,7 @@ namespace Pulsar4X.ECSLib
         }
 
         /// <summary>
-        /// Calculates the radius of a body from mass and densitiy using the formular: 
+        /// Calculates the radius of a body from mass and densitiy using the formular:
         /// <c>r = ((3M)/(4pD))^(1/3)</c>
         /// Where p = PI, D = Density, and M = Mass.
         /// </summary>
@@ -180,9 +224,10 @@ namespace Pulsar4X.ECSLib
         /// <returns>The radius in AU</returns>
         public static double CalculateRadius(double mass, double density)
         {
-            double radius = Math.Pow((3 * mass) / (4 * Math.PI * (density / 1000)), 0.3333333333); // density / 1000 changes it from g/cm2 to Kg/cm3, needed because mass in is KG. 
+            double radius = Math.Pow(3 * mass / (4 * Math.PI * (density / 1000)), 0.3333333333); // density / 1000 changes it from g/cm2 to Kg/cm3, needed because mass in is KG. 
             // 0.3333333333 should be 1/3 but 1/3 gives radius of 0.999999 for any mass/density pair, so i used 0.3333333333
-            return Distance.KmToAU(radius / 1000 / 100);     // convert from cm to AU.
+            return Distance.KmToAU(radius / 1000 / 100); // convert from cm to AU.
         }
+        #endregion
     }
 }

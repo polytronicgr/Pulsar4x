@@ -17,7 +17,6 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using System.Collections.Generic;
 
 namespace Pulsar4X.ECSLib
 {
@@ -44,9 +43,10 @@ namespace Pulsar4X.ECSLib
         GeneratesScientists,
         GeneratesCivilianLeaders,
         DetectionThermal, //radar
-        DetectionEM,    //radar
+        DetectionEM, //radar
         Terraforming,
         BasicLiving, //ie Auroras infrastructure will have this ability. 
+
         //shipcomponent
         ReducedSize,
         LaunchMissileSize,
@@ -63,51 +63,52 @@ namespace Pulsar4X.ECSLib
         EMSignature,
 
         Nothing
-
     }
 
     public class FactionAbilitiesDB : BaseDataBlob
     {
-        private int _basePlanetarySensorStrength;
+        #region Fields
+        private ObservableDictionary<AbilityType, float> _abilityBonuses;
         private float _baseGroundUnitStrengthBonus;
+        private int _basePlanetarySensorStrength;
+        #endregion
+
+        #region Properties
         public int BasePlanetarySensorStrength { get { return _basePlanetarySensorStrength; } set { SetField(ref _basePlanetarySensorStrength, value); } }
 
         public float BaseGroundUnitStrengthBonus { get { return _baseGroundUnitStrengthBonus; } set { SetField(ref _baseGroundUnitStrengthBonus, value); } }
 
-        public ObservableDictionary<AbilityType, float> AbilityBonuses { get; set; } = new ObservableDictionary<AbilityType, float>();
+        public ObservableDictionary<AbilityType, float> AbilityBonuses
+        {
+            get { return _abilityBonuses; }
+            set
+            {
+                SetField(ref _abilityBonuses, value);
+                AbilityBonuses.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(AbilityBonuses), args);
+            }
+        }
 
         /// <summary>
         /// To determine final colony costs, from the Colonization Cost Reduction X% techs.
         /// </summary>
         public float ColonyCostMultiplier { get; set; }
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Default faction abilities constructor.
         /// </summary>
-        /// 
-        /// 
         public FactionAbilitiesDB()
         {
-            AbilityBonuses.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(AbilityBonuses), args);
+            AbilityBonuses = new ObservableDictionary<AbilityType, float>();
         }
-        public FactionAbilitiesDB(float constructionBonus,
-            float fighterConstructionBonus = 1.0f,
-            float miningBonus = 1.0f,
-            float refiningBonus = 1.0f,
-            float ordnanceConstructionBonus = 1.0f,
-            float researchBonus = 1.0f,
-            float shipAsseblyBonus = 1.0f,
-            float terraformingBonus = 1.0f,
-            int basePlanetarySensorStrength = 250,
-            float groundUnitStrengthBonus = 1.0f,
-            float colonyCostMultiplier = 1.0f)
-            : this()
-        {
 
+        public FactionAbilitiesDB(float constructionBonus, float fighterConstructionBonus = 1.0f, float miningBonus = 1.0f, float refiningBonus = 1.0f, float ordnanceConstructionBonus = 1.0f, float researchBonus = 1.0f, float shipAsseblyBonus = 1.0f, float terraformingBonus = 1.0f, int basePlanetarySensorStrength = 250, float groundUnitStrengthBonus = 1.0f, float colonyCostMultiplier = 1.0f) : this()
+        {
             BasePlanetarySensorStrength = basePlanetarySensorStrength;
             BaseGroundUnitStrengthBonus = groundUnitStrengthBonus;
             ColonyCostMultiplier = colonyCostMultiplier;
-            
+
             AbilityBonuses.Add(AbilityType.GenericConstruction, constructionBonus);
             AbilityBonuses.Add(AbilityType.FighterConstruction, fighterConstructionBonus);
             AbilityBonuses.Add(AbilityType.Mine, miningBonus);
@@ -116,7 +117,6 @@ namespace Pulsar4X.ECSLib
             AbilityBonuses.Add(AbilityType.Research, researchBonus);
             AbilityBonuses.Add(AbilityType.ShipAssembly, shipAsseblyBonus);
             AbilityBonuses.Add(AbilityType.Terraforming, terraformingBonus);
-
         }
 
         public FactionAbilitiesDB(FactionAbilitiesDB db) : this()
@@ -126,10 +126,10 @@ namespace Pulsar4X.ECSLib
             ColonyCostMultiplier = db.ColonyCostMultiplier;
             AbilityBonuses.Merge(db.AbilityBonuses);
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new FactionAbilitiesDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new FactionAbilitiesDB(this);
+        #endregion
     }
 }

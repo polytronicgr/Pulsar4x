@@ -17,29 +17,32 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class LifeSupportAtbDB : BaseDataBlob
     {
+        #region Fields
         private int _lifeSupportCapacity;
+        #endregion
 
+        #region Properties
         [JsonProperty]
-        public int LifeSupportCapacity { get { return _lifeSupportCapacity; } internal set { SetField(ref _lifeSupportCapacity, value); } }
+        public int LifeSupportCapacity { get { return _lifeSupportCapacity; } set { SetField(ref _lifeSupportCapacity, value); } }
+        #endregion
 
+        #region Constructors
         public LifeSupportAtbDB() { }
 
         public LifeSupportAtbDB(double lifeSupportCapacity) : this((int)lifeSupportCapacity) { }
 
-        public LifeSupportAtbDB(int lifeSupportCapacity)
-        {
-            LifeSupportCapacity = lifeSupportCapacity;
-        }
-        
-        public override object Clone()
-        {
-               return new LifeSupportAtbDB(LifeSupportCapacity);
-        }
+        public LifeSupportAtbDB(int lifeSupportCapacity) { LifeSupportCapacity = lifeSupportCapacity; }
+        #endregion
+
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new LifeSupportAtbDB(LifeSupportCapacity);
+        #endregion
     }
 }

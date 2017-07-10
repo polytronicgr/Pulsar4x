@@ -17,8 +17,9 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
@@ -26,30 +27,51 @@ namespace Pulsar4X.ECSLib
     /// Attached to entities that are surveyed for the discovery of JumpPoints.
     /// </summary>
     /// <remarks>
-    /// This is very inefficient implementation of jump points. 
+    /// This is very inefficient implementation of jump points.
     /// Every system has 30 of these entities.
     /// This clogs EntityManager space too.
     /// Each of these entities individually stores every faction that scans it?
-    /// 
     /// PERFORMANCE OPTIMIZE:
     /// If we ever need to optimize memory usage, this may be something to look at.
     /// </remarks>
     public class JPSurveyableDB : BaseDataBlob
     {
+        #region Fields
+        private ObservableDictionary<Entity, int> _surveyPointsAccumulated;
         private int surveyPointsRequired;
+        #endregion
+
+        #region Properties
+        [JsonProperty]
+        public ObservableDictionary<Entity, int> SurveyPointsAccumulated
+        {
+            get { return _surveyPointsAccumulated; }
+            set
+            {
+                SetField(ref _surveyPointsAccumulated, value);
+                SurveyPointsAccumulated.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(SurveyPointsAccumulated), args);
+            }
+        }
 
         [JsonProperty]
-        public ObservableDictionary<Entity, int> SurveyPointsAccumulated { get; set; } = new ObservableDictionary<Entity, int>();
+        public int SurveyPointsRequired
+        {
+            get { return surveyPointsRequired; }
+            set
+            {
+                SetField(ref surveyPointsRequired, value);
+                ;
+            }
+        }
+        #endregion
 
-        [JsonProperty]
-        public int SurveyPointsRequired { get { return surveyPointsRequired; } set { SetField(ref surveyPointsRequired, value);; } }
-
+        #region Constructors
         /// <summary>
         /// Default public constructor for Json
         /// </summary>
         public JPSurveyableDB()
         {
-            SurveyPointsAccumulated.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(SurveyPointsAccumulated), args);
+            SurveyPointsAccumulated = new ObservableDictionary<Entity, int>();
         }
 
         /// <summary>
@@ -58,16 +80,16 @@ namespace Pulsar4X.ECSLib
         public JPSurveyableDB(int pointsRequired, IDictionary<Entity, int> pointsAccumulated)
         {
             SurveyPointsRequired = pointsRequired;
-            SurveyPointsAccumulated.Merge(pointsAccumulated);
+            SurveyPointsAccumulated = new ObservableDictionary<Entity, int>(pointsAccumulated);
         }
+        #endregion
 
+        #region Interfaces, Overrides, and Operators
         /// <summary>
         /// ICloneable interface implementation.
         /// </summary>
         /// <returns></returns>
-        public override object Clone()
-        {
-            return new JPSurveyableDB(SurveyPointsRequired, SurveyPointsAccumulated);
-        }
+        public override object Clone() => new JPSurveyableDB(SurveyPointsRequired, SurveyPointsAccumulated);
+        #endregion
     }
 }

@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using System;
 
 namespace Pulsar4X.ECSLib
@@ -26,27 +27,30 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class BuildCostDB : BaseDataBlob
     {
-        private DateTime _buildTime;
+        #region Fields
         private double _buildPointCost;
+        private DateTime _buildTime;
+        #endregion
 
-        public DateTime BuildTime { get { return _buildTime; } internal set { SetField(ref _buildTime, value); } }
-        public double BuildPointCost { get { return _buildPointCost; } internal set { SetField(ref _buildPointCost, value); } }
+        #region Properties
+        public DateTime BuildTime { get { return _buildTime; } set { SetField(ref _buildTime, value); } }
+        public double BuildPointCost { get { return _buildPointCost; } set { SetField(ref _buildPointCost, value); } }
+        #endregion
 
+        #region Constructors
         // add minerials
 
-        public BuildCostDB()
-        {
-        }
+        public BuildCostDB() { }
 
         public BuildCostDB(BuildCostDB buildCostDB)
         {
             BuildTime = buildCostDB.BuildTime; //Struct
             BuildPointCost = buildCostDB.BuildPointCost;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new BuildCostDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new BuildCostDB(this);
+        #endregion
     }
 }

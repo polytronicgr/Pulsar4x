@@ -17,32 +17,27 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pulsar4X.ECSLib
 {
     public class ColonyLifeSupportDB : BaseDataBlob
     {
+        #region Fields
         private long _maxPopulation;
+        #endregion
+
+        #region Properties
         public long MaxPopulation { get { return _maxPopulation; } set { SetField(ref _maxPopulation, value); } }
+        #endregion
 
-        public ColonyLifeSupportDB()
-        {
-            MaxPopulation = new long();
-        }
+        #region Constructors
+        public ColonyLifeSupportDB() { MaxPopulation = new long(); }
 
-        public ColonyLifeSupportDB(ColonyLifeSupportDB db)
-        {
-            MaxPopulation = db.MaxPopulation;
-        }
+        public ColonyLifeSupportDB(ColonyLifeSupportDB db) { MaxPopulation = db.MaxPopulation; }
+        #endregion
 
-        public override object Clone()
-        {
-            return new ColonyLifeSupportDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new ColonyLifeSupportDB(this);
+        #endregion
     }
 }

@@ -17,26 +17,34 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
-using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class CargoStorageAtbDB : BaseDataBlob
     {
+        #region Fields
+        private Guid _cargoTypeGuid;
+        private int _storageCapacity;
+        #endregion
+
+        #region Properties
         /// <summary>
         /// Storage Capacity of this module.
         /// </summary>
         [JsonProperty]
-        public int StorageCapacity { get; internal set; }
+        public int StorageCapacity { get { return _storageCapacity; } set { SetField(ref _storageCapacity, value); } }
 
         /// <summary>
         /// Type of cargo this stores
         /// </summary>
         [JsonProperty]
-        public Guid CargoTypeGuid { get; internal set; }
+        public Guid CargoTypeGuid { get { return _cargoTypeGuid; } set { SetField(ref _cargoTypeGuid, value); } }
+        #endregion
 
+        #region Constructors
         //public CargoTypeSD CargoType { get; private set; }
 
         /// <summary>
@@ -62,10 +70,10 @@ namespace Pulsar4X.ECSLib
             StorageCapacity = db.StorageCapacity;
             CargoTypeGuid = db.CargoTypeGuid;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new CargoStorageAtbDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new CargoStorageAtbDB(this);
+        #endregion
     }
 }

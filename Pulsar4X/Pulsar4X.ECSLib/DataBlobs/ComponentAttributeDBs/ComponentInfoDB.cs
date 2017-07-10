@@ -17,91 +17,118 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
-using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     [Flags]
     public enum ComponentMountType
     {
-        None                = 0,
-        ShipComponent       = 1 << 0,
-        ShipCargo           = 1 << 1,
-        PlanetInstallation  = 1 << 2,
-        PDC                 = 1 << 3,
-        Fighter             = 1 << 4,
+        None = 0,
+        ShipComponent = 1 << 0,
+        ShipCargo = 1 << 1,
+        PlanetInstallation = 1 << 2,
+        PDC = 1 << 3,
+        Fighter = 1 << 4
     }
 
     public class ComponentInfoDB : BaseDataBlob
     {
-        private Guid _designGuid;
-        private float _sizeInTons;
-        private int _htk;
-        private Dictionary<Guid, int> _minerialCosts;
-        private Dictionary<Guid, int> _materialCosts;
-        private Dictionary<Guid, int> _componentCosts;
+        #region Fields
         private int _buildPointCost;
-        private Guid _techRequirementToBuild;
-        private int _crewRequrements;
+        private ObservableDictionary<Guid, int> _componentCosts;
         private ComponentMountType _componentMountType;
         private ConstructionType _constructionType;
+        private int _crewRequrements;
+        private Guid _designGuid;
+        private int _htk;
+        private ObservableDictionary<Guid, int> _materialCosts;
+        private ObservableDictionary<Guid, int> _minerialCosts;
+        private float _sizeInTons;
+        private Guid _techRequirementToBuild;
+        #endregion
+
+        #region Properties
+        [JsonProperty]
+        public Guid DesignGuid { get { return _designGuid; } set { SetField(ref _designGuid, value); } }
 
         [JsonProperty]
-        public Guid DesignGuid { get { return _designGuid; } internal set { SetField(ref _designGuid, value); } }
+        public float SizeInTons { get { return _sizeInTons; } set { SetField(ref _sizeInTons, value); } }
 
         [JsonProperty]
-        public float SizeInTons { get { return _sizeInTons; } internal set { SetField(ref _sizeInTons, value); } }
+        public int HTK { get { return _htk; } set { SetField(ref _htk, value); } }
 
         [JsonProperty]
-        public int HTK { get { return _htk; } internal set { SetField(ref _htk, value); } }
+        public ObservableDictionary<Guid, int> MinerialCosts
+        {
+            get { return _minerialCosts; }
+            set
+            {
+                SetField(ref _minerialCosts, value);
+                MinerialCosts.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(MinerialCosts), args);
+            }
+        }
 
         [JsonProperty]
-        public Dictionary<Guid, int> MinerialCosts { get { return _minerialCosts; } internal set { SetField(ref _minerialCosts, value); } }
+        public ObservableDictionary<Guid, int> MaterialCosts
+        {
+            get { return _materialCosts; }
+            set
+            {
+                SetField(ref _materialCosts, value);
+                MaterialCosts.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(MaterialCosts), args);
+            }
+        }
 
         [JsonProperty]
-        public Dictionary<Guid, int> MaterialCosts { get { return _materialCosts; } internal set { SetField(ref _materialCosts, value); } }
+        public ObservableDictionary<Guid, int> ComponentCosts
+        {
+            get { return _componentCosts; }
+            set
+            {
+                SetField(ref _componentCosts, value);
+                ComponentCosts.CollectionChanged += (sender, args) => OnSubCollectionChanged(nameof(ComponentCosts), args);
+            }
+        }
 
         [JsonProperty]
-        public Dictionary<Guid, int> ComponentCosts { get { return _componentCosts; } internal set { SetField(ref _componentCosts, value); } }
+        public int BuildPointCost { get { return _buildPointCost; } set { SetField(ref _buildPointCost, value); } }
 
         [JsonProperty]
-        public int BuildPointCost { get { return _buildPointCost; } internal set { SetField(ref _buildPointCost, value); } }
+        public Guid TechRequirementToBuild { get { return _techRequirementToBuild; } set { SetField(ref _techRequirementToBuild, value); } }
 
         [JsonProperty]
-        public Guid TechRequirementToBuild { get { return _techRequirementToBuild; } internal set { SetField(ref _techRequirementToBuild, value); } }
+        public int CrewRequrements { get { return _crewRequrements; } set { SetField(ref _crewRequrements, value); } }
 
         [JsonProperty]
-        public int CrewRequrements { get { return _crewRequrements; } internal set { SetField(ref _crewRequrements, value); } }
+        public ComponentMountType ComponentMountType { get { return _componentMountType; } set { SetField(ref _componentMountType, value); } }
 
-        [JsonProperty]
-        public ComponentMountType ComponentMountType { get { return _componentMountType; } internal set { SetField(ref _componentMountType, value); } }
+        public ConstructionType ConstructionType { get { return _constructionType; } set { SetField(ref _constructionType, value); } }
+        #endregion
 
-        public ConstructionType ConstructionType { get { return _constructionType; } internal set { SetField(ref _constructionType, value); } }
-
+        #region Constructors
         public ComponentInfoDB()
         {
+            MinerialCosts = new ObservableDictionary<Guid, int>();
+            MaterialCosts = new ObservableDictionary<Guid, int>();
+            ComponentCosts = new ObservableDictionary<Guid, int>();
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="designGuid">this is the design GUID, NOT the SD GUID</param>
-        /// <param name="size"></param>
-        /// <param name="htk"></param>
-        /// <param name="materialCosts"></param>
-        /// <param name="techRequrement"></param>
-        /// <param name="crewReqirement"></param>
-        public ComponentInfoDB(Guid designGuid, int size, int htk, int buildPointCost, Dictionary<Guid, int> minerialCosts, Dictionary<Guid, int> materialCosts, Dictionary<Guid, int> componentCosts, Guid techRequrement, int crewReqirement)
+        public ComponentInfoDB(Guid designGuid, int size, int htk, int buildPointCost, IDictionary<Guid, int> minerialCosts, IDictionary<Guid, int> materialCosts, IDictionary<Guid, int> componentCosts, Guid techRequrement, int crewReqirement)
         {
             DesignGuid = designGuid;
             SizeInTons = size;
             HTK = htk;
             BuildPointCost = buildPointCost;
-            MinerialCosts = minerialCosts;
-            MaterialCosts = materialCosts;
-            ComponentCosts = componentCosts;
+            MinerialCosts = new ObservableDictionary<Guid, int>(minerialCosts);
+            MaterialCosts = new ObservableDictionary<Guid, int>(materialCosts);
+            ComponentCosts = new ObservableDictionary<Guid, int>(componentCosts);
             TechRequirementToBuild = techRequrement;
             CrewRequrements = crewReqirement;
         }
@@ -113,10 +140,10 @@ namespace Pulsar4X.ECSLib
             MaterialCosts = db.MaterialCosts;
             TechRequirementToBuild = db.TechRequirementToBuild;
         }
+        #endregion
 
-        public override object Clone()
-        {
-            return new ComponentInfoDB(this);
-        }
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new ComponentInfoDB(this);
+        #endregion
     }
 }

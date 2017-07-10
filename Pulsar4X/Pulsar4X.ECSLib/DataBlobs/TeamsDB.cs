@@ -17,6 +17,7 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
@@ -26,28 +27,50 @@ namespace Pulsar4X.ECSLib
     /// </summary>
     public class TeamsDB : BaseDataBlob
     {
+        #region Fields
         [JsonProperty]
         private int _teamSize;
+
         [JsonProperty]
         private object _teamTask;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Determines how many Labs this team can manage
         /// </summary>
         /// TODO: Pre-release
         /// Ensure Property/Fields are consistant throughout all DB usage.
-        /// Example: TransitableDB uses TeamSize { public get; internal set;}
+        /// Example: TransitableDB uses TeamSize { get; set;}
         [PublicAPI]
-        public int TeamSize { get { return _teamSize; } set { SetField(ref _teamSize, value);; } }
+        public int TeamSize
+        {
+            get { return _teamSize; }
+            set
+            {
+                SetField(ref _teamSize, value);
+                ;
+            }
+        }
 
         /// <summary>
-        /// not sure if this should be a blob, entity or guid. and maybe a queue as well. 
+        /// not sure if this should be a blob, entity or guid. and maybe a queue as well.
         /// </summary>
         /// TODO: Communications Review
         /// Detemine team orders system
         [PublicAPI]
-        public object TeamTask { get { return _teamTask; } set { SetField(ref _teamTask, value);; } }
+        public object TeamTask
+        {
+            get { return _teamTask; }
+            set
+            {
+                SetField(ref _teamTask, value);
+                ;
+            }
+        }
+        #endregion
 
+        #region Constructors
         public TeamsDB() { }
 
         public TeamsDB(int teamSize = 0, object initialTask = null)
@@ -61,9 +84,10 @@ namespace Pulsar4X.ECSLib
             TeamSize = teamsdb.TeamSize;
             TeamTask = teamsdb.TeamTask;
         }
-        public override object Clone()
-        {
-            return new TeamsDB(this);
-        }
+        #endregion
+
+        #region Interfaces, Overrides, and Operators
+        public override object Clone() => new TeamsDB(this);
+        #endregion
     }
 }

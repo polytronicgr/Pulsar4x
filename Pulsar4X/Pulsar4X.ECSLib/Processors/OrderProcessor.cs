@@ -61,7 +61,7 @@ namespace Pulsar4X.ECSLib
         internal static void ProcessActionList(DateTime toDate, Entity entity)
         {
             OrderableDB orderableDB = entity.GetDataBlob<OrderableDB>();
-            List<BaseAction> actionList = orderableDB.ActionQueue;
+            IList<BaseAction> actionList = orderableDB.ActionQueue;
             int mask = 1;
 
             int i = 0;
