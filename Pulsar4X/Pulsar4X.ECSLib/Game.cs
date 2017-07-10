@@ -119,7 +119,6 @@ namespace Pulsar4X.ECSLib
             GlobalManager = new EntityManager(this, true);
             MessagePump  = new MessagePumpServer(this);
             var tf = new TaskFactory(TaskCreationOptions.LongRunning, TaskContinuationOptions.LongRunning);
-            _gameTask = tf.StartNew(Main);
         }
 
         public Game([NotNull] NewGameSettings newGameSettings) : this()
