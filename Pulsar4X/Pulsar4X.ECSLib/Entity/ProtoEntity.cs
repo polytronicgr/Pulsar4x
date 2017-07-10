@@ -13,94 +13,11 @@ namespace Pulsar4X.ECSLib
     [JsonConverter(typeof(ProtoEntityConverter))]
     public class ProtoEntity
     {
-        [PublicAPI]
-        public List<BaseDataBlob> DataBlobs { get; set; } = EntityManager.BlankDataBlobList();
-
-        [PublicAPI]
-        public Guid Guid { get; protected internal set; }
-
-        [NotNull]
-        [PublicAPI]
-        public ComparableBitArray DataBlobMask => _protectedDataBlobMask_;
-
-        protected ComparableBitArray _protectedDataBlobMask_ = EntityManager.BlankDataBlobMask();
-
-        [PublicAPI]
-        public static ProtoEntity Create(Guid guid, IEnumerable<BaseDataBlob> dataBlobs = null)
-        {
-            var protoEntity = new ProtoEntity
-            {
-                DataBlobs = EntityManager.BlankDataBlobList(),
-                Guid = guid
-            };
-
-            if (dataBlobs == null)
-            {
-                return protoEntity;
-            }
-            foreach (BaseDataBlob dataBlob in dataBlobs)
-            {
-                protoEntity.SetDataBlob(dataBlob);
-            }
-
-            return protoEntity;
-        }
-
-        [PublicAPI]
-        public static ProtoEntity Create(IEnumerable<BaseDataBlob> dataBlobs = null)
-        {
-            return Create(Guid.Empty, dataBlobs);
-        }
-
-        [PublicAPI]
-        public virtual T GetDataBlob<T>() where T : BaseDataBlob
-        {
-            return (T)DataBlobs[EntityManager.GetTypeIndex<T>()];
-        }
-
-        [PublicAPI]
-        public virtual T GetDataBlob<T>(int typeIndex) where T : BaseDataBlob
-        {
-            return (T)DataBlobs[typeIndex];
-        }
-
-        [PublicAPI]
-        public virtual void SetDataBlob<T>(T dataBlob) where T : BaseDataBlob
-        {
-            int typeIndex;
-            EntityManager.TryGetTypeIndex(dataBlob.GetType(), out typeIndex);
-            DataBlobs[typeIndex] = dataBlob;
-            _protectedDataBlobMask_[typeIndex] = true;
-        }
-
-        [PublicAPI]
-        public virtual void SetDataBlob<T>(T dataBlob, int typeIndex) where T : BaseDataBlob
-        {
-            DataBlobs[typeIndex] = dataBlob;
-            _protectedDataBlobMask_[typeIndex] = true;
-        }
-
-        [PublicAPI]
-        public virtual void RemoveDataBlob<T>() where T : BaseDataBlob
-        {
-            int typeIndex = EntityManager.GetTypeIndex<T>();
-            DataBlobs[typeIndex] = null;
-            _protectedDataBlobMask_[typeIndex] = false;
-        }
-
-        [PublicAPI]
-        public virtual void RemoveDataBlob(int typeIndex)
-        {
-            DataBlobs[typeIndex] = null;
-            _protectedDataBlobMask_[typeIndex] = false;
-        }
-
+        #region Types
         internal class ProtoEntityConverter : JsonConverter
         {
-            public override bool CanConvert(Type objectType)
-            {
-                return objectType == typeof(ProtoEntity);
-            }
+            #region Interfaces, Overrides, and Operators
+            public override bool CanConvert(Type objectType) => objectType == typeof(ProtoEntity);
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
@@ -117,7 +34,7 @@ namespace Pulsar4X.ECSLib
                 {
                     Type dataBlobType = Type.GetType("Pulsar4X.ECSLib." + (string)reader.Value);
                     reader.Read(); // StartObject (dataBlob)
-                    BaseDataBlob dataBlob = (BaseDataBlob)serializer.Deserialize(reader, dataBlobType); // EndObject (dataBlob)
+                    var dataBlob = (BaseDataBlob)serializer.Deserialize(reader, dataBlobType); // EndObject (dataBlob)
                     protoEntity.SetDataBlob(dataBlob);
                     reader.Read(); // PropertyName DATABLOB OR EndObject (Entity)
                 }
@@ -127,7 +44,7 @@ namespace Pulsar4X.ECSLib
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
-                ProtoEntity protoEntity = (ProtoEntity)value;
+                var protoEntity = (ProtoEntity)value;
                 writer.WriteStartObject(); // Start the Entity.
                 writer.WritePropertyName("Guid"); // Write the Guid PropertyName
                 serializer.Serialize(writer, protoEntity.Guid); // Write the Entity's guid.
@@ -138,6 +55,94 @@ namespace Pulsar4X.ECSLib
                 }
                 writer.WriteEndObject(); // End then Entity.
             }
+            #endregion
         }
+        #endregion
+
+        #region Fields
+        protected ComparableBitArray _protectedDataBlobMask_ = EntityManager.BlankDataBlobMask();
+        #endregion
+
+        #region Properties
+        [PublicAPI]
+        public List<BaseDataBlob> DataBlobs { get; set; } = EntityManager.BlankDataBlobList();
+
+        [PublicAPI]
+        public Guid Guid { get; protected internal set; }
+
+        [NotNull]
+        [PublicAPI]
+        public ComparableBitArray DataBlobMask => _protectedDataBlobMask_;
+        #endregion
+
+        #region Interfaces, Overrides, and Operators
+        [PublicAPI]
+        public virtual T GetDataBlob<T>()
+            where T : BaseDataBlob => (T)DataBlobs[EntityManager.GetTypeIndex<T>()];
+
+        [PublicAPI]
+        public virtual T GetDataBlob<T>(int typeIndex)
+            where T : BaseDataBlob => (T)DataBlobs[typeIndex];
+
+        [PublicAPI]
+        public virtual void SetDataBlob<T>(T dataBlob)
+            where T : BaseDataBlob
+        {
+            int typeIndex;
+            EntityManager.TryGetTypeIndex(dataBlob.GetType(), out typeIndex);
+            DataBlobs[typeIndex] = dataBlob;
+            _protectedDataBlobMask_[typeIndex] = true;
+        }
+
+        [PublicAPI]
+        public virtual void SetDataBlob<T>(T dataBlob, int typeIndex)
+            where T : BaseDataBlob
+        {
+            DataBlobs[typeIndex] = dataBlob;
+            _protectedDataBlobMask_[typeIndex] = true;
+        }
+
+        [PublicAPI]
+        public virtual void RemoveDataBlob<T>()
+            where T : BaseDataBlob
+        {
+            int typeIndex = EntityManager.GetTypeIndex<T>();
+            DataBlobs[typeIndex] = null;
+            _protectedDataBlobMask_[typeIndex] = false;
+        }
+
+        [PublicAPI]
+        public virtual void RemoveDataBlob(int typeIndex)
+        {
+            DataBlobs[typeIndex] = null;
+            _protectedDataBlobMask_[typeIndex] = false;
+        }
+        #endregion
+
+        #region Public Methods
+        [PublicAPI]
+        public static ProtoEntity Create(Guid guid, IEnumerable<BaseDataBlob> dataBlobs = null)
+        {
+            var protoEntity = new ProtoEntity
+                              {
+                                  DataBlobs = EntityManager.BlankDataBlobList(),
+                                  Guid = guid
+                              };
+
+            if (dataBlobs == null)
+            {
+                return protoEntity;
+            }
+            foreach (BaseDataBlob dataBlob in dataBlobs)
+            {
+                protoEntity.SetDataBlob(dataBlob);
+            }
+
+            return protoEntity;
+        }
+
+        [PublicAPI]
+        public static ProtoEntity Create(IEnumerable<BaseDataBlob> dataBlobs = null) => Create(Guid.Empty, dataBlobs);
+        #endregion
     }
 }
