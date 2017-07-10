@@ -38,8 +38,7 @@ namespace Pulsar4X.ECSLib
 
         #region Properties
         protected IDictionary<TKey, TValue> Dictionary { get; private set; }
-
-
+        
         ICollection IDictionary.Keys => ((IDictionary)Dictionary).Keys;
         ICollection IDictionary.Values => ((IDictionary)Dictionary).Values;
 
@@ -120,9 +119,8 @@ namespace Pulsar4X.ECSLib
             Dictionary.TryGetValue(key, out value);
             bool removed = Dictionary.Remove(key);
             if (removed)
-                //OnCollectionChanged(NotifyCollectionChangedAction.Remove, new KeyValuePair<TKey, TValue>(key, value));
             {
-                OnCollectionChanged();
+                OnCollectionChanged(NotifyCollectionChangedAction.Remove, new KeyValuePair<TKey, TValue>(key, value));
             }
 
             return removed;
