@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,34 +6,17 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib
 {
     public class EntityManager : ISerializable
     {
-        [CanBeNull]
-        internal readonly Game Game;
-        private readonly List<Entity> _entities = new List<Entity>();
-        private readonly List<List<BaseDataBlob>> _dataBlobMap = new List<List<BaseDataBlob>>();
-        private readonly Dictionary<Guid, Entity> _localEntityDictionary = new Dictionary<Guid, Entity>();
-        private readonly Dictionary<Guid, EntityManager> _globalEntityDictionary;
-        private readonly ReaderWriterLockSlim _globalGuidDictionaryLock;
-
-        private int _nextID;
-
-        internal readonly List<ComparableBitArray> EntityMasks = new List<ComparableBitArray>();
-
+        #region Constants
         private static readonly Dictionary<Type, int> InternalDataBlobTypes = InitializeDataBlobTypes();
+
         [PublicAPI]
         public static ReadOnlyDictionary<Type, int> DataBlobTypes = new ReadOnlyDictionary<Type, int>(InternalDataBlobTypes);
-
-        internal ReadOnlyCollection<Entity> Entities => _entities.AsReadOnly();
-
-        [JsonProperty]
-        public ManagerSubPulse ManagerSubpulses { get; private set; }
-
-        [JsonProperty]
-        internal readonly ConcurrentQueue<BaseOrder> OrderQueue = new ConcurrentQueue<BaseOrder>();
 
         /// <summary>
         /// Static reference to an invalid manager.
@@ -42,15 +24,40 @@ namespace Pulsar4X.ECSLib
         [NotNull]
         [PublicAPI]
         public static readonly EntityManager InvalidManager = new EntityManager();
-        
+        #endregion
+
+        #region Fields
+        private readonly List<List<BaseDataBlob>> _dataBlobMap = new List<List<BaseDataBlob>>();
+        private readonly List<Entity> _entities = new List<Entity>();
+        private readonly Dictionary<Guid, EntityManager> _globalEntityDictionary;
+        private readonly ReaderWriterLockSlim _globalGuidDictionaryLock;
+        private readonly Dictionary<Guid, Entity> _localEntityDictionary = new Dictionary<Guid, Entity>();
+
+        internal readonly List<ComparableBitArray> EntityMasks = new List<ComparableBitArray>();
+
+        [CanBeNull]
+        internal readonly Game Game;
+
+        [JsonProperty]
+        internal readonly ConcurrentQueue<BaseOrder> OrderQueue = new ConcurrentQueue<BaseOrder>();
+
+        private int _nextID;
+        #endregion
+
+        #region Properties
+        internal ReadOnlyCollection<Entity> Entities => _entities.AsReadOnly();
+
+        [JsonProperty]
+        public ManagerSubPulse ManagerSubpulses { get; private set; }
+        #endregion
+
         #region Constructors
-        private EntityManager() { }
         internal EntityManager(Game game, bool isGlobalManager = false)
         {
             Game = game;
             if (isGlobalManager)
             {
-                _globalEntityDictionary = new Dictionary<Guid,EntityManager>();
+                _globalEntityDictionary = new Dictionary<Guid, EntityManager>();
                 _globalGuidDictionaryLock = new ReaderWriterLockSlim();
             }
             else
@@ -65,6 +72,21 @@ namespace Pulsar4X.ECSLib
             ManagerSubpulses = new ManagerSubPulse(this);
         }
 
+        private EntityManager() { }
+        #endregion
+
+        #region Public Methods
+        public void Clear()
+        {
+            for (int index = 0; index < _entities.Count; index++)
+            {
+                Entity entity = _entities[index];
+                entity?.Destroy();
+            }
+        }
+        #endregion
+
+        #region Private Methods
         private static Dictionary<Type, int> InitializeDataBlobTypes()
         {
             var dbTypes = new Dictionary<Type, int>();
@@ -79,14 +101,12 @@ namespace Pulsar4X.ECSLib
 
             return dbTypes;
         }
-
         #endregion
 
         #region Entity Management Functions
-
         /// <summary>
         /// Used to add the provided entity to this entity manager.
-        /// Sets up the entity slot and assigns it to the entity while preserving 
+        /// Sets up the entity slot and assigns it to the entity while preserving
         /// entity object references.
         /// </summary>
         internal int SetupEntity(Entity entity)
@@ -159,10 +179,7 @@ namespace Pulsar4X.ECSLib
             return IsValidID(entity.ID) && _entities[entity.ID] == entity;
         }
 
-        private bool IsValidID(int entityID)
-        {
-            return entityID >= 0 && entityID < _entities.Count && _entities[entityID] != null;
-        }
+        private bool IsValidID(int entityID) => entityID >= 0 && entityID < _entities.Count && _entities[entityID] != null;
 
         internal void RemoveEntity(Entity entity)
         {
@@ -220,15 +237,11 @@ namespace Pulsar4X.ECSLib
             return dataBlobs;
         }
 
-        internal T GetDataBlob<T>(int entityID) where T : BaseDataBlob
-        {
-            return (T)_dataBlobMap[GetTypeIndex<T>()][entityID];
-        }
+        internal T GetDataBlob<T>(int entityID)
+            where T : BaseDataBlob => (T)_dataBlobMap[GetTypeIndex<T>()][entityID];
 
-        internal T GetDataBlob<T>(int entityID, int typeIndex) where T : BaseDataBlob
-        {
-            return (T)_dataBlobMap[typeIndex][entityID];
-        }
+        internal T GetDataBlob<T>(int entityID, int typeIndex)
+            where T : BaseDataBlob => (T)_dataBlobMap[typeIndex][entityID];
 
         internal void SetDataBlob(int entityID, BaseDataBlob dataBlob)
         {
@@ -247,7 +260,8 @@ namespace Pulsar4X.ECSLib
             dataBlob.OwningEntity = _entities[entityID];
         }
 
-        internal void RemoveDataBlob<T>(int entityID) where T : BaseDataBlob
+        internal void RemoveDataBlob<T>(int entityID)
+            where T : BaseDataBlob
         {
             int typeIndex = GetTypeIndex<T>();
             _dataBlobMap[typeIndex][entityID].OwningEntity = null;
@@ -261,11 +275,9 @@ namespace Pulsar4X.ECSLib
             _dataBlobMap[typeIndex][entityID] = null;
             EntityMasks[entityID][typeIndex] = false;
         }
-
         #endregion
 
         #region Public API Functions
-
         /// <summary>
         /// Returns a list of entities that have datablob type T.
         /// <para></para>
@@ -275,7 +287,8 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <exception cref="KeyNotFoundException">Thrown when T is not derived from BaseDataBlob.</exception>
         [NotNull]
-        public List<Entity> GetAllEntitiesWithDataBlob<T>(AuthenticationToken authToken) where T : BaseDataBlob
+        public List<Entity> GetAllEntitiesWithDataBlob<T>(AuthenticationToken authToken)
+            where T : BaseDataBlob
         {
             List<Entity> allEntities = GetAllEntitiesWithDataBlob<T>();
             var authorizedEntities = new List<Entity>();
@@ -300,7 +313,8 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <exception cref="KeyNotFoundException">Thrown when T is not derived from BaseDataBlob.</exception>
         [NotNull]
-        internal List<Entity> GetAllEntitiesWithDataBlob<T>() where T : BaseDataBlob
+        internal List<Entity> GetAllEntitiesWithDataBlob<T>()
+            where T : BaseDataBlob
         {
             int typeIndex = GetTypeIndex<T>();
 
@@ -394,7 +408,7 @@ namespace Pulsar4X.ECSLib
             return authorizedEntities;
         }
 
-        internal virtual List<Entity> GetAllEntitiesWithOUTDataBlobs([NotNull] ComparableBitArray dataBlobMask) 
+        internal virtual List<Entity> GetAllEntitiesWithOUTDataBlobs([NotNull] ComparableBitArray dataBlobMask)
         {
             if (dataBlobMask == null)
             {
@@ -432,10 +446,8 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <exception cref="KeyNotFoundException">Thrown when T is not derived from BaseDataBlob.</exception>
         [NotNull]
-        public Entity GetFirstEntityWithDataBlob<T>(AuthenticationToken authToken) where T : BaseDataBlob
-        {
-            return GetFirstEntityWithDataBlob(authToken, GetTypeIndex<T>());
-        }
+        public Entity GetFirstEntityWithDataBlob<T>(AuthenticationToken authToken)
+            where T : BaseDataBlob => GetFirstEntityWithDataBlob(authToken, GetTypeIndex<T>());
 
         /// <summary>
         /// Returns the first entityID found with the specified DataBlobType.
@@ -444,10 +456,8 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <exception cref="KeyNotFoundException">Thrown when T is not derived from BaseDataBlob.</exception>
         [NotNull]
-        internal Entity GetFirstEntityWithDataBlob<T>() where T : BaseDataBlob
-        {
-            return GetFirstEntityWithDataBlob(GetTypeIndex<T>());
-        }
+        internal Entity GetFirstEntityWithDataBlob<T>()
+            where T : BaseDataBlob => GetFirstEntityWithDataBlob(GetTypeIndex<T>());
 
         /// <summary>
         /// Returns the first entityID found with the specified DataBlobType.
@@ -489,10 +499,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public static ComparableBitArray BlankDataBlobMask()
-        {
-            return new ComparableBitArray(InternalDataBlobTypes.Count);
-        }
+        public static ComparableBitArray BlankDataBlobMask() => new ComparableBitArray(InternalDataBlobTypes.Count);
 
         /// <summary>
         /// Returns a blank list used for storing datablobs by typeIndex.
@@ -559,7 +566,9 @@ namespace Pulsar4X.ECSLib
         {
             Entity entity;
             if (!FindEntityByGuid(entityGuid, out entity))
+            {
                 throw new GuidNotFoundException(entityGuid);
+            }
             return entity;
         }
 
@@ -621,25 +630,18 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when dataBlobType is null.</exception>
         [PublicAPI]
-        public static bool TryGetTypeIndex(Type dataBlobType, out int typeIndex)
-        {
-            return InternalDataBlobTypes.TryGetValue(dataBlobType, out typeIndex);
-        }
+        public static bool TryGetTypeIndex(Type dataBlobType, out int typeIndex) => InternalDataBlobTypes.TryGetValue(dataBlobType, out typeIndex);
 
         /// <summary>
         /// Faster than TryGetDataBlobTypeIndex and uses generics for type safety.
         /// </summary>
         /// <exception cref="KeyNotFoundException">Thrown when T is not derived from BaseDataBlob, or is Abstract</exception>
         [PublicAPI]
-        public static int GetTypeIndex<T>() where T : BaseDataBlob
-        {
-            return InternalDataBlobTypes[typeof(T)];
-        }
-
+        public static int GetTypeIndex<T>()
+            where T : BaseDataBlob => InternalDataBlobTypes[typeof(T)];
         #endregion
 
         #region ISerializable interface
-
         // ReSharper disable once UnusedParameter.Local
         public EntityManager(SerializationInfo info, StreamingContext context) : this((Game)context.Context)
         {
@@ -663,7 +665,6 @@ namespace Pulsar4X.ECSLib
                     Entity.Create(this, protoEntity);
                 }
             }
-            
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -700,16 +701,6 @@ namespace Pulsar4X.ECSLib
                 throw new InvalidOperationException("Fake managers cannot be deserialized.");
             }
         }
-
         #endregion
-
-        public void Clear()
-        {
-            for (int index = 0; index < _entities.Count; index++)
-            {
-                Entity entity = _entities[index];
-                entity?.Destroy();
-            }
-        }
     }
 }
