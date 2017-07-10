@@ -1,4 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -10,7 +29,6 @@ namespace Pulsar4X.ECSLib
     public class Game
     {
         #region Properties
-
         [PublicAPI]
         [JsonProperty]
         public List<Player> Players = new List<Player>();
@@ -79,6 +97,8 @@ namespace Pulsar4X.ECSLib
         
         internal bool ExitRequested;
 
+        private readonly EntityChangeProcessor _entityChangeProcessor = new EntityChangeProcessor();
+
         #endregion
 
         #region Events
@@ -99,7 +119,7 @@ namespace Pulsar4X.ECSLib
             GlobalManager = new EntityManager(this, true);
             MessagePump  = new MessagePumpServer(this);
             var tf = new TaskFactory(TaskCreationOptions.LongRunning, TaskContinuationOptions.LongRunning);
-            tf.StartNew(Main);
+            _gameTask = tf.StartNew(Main);
         }
 
         public Game([NotNull] NewGameSettings newGameSettings) : this()
@@ -193,6 +213,8 @@ namespace Pulsar4X.ECSLib
             // Invoke the Post Load event down the chain.
             PostLoad?.Invoke(this, EventArgs.Empty);
 
+            _entityChangeProcessor.Initialize(Systems.Values);
+
             // set isLoaded to true:
             IsLoaded = true;
 
@@ -207,6 +229,15 @@ namespace Pulsar4X.ECSLib
         {
             
             //InstallationProcessor.Initialize();
+        }
+
+        internal void AddSystem(int systemSeed = 0)
+        {
+            if (systemSeed == 0)
+                systemSeed = GalaxyGen.SeedRNG.Next();
+
+            StarSystem system = GalaxyGen.StarSystemFactory.CreateSystem(this, $"Star System #{Systems.Count + 1}", systemSeed);
+            _entityChangeProcessor.AddSystem(system);
         }
 
         #endregion
@@ -311,7 +342,7 @@ namespace Pulsar4X.ECSLib
             {
                 foreach (int systemSeed in systemSeeds)
                 {
-                    GalaxyGen.StarSystemFactory.CreateSystem(this, $"Star System #{Systems.Count + 1}", systemSeed);
+                    AddSystem(systemSeed);
                 }
             }
         }

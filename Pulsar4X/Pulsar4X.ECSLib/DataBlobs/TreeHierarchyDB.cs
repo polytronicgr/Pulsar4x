@@ -38,7 +38,7 @@ namespace Pulsar4X.ECSLib
     /// </remarks>
     public abstract class TreeHierarchyDB : BaseDataBlob
     {
-        protected Entity _owningEntity_;
+        protected Entity _owningEntity_ = Entity.InvalidEntity;
         private Entity _parent;
 
         [PublicAPI]

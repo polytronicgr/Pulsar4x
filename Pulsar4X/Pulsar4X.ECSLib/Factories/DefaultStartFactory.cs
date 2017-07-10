@@ -1,4 +1,23 @@
-﻿using System;
+﻿#region Copyright/License
+/* 
+ *Copyright© 2017 Daniel Phelps
+    This file is part of Pulsar4x.
+
+    Pulsar4x is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Pulsar4x is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#endregion
+using System;
 using System.Collections.Generic;
 
 namespace Pulsar4X.ECSLib
@@ -76,9 +95,9 @@ namespace Pulsar4X.ECSLib
             Entity gunShip = ShipFactory.CreateShip(gunShipClass, sol.SystemManager, factionEntity, earth, sol, "Prevailing Stillness");
             StorageSpaceProcessor.AddItemToCargo(gunShipClass.GetDataBlob<CargoStorageDB>(), new Guid("33e6ac88-0235-4917-a7ff-35c8886aad3a"), 2000000000);
 
-            sol.SystemManager.SetDataBlob(ship1.ID, new TransitableDB());
-            sol.SystemManager.SetDataBlob(ship2.ID, new TransitableDB());
-            sol.SystemManager.SetDataBlob(gunShip.ID, new TransitableDB());
+            ship1.SetDataBlob(new TransitableDB());
+            ship2.SetDataBlob(new TransitableDB());
+            gunShip.SetDataBlob(new TransitableDB());
 
             //Entity ship = ShipFactory.CreateShip(shipClass, sol.SystemManager, factionEntity, position, sol, "Serial Peacemaker");
             //ship.SetDataBlob(earth.GetDataBlob<PositionDB>()); //first ship reference PositionDB

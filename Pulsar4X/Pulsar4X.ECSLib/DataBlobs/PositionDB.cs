@@ -46,7 +46,7 @@ namespace Pulsar4X.ECSLib
                 {
                     newRelative = currentAbsolute - value.GetDataBlob<PositionDB>().AbsolutePosition;
                 }
-                Parent = value;
+                base.Parent = value;
                 _position = newRelative;
             }
         }

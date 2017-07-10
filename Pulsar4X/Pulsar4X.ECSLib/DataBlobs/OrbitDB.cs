@@ -78,7 +78,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         [PublicAPI]
         [JsonProperty]
-        public DateTime Epoch { get { return _epoch; } set { SetField(ref _epoch, value);; } }
+        public DateTime Epoch { get { return _epoch; } set { SetField(ref _epoch, value); } }
 
         /// <summary>
         /// 2-Body gravitational parameter of system.

@@ -72,7 +72,8 @@ namespace Pulsar4X.ECSLib
         private void Deserialized(StreamingContext context)
         {
             //set item name to the design name if it exsists. 
-            ItemName = OwningEntity.GetDataBlob<DesignInfoDB>()?.DesignEntity.GetDataBlob<NameDB>()?.DefaultName ?? Name;
+            var game = (Game)context.Context;
+            game.PostLoad += (sender, args) => { ItemName = OwningEntity.GetDataBlob<DesignInfoDB>()?.DesignEntity.GetDataBlob<NameDB>()?.DefaultName ?? Name; };
         }
     }
 }

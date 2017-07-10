@@ -22,31 +22,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using static Pulsar4X.ECSLib.EntityChangeEvent;
 
 namespace Pulsar4X.ECSLib
 {
     public class EntityEventArgs
     {
-        #region Types
-        public enum EntityEventType
-        {
-            EntityCreated,      // Entity was freshly created.
-            EntityDestroyed,    // Entity has been destroyed and is no longer valid.
-            EntityMovedIn,      // Entity moved into an EntityManager from another.
-            EntityMovedOut      // Entity moved out of an EntityManager to another.
-        }
-        #endregion
-
         #region Fields
+        public int DataBlobTypeIndex;
         public Guid EntityGuid;
-        public EntityEventType Type;
+        public EntityChangeType Type;
         #endregion
 
         #region Constructors
-        public EntityEventArgs(EntityEventType type, Guid entityGuid)
+        public EntityEventArgs(EntityChangeType type, Guid entityGuid, int dataBlobTypeIndex = -1)
         {
             Type = type;
             EntityGuid = entityGuid;
+            DataBlobTypeIndex = dataBlobTypeIndex;
         }
         #endregion
     }
@@ -124,6 +117,19 @@ namespace Pulsar4X.ECSLib
         #endregion
 
         #region Events
+        /// <summary>
+        /// Invoked just before removing a DataBlob from this Entity.
+        /// </summary>
+        public event EntityEventHandler DataBlobRemoving;
+
+        /// <summary>
+        /// Invoked after setting a DataBlob to this entity.
+        /// </summary>
+        public event EntityEventHandler DataBlobSet;
+
+        /// <summary>
+        /// Invoked after invalidating this entity.
+        /// </summary>
         public event EntityEventHandler EntityDestroyed;
         #endregion
 
@@ -174,7 +180,7 @@ namespace Pulsar4X.ECSLib
         public virtual void Destroy()
         {
             _protectedDataBlobMask_ = EntityManager.BlankDataBlobMask();
-            EntityDestroyed?.Invoke(this, new EntityEventArgs(EntityEventArgs.EntityEventType.EntityDestroyed, Guid));
+            EntityDestroyed?.Invoke(this, new EntityEventArgs(EntityChangeType.EntityDestroyed, Guid));
             EntityDestroyed = null; // Remove any handlers.
         }
         #endregion
@@ -204,5 +210,9 @@ namespace Pulsar4X.ECSLib
         [PublicAPI]
         public static ProtoEntity Create(IEnumerable<BaseDataBlob> dataBlobs = null) => Create(Guid.Empty, dataBlobs);
         #endregion
+
+        protected void OnDataBlobSet(int typeIndex) => DataBlobSet?.Invoke(this, new EntityEventArgs(EntityChangeType.EntityDataBlobSet, Guid, typeIndex));
+
+        protected void OnDataBlobRemoving(int typeIndex) => DataBlobRemoving?.Invoke(this, new EntityEventArgs(EntityChangeType.EntityDataBlobRemoved, Guid, typeIndex));
     }
 }

@@ -267,6 +267,7 @@
     <Compile Include="Processors\EconProcessor.cs" />
     <Compile Include="Processors\AtmosphereProcessor.cs" />
     <Compile Include="Factories\ShipComponents\ParsingProcessor.cs" />
+    <Compile Include="Processors\EntityChangeProcessor.cs" />
     <Compile Include="Processors\InterSystemJumpProcessor.cs" />
     <Compile Include="Processors\NewtonBalisticProcessor.cs" />
     <Compile Include="Processors\ReCalcProcessor.cs" />

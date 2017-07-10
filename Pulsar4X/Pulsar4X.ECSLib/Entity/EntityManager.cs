@@ -26,6 +26,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 using Newtonsoft.Json;
+using static Pulsar4X.ECSLib.EntityChangeEvent;
 
 namespace Pulsar4X.ECSLib
 {
@@ -71,8 +72,8 @@ namespace Pulsar4X.ECSLib
         #endregion
 
         #region Events
-        public EntityEventHandler EntityCreated;
-        public EntityEventHandler EntityMoved;
+        public event EntityEventHandler EntityCreated;
+        public event EntityEventHandler EntityMoved;
         #endregion
 
         #region Constructors
@@ -267,6 +268,10 @@ namespace Pulsar4X.ECSLib
         internal T GetDataBlob<T>(int entityID, int typeIndex)
             where T : BaseDataBlob => (T)_dataBlobMap[typeIndex][entityID];
 
+        /// <summary>
+        /// This should ONLY be called from Entity.cs
+        /// Use Entity.SetDataBlob elsewhere.
+        /// </summary>
         internal void SetDataBlob(int entityID, BaseDataBlob dataBlob)
         {
             int typeIndex;
@@ -277,6 +282,10 @@ namespace Pulsar4X.ECSLib
             dataBlob.OwningEntity = _entities[entityID];
         }
 
+        /// <summary>
+        /// This should ONLY be called from Entity.cs
+        /// Use Entity.SetDataBlob elsewhere.
+        /// </summary>
         internal void SetDataBlob(int entityID, BaseDataBlob dataBlob, int typeIndex)
         {
             _dataBlobMap[typeIndex][entityID] = dataBlob;
@@ -284,15 +293,10 @@ namespace Pulsar4X.ECSLib
             dataBlob.OwningEntity = _entities[entityID];
         }
 
-        internal void RemoveDataBlob<T>(int entityID)
-            where T : BaseDataBlob
-        {
-            int typeIndex = GetTypeIndex<T>();
-            _dataBlobMap[typeIndex][entityID].OwningEntity = null;
-            _dataBlobMap[typeIndex][entityID] = null;
-            EntityMasks[entityID][typeIndex] = false;
-        }
-
+        /// <summary>
+        /// This should ONLY be called from Entity.cs
+        /// Use Entity.RemoveDataBlob elsewhere.
+        /// </summary>
         internal void RemoveDataBlob(int entityID, int typeIndex)
         {
             _dataBlobMap[typeIndex][entityID].OwningEntity = null;
@@ -305,7 +309,7 @@ namespace Pulsar4X.ECSLib
         /// </summary>
         internal void OnEntityCreated(Entity entity)
         {
-            EntityCreated?.Invoke(this, new EntityEventArgs(EntityEventArgs.EntityEventType.EntityCreated, entity.Guid));
+            EntityCreated?.Invoke(this, new EntityEventArgs(EntityChangeType.EntityCreated, entity.Guid));
         }
 
         /// <summary>
@@ -315,11 +319,11 @@ namespace Pulsar4X.ECSLib
         {
             if (_localEntityDictionary.ContainsKey(entity.Guid))
             {
-                EntityMoved?.Invoke(this, new EntityEventArgs(EntityEventArgs.EntityEventType.EntityMovedIn, entity.Guid));
+                EntityMoved?.Invoke(this, new EntityEventArgs(EntityChangeType.EntityMovedIn, entity.Guid));
             }
             else
             {
-                EntityMoved?.Invoke(this, new EntityEventArgs(EntityEventArgs.EntityEventType.EntityMovedOut, entity.Guid));
+                EntityMoved?.Invoke(this, new EntityEventArgs(EntityChangeType.EntityMovedOut, entity.Guid));
             }
         }
         #endregion

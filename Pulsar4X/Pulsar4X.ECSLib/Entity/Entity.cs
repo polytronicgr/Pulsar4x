@@ -303,8 +303,13 @@ namespace Pulsar4X.ECSLib
             {
                 throw new InvalidOperationException("Cannot set a datablob to an invalid entity.");
             }
+            if (HasDataBlob(typeIndex))
+            {
+                RemoveDataBlob(typeIndex);
+            }
 
             Manager.SetDataBlob(ID, dataBlob, typeIndex);
+            OnDataBlobSet(typeIndex);
         }
 
         /// <summary>
@@ -314,15 +319,8 @@ namespace Pulsar4X.ECSLib
         [PublicAPI]
         public override void RemoveDataBlob<T>()
         {
-            if (!IsValid)
-            {
-                throw new InvalidOperationException("Cannot remove a datablob from an invalid entity.");
-            }
-            if (!HasDataBlob<T>())
-            {
-                throw new InvalidOperationException("Entity does not contain this datablob.");
-            }
-            Manager.RemoveDataBlob<T>(ID);
+            int typeIndex = EntityManager.GetTypeIndex<T>();
+            RemoveDataBlob(typeIndex);
         }
 
         /// <summary>
@@ -340,6 +338,7 @@ namespace Pulsar4X.ECSLib
             {
                 throw new InvalidOperationException("Entity does not contain this datablob.");
             }
+            OnDataBlobRemoving(typeIndex);
             Manager.RemoveDataBlob(ID, typeIndex);
         }
 
@@ -352,12 +351,8 @@ namespace Pulsar4X.ECSLib
         public bool HasDataBlob<T>()
             where T : BaseDataBlob
         {
-            if (!IsValid)
-            {
-                throw new InvalidOperationException("Cannot query an invalid entity.");
-            }
             int typeIndex = EntityManager.GetTypeIndex<T>();
-            return DataBlobMask[typeIndex];
+            return HasDataBlob(typeIndex);
         }
 
         /// <summary>
