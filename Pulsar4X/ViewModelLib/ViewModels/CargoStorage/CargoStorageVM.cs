@@ -14,7 +14,7 @@ namespace Pulsar4X.ViewModel
 {
     public class CargoStorageVM : ViewModelBase, IHandleMessage
     {
-        private CargoStorageUIData _cargoData;
+        private CargoStorageDB _cargoData;
         private StaticDataStore _dataStore;
         private GameVM _gameVM;
 
@@ -27,7 +27,7 @@ namespace Pulsar4X.ViewModel
         public void Initialise(Entity entity)
         {
 
-            SubscriptionRequestMessage<CargoStorageUIData> subreq = new SubscriptionRequestMessage<CargoStorageUIData>()
+            SubscriptionRequestMessage<CargoStorageDB> subreq = new SubscriptionRequestMessage<CargoStorageDB>()
             {
                 ConnectionID = Guid.Empty, 
                 EntityGuid = entity.Guid, 
@@ -59,12 +59,20 @@ namespace Pulsar4X.ViewModel
 
         public void Update(BaseToClientMessage message)
         {
-            _cargoData = (CargoStorageUIData)message;
-            foreach (var item in _cargoData.CargoByType)
+            var dataMessage = (DatablobChangedMessage)message;
+            foreach (CargoDataChange change in dataMessage.Changes)
             {
-                CargoStorageByTypeVM storeType = new CargoStorageByTypeVM(_gameVM);
-                storeType.Initalise(item.Value, item.Key);
-                CargoStore.Add(storeType);
+                switch (change.ChangeType)
+                {
+                    case CargoDataChange.CargoChangeTypes.AddToCargo:
+                        break;
+                    case CargoDataChange.CargoChangeTypes.RemoveFromCargo:
+                        break;
+                    case CargoDataChange.CargoChangeTypes.CapacityChange:
+                        break;
+                    case CargoDataChange.CargoChangeTypes.TransferRateChange:
+                        break;
+                }
             }
 
         }
@@ -75,7 +83,6 @@ namespace Pulsar4X.ViewModel
     public class CargoStorageByTypeVM : INotifyPropertyChanged
     {
         private CargoStorageTypeData _storageData;
-        private CargoStorageUIData _storageUIData;
         private StaticDataStore _dataStore;
         public Guid TypeID { get; private set; }
         private GameVM _gameVM;

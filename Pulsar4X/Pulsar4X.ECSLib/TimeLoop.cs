@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using Newtonsoft.Json;
+using Pulsar4X.ECSLib.DataSubscription;
 
 namespace Pulsar4X.ECSLib
 {
@@ -236,7 +237,19 @@ namespace Pulsar4X.ECSLib
 
                 GameGlobalDateTime = nextInterupt; //set the GlobalDateTime this will invoke the datechange event.
             }
-
+            
+            //Notify UI/Network clients of changes. 
+            if (_game.Settings.EnableMultiThreading == true)
+            {
+                Parallel.ForEach(_game.Systems.Values, starSys => _game.MessagePump.NotifyConnectionsOfDataChanges(starSys.SystemManager));
+            }
+            else
+            {
+                foreach (StarSystem starSystem in _game.Systems.Values)
+                {
+                    _game.MessagePump.NotifyConnectionsOfDataChanges(starSystem.SystemManager);
+                }
+            }
             LastProcessingTime = _stopwatch.Elapsed; //how long the processing took
             _stopwatch.Reset();
         }

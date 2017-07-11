@@ -66,9 +66,6 @@ namespace Pulsar4X.ECSLib
                 else 
                     i++;
             }
-            
-            if(entity.Manager.Game.MessagePump.AreAnySubscribers<OrdersUIData>(entity.Guid))
-                entity.Manager.Game.MessagePump.NotifyConnectionsOfDataChanges<OrdersUIData>(entity.Guid, new OrdersUIData(orderableDB));
         }
 
         public static bool IsTargetClose(Game game, Entity thisEntity, Entity targetEntity, BaseAction order, int reqiredDistance)

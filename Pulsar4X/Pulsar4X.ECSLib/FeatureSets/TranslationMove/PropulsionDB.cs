@@ -32,35 +32,6 @@ namespace Pulsar4X.ECSLib
         }
     }
 
-    public class MovementUIData : UIData
-    {
-        public int MaximumSpeed { get; set; }
-        public Vector4 CurrentSpeed { get; set; }
-        public int TotalEnginePower { get; set; }
-        public List<FuelUse> FuelUsePerKM { get; set; }
-
-
-        public MovementUIData(StaticDataStore staticData, PropulsionDB db)
-        {
-            MaximumSpeed = db.MaximumSpeed;
-            CurrentSpeed = db.CurrentSpeed;
-            TotalEnginePower = db.TotalEnginePower;
-            foreach (var kvp in db.FuelUsePerKM)
-            {
-                string name = staticData.GetICargoable(kvp.Key).Name;
-                FuelUse fuelUse = new FuelUse(){FuelName = name, AmountPerKM = kvp.Value};
-                FuelUsePerKM.Add(fuelUse);
-            }
-        }
-        
-        
-        public struct FuelUse
-        {
-            public string FuelName;
-            public double AmountPerKM;
-        }
-
-    }
 
     public class TranslateOrderableDB:BaseDataBlob
     {

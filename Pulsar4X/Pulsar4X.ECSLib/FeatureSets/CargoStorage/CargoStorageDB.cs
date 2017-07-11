@@ -14,11 +14,11 @@ namespace Pulsar4X.ECSLib
     /// entities need to reference specific items or it'd be possible to put damaged components into cargo and take them out new.  
     /// Either capacity used or capacity remaining. 
     /// </summary>
-    public class CargoStorageDB : BaseDataBlob, ISubscribableDatablob
+    public class CargoStorageDB : SubscribableDatablob
     {
         
-        public bool HasSubscribers { get; set; }
-        public List<DatablobChange> Changes { get; } = new List<DatablobChange>();
+        //public bool HasSubscribers { get; set; }
+        //public List<DatablobChange> Changes { get; } = new List<DatablobChange>();
 
         public Dictionary<Guid, CargoStorageTypeData> StorageByType { get; private set; } = new Dictionary<Guid, CargoStorageTypeData>();
 

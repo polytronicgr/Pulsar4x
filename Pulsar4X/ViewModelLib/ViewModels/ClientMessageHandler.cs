@@ -28,7 +28,7 @@ namespace Pulsar4X.ViewModel
             }
         }
 
-        public void Subscribe<T>(SubscriptionRequestMessage<T> message, IHandleMessage requestingVM) where T: BaseToClientMessage
+        public void Subscribe<T>(SubscriptionRequestMessage<T> message, IHandleMessage requestingVM) where T: SubscribableDatablob
         {
             if(!_updatables.ContainsKey(typeof(T)))
                 _updatables.Add(typeof(T), new List<IHandleMessage>(){requestingVM});

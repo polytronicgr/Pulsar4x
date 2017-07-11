@@ -12,7 +12,7 @@ namespace Pulsar4X.ECSLib
         private readonly Game _game;
         private readonly ConcurrentQueue<BaseToServerMessage> _incommingMessages = new ConcurrentQueue<BaseToServerMessage>();
         private readonly ConcurrentDictionary<Guid, ConcurrentQueue<BaseToClientMessage>> _outGoingQueus = new ConcurrentDictionary<Guid, ConcurrentQueue<BaseToClientMessage>>();
-        internal readonly Dictionary<Guid, DataSubsciber> DataSubscibers = new Dictionary<Guid, DataSubsciber>();
+        internal readonly Dictionary<Guid, DataSubscriber> DataSubscibers = new Dictionary<Guid, DataSubscriber>();
         public MessagePumpServer(Game game)
         {
             _game = game;
@@ -23,7 +23,7 @@ namespace Pulsar4X.ECSLib
         public void AddNewConnection(Guid connectionID)
         {
             _outGoingQueus.TryAdd(connectionID, new ConcurrentQueue<BaseToClientMessage>());
-            DataSubscibers.Add(connectionID, new DataSubsciber(_game, Guid.Empty));
+            DataSubscibers.Add(connectionID, new DataSubscriber(_game, Guid.Empty));
         }
 
         /// <summary>
@@ -63,23 +63,18 @@ namespace Pulsar4X.ECSLib
             return _outGoingQueus[connection].TryDequeue(out message);
         }
 
-        
-        internal void NotifyConnectionsOfDataChanges<T>(Guid entityGuid, UIData data ) where T : BaseToClientMessage
-        {
-            foreach (var item in DataSubscibers.Values)
-            {
-                item.TriggerIfSubscribed<T>(entityGuid, data);
-            }
-        }
 
-        internal bool AreAnySubscribers<T>(Guid entityGuid) where T : BaseToClientMessage
+        public void NotifyConnectionsOfDataChanges(EntityManager manager)
         {
-            foreach (var item in DataSubscibers.Values)
+            var entityMessages = DataSubscriber.ChangedEntityMessages(manager);
+
+            foreach (var dataSubsciber in DataSubscibers.Values)
             {
-                if (item.IsSubscribedTo<T>(entityGuid))
-                    return true;
-            }
-            return false;
+                foreach (var entityMessage in entityMessages)
+                {
+                    dataSubsciber.SendDatablobChangesIfSubscribedToEntity(entityMessage, this);
+                }
+            }               
         }
 
         public void ReadIncommingMessages(Game game)

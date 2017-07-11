@@ -22,11 +22,7 @@ namespace Pulsar4X.ViewModel
         {
             EntityGuid = entityGuid;
             
-            SubscriptionRequestMessage<EntityUIData> subreq = new SubscriptionRequestMessage<EntityUIData>()
-            {
-                ConnectionID = Guid.Empty, 
-                EntityGuid = entityGuid            
-            };
+
             
             
             
@@ -45,12 +41,7 @@ namespace Pulsar4X.ViewModel
             */
         }
 
-        public void Update(BaseToClientMessage message)
-        {
-            var entityUIData = (EntityUIData)message;
-            
-            
-        }
+        public void Update(BaseToClientMessage message) { throw new NotImplementedException(); }
     }
 
 

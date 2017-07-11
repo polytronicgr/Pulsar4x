@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using Pulsar4X.ECSLib;
+using Pulsar4X.ECSLib.DataSubscription;
 
 namespace Pulsar4X.Tests
 {
@@ -24,8 +26,9 @@ namespace Pulsar4X.Tests
             TestingUtilities.ColonyFacilitys(_testGame, _testGame.EarthColony);
 
             _cargoStorageDB = _testGame.EarthColony.GetDataBlob<CargoStorageDB>();
-
-            _cargoStorageDB.HasSubscribers = true;
+            DataSubscriber dataSubsriber2 = new DataSubscriber(_testGame.Game, Guid.Empty);
+            dataSubsriber2.Subscribe<CargoStorageDB>(_cargoStorageDB.OwningEntity.Guid);
+            //_cargoStorageDB.HasSubscribers = true;
         }
 
         [Test]
@@ -43,6 +46,8 @@ namespace Pulsar4X.Tests
             
             Assert.True(change.Amount == 10000);
             Assert.True(change.ChangeType == CargoDataChange.CargoChangeTypes.AddToCargo);
+            List<Entity> subscribedEntities = _cargoStorageDB.OwningEntity.Manager.GetAllEntitiesWithDataBlob<SubscribedEntityDB>();
+            Assert.True(subscribedEntities.Count == 1);
         }
         
         [Test]

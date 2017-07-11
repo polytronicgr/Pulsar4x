@@ -101,13 +101,14 @@ namespace Pulsar4X.Tests
             Assert.True(deserailisedOrder is CargoOrder);
         }
         
+        
         [Test]
         public void TestOrderViaMessagePump()
         {
             _testGame.GameSettings.EnableMultiThreading = false;
             ClientMessageHandler incommingMessageHandler = new ClientMessageHandler(_testGame.Game.MessagePump);
             FakeVM fakeVM = new FakeVM();
-            SubscriptionRequestMessage<OrdersUIData> subreq = new SubscriptionRequestMessage<OrdersUIData>()
+            SubscriptionRequestMessage<OrderableDB> subreq = new SubscriptionRequestMessage<OrderableDB>()
             {
                 ConnectionID = Guid.Empty, 
                 EntityGuid = _testGame.DefaultShip.Guid,             
@@ -136,9 +137,7 @@ namespace Pulsar4X.Tests
 
             public void Update(BaseToClientMessage message)
             {
-                OrdersUIData data = (OrdersUIData)message;
-                Name = data.OrderUIDatas[0].Name;
-                OrderStatus = data.OrderUIDatas[0].Status;
+
             }
         }
     }

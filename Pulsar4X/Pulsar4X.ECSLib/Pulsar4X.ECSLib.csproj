@@ -171,15 +171,15 @@
     <Compile Include="DataBlobs\ComponentInstanceDBs\WeaponStateDB.cs" />
     <Compile Include="DataBlobs\NewtonBalisticDB.cs" />
     <Compile Include="DataBlobs\ShipDBs\DesignInfoDB.cs" />
-    <Compile Include="DataSubscription\DataSubsciber.cs" />
-    <Compile Include="Entity\EntityUIData.cs" />
+    <Compile Include="DataSubscription\DataSubscriber.cs" />
+    <Compile Include="DataSubscription\SubscriptionRequestMessage.cs" />
     <Compile Include="Factories\AsteroidFactory.cs" />
     <Compile Include="Factories\ShipComponents\ComponentInstanceFactory.cs" />
+    <Compile Include="FeatureSets\CargoStorage\CargoableUIData.cs" />
     <Compile Include="FeatureSets\CargoStorage\CargoAction.cs" />
     <Compile Include="FeatureSets\CargoStorage\CargoOrder.cs" />
     <Compile Include="FeatureSets\CargoStorage\CargoStorageAtbDB.cs" />
     <Compile Include="FeatureSets\CargoStorage\CargoStorageDB.cs" />
-    <Compile Include="FeatureSets\CargoStorage\CargoStorageUIData.cs" />
     <Compile Include="FeatureSets\CargoStorage\CargoStorageProcessor.cs" />
     <Compile Include="FeatureSets\CargoStorage\CargoAbleTypeDB.cs" />
     <Compile Include="FeatureSets\Orders\BaseAction.cs" />
@@ -187,7 +187,6 @@
     <Compile Include="FeatureSets\Orders\EnableDisableComponent.cs" />
     <Compile Include="FeatureSets\Orders\OrderableDB.cs" />
     <Compile Include="FeatureSets\Orders\OrderProcessor.cs" />
-    <Compile Include="FeatureSets\Orders\OrdersUIData.cs" />
     <Compile Include="FeatureSets\TranslationMove\EnginePowerAtbDB.cs" />
     <Compile Include="FeatureSets\TranslationMove\PropulsionDB.cs" />
     <Compile Include="FeatureSets\TranslationMove\TranslationAction.cs" />
@@ -199,6 +198,8 @@
     <Compile Include="Helpers\NameLookup.cs" />
     <Compile Include="Helpers\ObjectSerializer.cs" />
     <Compile Include="Helpers\ObserviableConcurrentDictionary.cs" />
+    <Compile Include="Helpers\StoredObservableDictionary.cs" />
+    <Compile Include="Helpers\StoredObservableList.cs" />
     <Compile Include="ManagerSubPulse.cs" />
     <Compile Include="Messages\IncomingMessageType.cs" />
     <Compile Include="Messages\OutgoingMessageType.cs" />
