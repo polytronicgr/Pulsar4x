@@ -6,8 +6,8 @@ namespace Pulsar4X.ECSLib.DataSubscription
     public class SubscriptionRequestMessage<T> : BaseToServerMessage where T: SubscribableDatablob
     {
         public Guid EntityGuid { get; set; }
+        public override string ResponseCode { get; set; } = typeof(T).ToString();
 
-        
         [JsonConstructor]
         public SubscriptionRequestMessage() { }
 
@@ -18,8 +18,11 @@ namespace Pulsar4X.ECSLib.DataSubscription
                 ConnectionID = connectionID,
                 FactionGuid = factionID,
                 EntityGuid = entityGuid,
+                
             };
         }
+
+        
 
         internal override void HandleMessage(Game game)
         {            

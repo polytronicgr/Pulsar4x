@@ -9,7 +9,7 @@ namespace Pulsar4X.ViewModel
     {
         private MessagePumpServer MessagePump { get; }
         
-        private readonly Dictionary<Type, List<IHandleMessage>> _updatables = new Dictionary<Type, List<IHandleMessage>>();
+        private readonly Dictionary<string, List<IHandleMessage>> _updatables = new Dictionary<string, List<IHandleMessage>>();
 
         public ClientMessageHandler(MessagePumpServer messagePump) { MessagePump = messagePump; }
 
@@ -18,25 +18,25 @@ namespace Pulsar4X.ViewModel
             BaseToClientMessage message;
             while( MessagePump.TryDequeueOutgoingMessage(Guid.Empty, out message))
             {
-                if(_updatables.ContainsKey(message.GetType()))
+                if(_updatables.ContainsKey(message.ResponseCode))
                 {
-                    foreach (var item in _updatables[message.GetType()])
+                    foreach (var item in _updatables[message.ResponseCode])
                     {
                         item.Update(message);
                     }
-                }                  
+                }              
             }
         }
 
         public void Subscribe<T>(SubscriptionRequestMessage<T> message, IHandleMessage requestingVM) where T: SubscribableDatablob
         {
-            if(!_updatables.ContainsKey(typeof(T)))
-                _updatables.Add(typeof(T), new List<IHandleMessage>(){requestingVM});
+            if(!_updatables.ContainsKey(message.ResponseCode))
+                _updatables.Add(message.ResponseCode, new List<IHandleMessage>(){requestingVM});
             else 
-                _updatables[typeof(T)].Add(requestingVM);
+                _updatables[message.ResponseCode].Add(requestingVM);
             
             MessagePump.EnqueueIncomingMessage(message);
-        }     
+        }
     }
 
     public interface IHandleMessage

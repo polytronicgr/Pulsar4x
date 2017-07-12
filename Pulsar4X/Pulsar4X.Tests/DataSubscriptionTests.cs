@@ -14,7 +14,7 @@ namespace Pulsar4X.Tests
 
         TestGame _testGame;
         private MineralSD _duraniumSD;
-
+        private CargoStorageDB _cargoStorage;
         private DateTime _currentDateTime
         {
             get { return _testGame.Game.CurrentDateTime; }
@@ -26,6 +26,7 @@ namespace Pulsar4X.Tests
         public void Init()
         {
             _testGame = new TestGame(1);
+            _testGame.GameSettings.EnableMultiThreading = false;
             _duraniumSD = NameLookup.TryGetMineralSD(_testGame.Game, "Duranium");
             OrderableDB orderable = new OrderableDB();
             TestingUtilities.ColonyFacilitys(_testGame, _testGame.EarthColony);
@@ -33,6 +34,7 @@ namespace Pulsar4X.Tests
             CargoStorageHelpers.AddItemToCargo(_testGame.EarthColony.GetDataBlob<CargoStorageDB>(), _duraniumSD, 10000);
 
             _cargoOrder = new CargoOrder(_testGame.DefaultShip.Guid, _testGame.HumanFaction.Guid, _testGame.EarthColony.Guid, CargoOrder.CargoOrderTypes.LoadCargo, _duraniumSD.ID, 100);
+            _cargoStorage = _testGame.DefaultShip.GetDataBlob<CargoStorageDB>();
         }
 
 
@@ -49,13 +51,14 @@ namespace Pulsar4X.Tests
             //_testGame.Game.MessagePump.DataSubscibers[Guid.Empty].Subscribe<OrderableDB>(_testGame.DefaultShip.Guid);
 
             Assert.True(_testGame.Game.MessagePump.DataSubscibers[Guid.Empty].IsSubscribedTo<CargoStorageDB>(_testGame.DefaultShip.Guid), "not subscribed");
+            Assert.True(_cargoStorage.HasSubscribers);
             BaseAction action = _cargoOrder.CreateAction(_testGame.Game, _cargoOrder);
             Assert.NotNull(action.OrderableProcessor);
 
             _testGame.EarthColony.Manager.OrderQueue.Enqueue(_cargoOrder);
             OrderProcessor.ProcessManagerOrders(_testGame.EarthColony.Manager);
             Assert.True(_testGame.DefaultShip.GetDataBlob<OrderableDB>().ActionQueue[0] is CargoAction, "No action in ship orders");
-            _testGame.Game.GameLoop.Ticklength = TimeSpan.FromSeconds(10);
+            _testGame.Game.GameLoop.Ticklength = TimeSpan.FromSeconds(240);
             _testGame.Game.GameLoop.TimeStep();
             OrderProcessor.ProcessActionList(_testGame.Game.CurrentDateTime, _testGame.EarthColony.Manager);
 
@@ -79,6 +82,7 @@ namespace Pulsar4X.Tests
             //Assert.True(_testGame.Game.MessagePump.AreAnySubscribers<CargoStorageUIData>(_testGame.DefaultShip.Guid));
         }
 
+        /*
         [Test]
         public void TestClientHandler()
         {
@@ -93,7 +97,7 @@ namespace Pulsar4X.Tests
             incommingMessageHandler.Subscribe(subreq, fakeVM);            
             
             _testGame.Game.MessagePump.EnqueueIncomingMessage(_cargoOrder);
-            
+            _testGame.Game.GameLoop.Ticklength = TimeSpan.FromSeconds(240);
             BaseToClientMessage message;
             while (!_testGame.Game.MessagePump.TryPeekOutgoingMessage(Guid.Empty, out message))
             {
@@ -103,6 +107,7 @@ namespace Pulsar4X.Tests
             incommingMessageHandler.Read();
             Assert.IsTrue(fakeVM.IsHandled);
         }
+        */
         
         public class FakeVM : IHandleMessage
         {

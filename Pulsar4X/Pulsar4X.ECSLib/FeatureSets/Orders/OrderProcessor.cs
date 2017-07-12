@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
-
+using Pulsar4X.ECSLib.DataSubscription;
 
 
 namespace Pulsar4X.ECSLib
@@ -60,10 +60,31 @@ namespace Pulsar4X.ECSLib
                         mask |= item.Lanes; //bitwise or
                     }
                     item.OrderableProcessor.ProcessAction(toDate, item);
-                }                      
-                if(item.IsFinished)
+                    if(orderableDB.HasSubscribers)
+                    {
+                        OrderableDataChange change = new OrderableDataChange()
+                        {
+                            ChangeType = OrderableDataChange.ChangeTypes.ActionStatus,
+                            Status = item.Status,
+                            Name = item.Name
+                        };
+                        orderableDB.Changes.Add(change);
+                    }
+                }
+                if (item.IsFinished)
+                {
                     actionList.RemoveAt(i);
-                else 
+                    if(orderableDB.HasSubscribers)
+                    {
+                        OrderableDataChange change = new OrderableDataChange()
+                        {
+                            ChangeType = OrderableDataChange.ChangeTypes.RemoveAction,
+                        };
+                        orderableDB.Changes.Add(change);
+                    }
+                        
+                }
+                else
                     i++;
             }
         }
@@ -79,5 +100,7 @@ namespace Pulsar4X.ECSLib
             }
             return false;
         }
+        
+        
     }
 }

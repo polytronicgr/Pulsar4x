@@ -153,7 +153,8 @@ namespace Pulsar4X.ECSLib
         public CargoChangeTypes ChangeType;
         public Guid TypGuid;
         public Guid ItemID;      
-        public uint Amount;        
+        public uint Amount;
+        
     }
     
 

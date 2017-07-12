@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Pulsar4X.ECSLib.DataSubscription;
@@ -25,5 +26,19 @@ namespace Pulsar4X.ECSLib
         {
             return new OrderableDB(this);
         }
+    }
+    
+    public class OrderableDataChange : DatablobChange
+    {
+        public enum ChangeTypes
+        {
+            AddAction,
+            RemoveAction,
+            ActionStatus
+        }
+
+        public string Name;
+        public ChangeTypes ChangeType;
+        public string Status;
     }
 }

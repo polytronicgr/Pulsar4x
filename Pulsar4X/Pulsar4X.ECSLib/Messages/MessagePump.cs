@@ -95,15 +95,21 @@ namespace Pulsar4X.ECSLib
         [JsonProperty]
         public Guid ConnectionID { get; set; }
         
+        public virtual string ResponseCode { get; set; }
+        
         internal abstract void HandleMessage(Game game);
     }
 
     public abstract class BaseToClientMessage
     {
+        public abstract string ResponseCode { get; }
+        
     }
 
     public class UIInfoMessage : BaseToClientMessage
-    {   
+    {
+        public override string ResponseCode { get; } = "InfoMessage";
+        
         [JsonProperty]
         public string Message;     
         public UIInfoMessage(string message) { Message = message; }

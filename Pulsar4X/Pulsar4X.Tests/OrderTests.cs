@@ -127,17 +127,22 @@ namespace Pulsar4X.Tests
             }
             
             incommingMessageHandler.Read();
-            Assert.IsTrue(fakeVM.Name == "Cargo Transfer: Load from Venus Colony");
+            Assert.IsTrue(fakeVM.OrderStatus == "In Progress ", "Wrong Order Status");
+            Assert.IsTrue(fakeVM.Name == "Cargo Transfer: Load from Earth Colony", "Wrong Order Name");
         }
         
         public class FakeVM : IHandleMessage
         {
-            public string Name { get; set; }
             public string OrderStatus { get; set; }
-
+            public string Name { get; set; }
             public void Update(BaseToClientMessage message)
             {
-
+                DatablobChangedMessage changeMessage = (DatablobChangedMessage)message;
+                foreach (OrderableDataChange change in changeMessage.Changes)
+                {   
+                    OrderStatus = change.Status;
+                    Name = change.Name;
+                }
             }
         }
     }

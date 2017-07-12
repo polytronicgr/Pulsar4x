@@ -287,6 +287,7 @@ namespace Pulsar4X.ECSLib
         private void ProcessAction(DateTime toDate, CargoAction action)
         {
             action.Status = "In Progress ";
+            
             TimeSpan deltaTime = toDate - action.ThisStorage.LastRunDate;
             
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Pulsar4X.ECSLib.DataSubscription
@@ -59,15 +60,15 @@ namespace Pulsar4X.ECSLib.DataSubscription
         public static List<DatablobChangedMessage> ChangedEntityMessages(EntityManager manager)
         {
             var changedEntityMessages = new List<DatablobChangedMessage>();
-            
-            int dbID = EntityManager.GetTypeIndex<SubscribedEntityDB>();
-            List<BaseDataBlob> subscribedDatablobs = manager.GetAllDataBlobs(dbID);
+
+            var entites = manager.GetAllEntitiesWithDataBlob<SubscribedEntityDB>();
+            List<BaseDataBlob> subscribedDatablobs = entites.Select(entity => entity.GetDataBlob<SubscribedEntityDB>()).Cast<BaseDataBlob>().ToList();
 
             foreach (SubscribedEntityDB subscribedEntityDB in subscribedDatablobs)
             {
                 foreach (var datablob in subscribedEntityDB.SubscribableDatablobs)
                 {
-                    DatablobChangedMessage changedMessage = new DatablobChangedMessage(datablob.OwningEntity.Guid, datablob.Changes);
+                    DatablobChangedMessage changedMessage = new DatablobChangedMessage(datablob.OwningEntity.Guid, datablob.Changes, datablob.GetType().ToString());
                     datablob.Changes.Clear();
                     changedEntityMessages.Add(changedMessage);
                 }
@@ -96,11 +97,20 @@ namespace Pulsar4X.ECSLib.DataSubscription
 
     }
 
-    public class DatablobChangedMessage : BaseToClientMessage
+    public class DatablobChangedMessage : BaseToClientMessage 
     {
         public List<DatablobChange> Changes;
         public Guid EntityGuid;
-        public DatablobChangedMessage(Guid entityID, List<DatablobChange> changes) { Changes = changes; }
+        public override string ResponseCode { get; } 
+
+        public DatablobChangedMessage(Guid entityID, List<DatablobChange> changes, string responseCode) 
+        {
+            Changes = changes;
+            EntityGuid = entityID;
+            ResponseCode = responseCode;
+        }
+
+        
     }
 
 
