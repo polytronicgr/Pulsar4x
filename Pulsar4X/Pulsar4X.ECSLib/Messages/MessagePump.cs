@@ -7,24 +7,19 @@ using Pulsar4X.ECSLib.DataSubscription;
 
 namespace Pulsar4X.ECSLib
 {
-    public class MessagePumpServer
+    public class MessagePump
     {
-        private readonly Game _game;
-        private readonly ConcurrentQueue<BaseToServerMessage> _incommingMessages = new ConcurrentQueue<BaseToServerMessage>();
-        private readonly ConcurrentDictionary<Guid, ConcurrentQueue<BaseToClientMessage>> _outGoingQueus = new ConcurrentDictionary<Guid, ConcurrentQueue<BaseToClientMessage>>();
-        internal readonly Dictionary<Guid, DataSubsciber> DataSubscibers = new Dictionary<Guid, DataSubsciber>();
-        public MessagePumpServer(Game game)
+        private readonly ConcurrentQueue<BaseToServerMessage> _incomingMessages = new ConcurrentQueue<BaseToServerMessage>();
+        private readonly ConcurrentDictionary<Guid, ConcurrentQueue<BaseToClientMessage>> _outgoingQueues = new ConcurrentDictionary<Guid, ConcurrentQueue<BaseToClientMessage>>();
+
+        public MessagePump()
         {
-            _game = game;
             //local UIconnection is an empty guid.
             AddNewConnection(Guid.Empty);
         }
 
-        public void AddNewConnection(Guid connectionID)
-        {
-            _outGoingQueus.TryAdd(connectionID, new ConcurrentQueue<BaseToClientMessage>());
-            DataSubscibers.Add(connectionID, new DataSubsciber(_game, Guid.Empty));
-        }
+        public void AddNewConnection(Guid connectionID) => _outgoingQueues.TryAdd(connectionID, new ConcurrentQueue<BaseToClientMessage>());
+        public void RemoveConnection(Guid connectionID) => _outgoingQueues.TryRemove(connectionID, out ConcurrentQueue<BaseToClientMessage> unusedValue);
 
         /// <summary>
         /// takes a seralised (derived type of)BaseToServerMessage as a string, deserialises it and enqueues it.
@@ -40,53 +35,26 @@ namespace Pulsar4X.ECSLib
         /// <param name="message"></param>
         public void EnqueueIncomingMessage(BaseToServerMessage message)
         {
-            _incommingMessages.Enqueue(message);
+            _incomingMessages.Enqueue(message);
         }
 
         public void EnqueueOutgoingMessage(Guid toConnection, BaseToClientMessage message)
         {
-            if(_outGoingQueus.ContainsKey(toConnection))
-                _outGoingQueus[toConnection].Enqueue(message);
+            if(_outgoingQueues.ContainsKey(toConnection))
+                _outgoingQueues[toConnection].Enqueue(message);
             else
             {
                 //TODO: log NoConnection message.
             }
         }
 
-        public bool TryPeekOutgoingMessage(Guid connction, out BaseToClientMessage message)
-        {
-            return _outGoingQueus[connction].TryPeek(out message);
-        }
+        public bool TryPeekOutgoingMessage(Guid connction, out BaseToClientMessage message) => _outgoingQueues[connction].TryPeek(out message);
+        public bool TryDequeueOutgoingMessage(Guid connection, out BaseToClientMessage message) => _outgoingQueues[connection].TryDequeue(out message);
 
-        public bool TryDequeueOutgoingMessage(Guid connection, out BaseToClientMessage message)
+        public void ReadIncomingMessages(Game game)
         {
-            return _outGoingQueus[connection].TryDequeue(out message);
-        }
-
-        
-        internal void NotifyConnectionsOfDataChanges<T>(Guid entityGuid, UIData data ) where T : BaseToClientMessage
-        {
-            foreach (var item in DataSubscibers.Values)
+            while (_incomingMessages.TryDequeue(out BaseToServerMessage message))
             {
-                item.TriggerIfSubscribed<T>(entityGuid, data);
-            }
-        }
-
-        internal bool AreAnySubscribers<T>(Guid entityGuid) where T : BaseToClientMessage
-        {
-            foreach (var item in DataSubscibers.Values)
-            {
-                if (item.IsSubscribedTo<T>(entityGuid))
-                    return true;
-            }
-            return false;
-        }
-
-        public void ReadIncommingMessages(Game game)
-        {
-            BaseToServerMessage message;
-            while(_incommingMessages.TryDequeue(out message))
-            {             
                 message.HandleMessage(game);
             }
         }
@@ -107,17 +75,7 @@ namespace Pulsar4X.ECSLib
     {
         public abstract string GetDataCode { get; }
     }
-
-    public class UIInfoMessage : BaseToClientMessage
-    {   
-        [JsonProperty]
-        public string Message;     
-        public UIInfoMessage(string message) { Message = message; }
-        public override string GetDataCode { get; } = "InfoMessage";
-    }
-
-
-
+    
     public class GameOrder : BaseToServerMessage
     {
         [JsonProperty]
@@ -150,8 +108,8 @@ namespace Pulsar4X.ECSLib
                     game.GameLoop.PauseTime();
                     break;
                 case IncomingMessageType.Echo:
-                    UIInfoMessage newMessage = new UIInfoMessage("Echo from " + ConnectionID);
-                    game.MessagePump.EnqueueOutgoingMessage(ConnectionID, newMessage);
+                    //UIInfoMessage newMessage = new UIInfoMessage("Echo from " + ConnectionID);
+                    //game.MessagePump.EnqueueOutgoingMessage(ConnectionID, newMessage);
                     break;
 
                 // This message may be getting too complex for this handler.

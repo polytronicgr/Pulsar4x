@@ -95,7 +95,7 @@ namespace Pulsar4X.ECSLib
         private readonly EconProcessor _econProcessor = new EconProcessor();
 
         //public readonly IncommingMessageQueue MessagePump = new IncommingMessageQueue();
-        public readonly MessagePumpServer MessagePump; 
+        public readonly MessagePump MessagePump; 
         
         internal bool ExitRequested;
 
@@ -119,7 +119,7 @@ namespace Pulsar4X.ECSLib
             GameLoop = new TimeLoop(this);
             EventLog = new EventLog(this);
             GlobalManager = new EntityManager(this, true);
-            MessagePump  = new MessagePumpServer(this);
+            MessagePump  = new MessagePump();
             var tf = new TaskFactory(TaskCreationOptions.LongRunning, TaskContinuationOptions.LongRunning);
             _gameTask = tf.StartNew(Main);
         }
@@ -204,7 +204,7 @@ namespace Pulsar4X.ECSLib
                 }
 
                 // Clear the MessagePump.
-                MessagePump.ReadIncommingMessages(this);
+                MessagePump.ReadIncomingMessages(this);
             }
         }
 

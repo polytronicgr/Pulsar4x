@@ -17,8 +17,8 @@
     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 */
 #endregion
+
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -67,16 +67,27 @@ namespace Pulsar4X.ECSLib
         #region Fields
         private readonly Dictionary<Guid, List<EntityChangeEvent>> _entityChanges = new Dictionary<Guid, List<EntityChangeEvent>>();
         private readonly List<EntityChangeEvent> _entityEvents = new List<EntityChangeEvent>();
+        private readonly EntitySubscriptionManager _subscriptionManager = new EntitySubscriptionManager();
         #endregion
-
-
-
+        
         #region Internal Methods
         internal void Initialize(IEnumerable<StarSystem> systems)
         {
             foreach (StarSystem system in systems)
             {
                 AddSystem(system);
+            }
+        }
+
+        internal void Process()
+        {
+            foreach (var(entityGuid, changes) in _entityChanges)
+            {
+                foreach (Guid subscriber in _subscriptionManager.GetSubscribers(entityGuid))
+                {
+                    // TODO: Use Actual MessagePump
+                    MessagePump mp;
+                }
             }
         }
 

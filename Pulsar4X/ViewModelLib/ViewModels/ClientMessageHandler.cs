@@ -7,11 +7,11 @@ namespace Pulsar4X.ViewModel
 {
     public class ClientMessageHandler
     {
-        private MessagePumpServer MessagePump { get; }
+        private MessagePump MessagePump { get; }
         
         private readonly Dictionary<Type, List<IHandleMessage>> _updatables = new Dictionary<Type, List<IHandleMessage>>();
 
-        public ClientMessageHandler(MessagePumpServer messagePump) { MessagePump = messagePump; }
+        public ClientMessageHandler(MessagePump messagePump) { MessagePump = messagePump; }
 
         public void Read()
         {

@@ -402,7 +402,7 @@ namespace Pulsar4X.ECSLib
 
             CargoStorageDB cargoFrom = action.CargoFrom;
             CargoStorageDB cargoTo = action.CargoTo;
-            MessagePumpServer messagePump = action.ThisEntity.Manager.Game.MessagePump;
+            MessagePump messagePump = action.ThisEntity.Manager.Game.MessagePump;
             
             double tonsThisDeltaT = action.ThisStorage.OrderTransferRate * deltaTime.TotalSeconds / 3600;
             tonsThisDeltaT += action.ThisStorage.PartAmount;
@@ -424,18 +424,6 @@ namespace Pulsar4X.ECSLib
                 {
                     OrderProcessor.SetNextInterupt(EstDateTime(action, action.ThisStorage), action);
                 }
-            }
-
-            if (messagePump.AreAnySubscribers<CargoStorageUIData>(cargoTo.OwningEntity.Guid))
-            {
-                CargoStorageUIData toData = new CargoStorageUIData(cargoTo.OwningEntity.Manager.Game.StaticData, cargoTo);
-                messagePump.NotifyConnectionsOfDataChanges<CargoStorageUIData>(cargoTo.OwningEntity.Guid, toData);
-            }
-            
-            if (messagePump.AreAnySubscribers<CargoStorageUIData>(cargoFrom.OwningEntity.Guid))
-            {
-                CargoStorageUIData fromData = new CargoStorageUIData(cargoFrom.OwningEntity.Manager.Game.StaticData, cargoFrom);
-                messagePump.NotifyConnectionsOfDataChanges<CargoStorageUIData>(cargoFrom.OwningEntity.Guid, fromData);
             }
         }
 
