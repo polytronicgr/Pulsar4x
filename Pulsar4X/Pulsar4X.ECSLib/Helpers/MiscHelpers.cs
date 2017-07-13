@@ -25,6 +25,24 @@ namespace Pulsar4X.ECSLib
         }
     }
 
+    /// <summary>
+    /// Extension class to allow foreach with tuple variables.
+    /// </summary>
+    /// <example>
+    /// foreach (var(key, value) in dict)
+    /// {
+    ///     // key and value are now strongly-typed local variables.
+    /// }
+    /// </example>
+    public static class KeyValuePairExtension
+    {
+        public static void Deconstruct<T1, T2>(this KeyValuePair<T1, T2> tuple, out T1 key, out T2 value)
+        {
+            key = tuple.Key;
+            value = tuple.Value;
+        }
+    }
+
     public static class DictionaryExtension
     {
         /// <summary>
