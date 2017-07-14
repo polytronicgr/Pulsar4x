@@ -17,8 +17,9 @@ namespace Pulsar4X.ViewModel
         private CargoStorageDB _cargoData;
         private StaticDataStore _dataStore;
         private GameVM _gameVM;
-
+        private Guid _entityGuid;
         public  ObservableCollection<CargoStorageByTypeVM> CargoStore { get; } = new ObservableCollection<CargoStorageByTypeVM>();
+        private Dictionary<Guid, CargoStorageByTypeVM> CargoDictionary { get; }= new Dictionary<Guid, CargoStorageByTypeVM>();
         public CargoStorageVM(GameVM gameVM)
         {
             _gameVM = gameVM;
@@ -26,56 +27,60 @@ namespace Pulsar4X.ViewModel
         }
         public void Initialise(Entity entity)
         {
-
+            _entityGuid = entity.Guid;
             SubscriptionRequestMessage<CargoStorageDB> subreq = new SubscriptionRequestMessage<CargoStorageDB>()
             {
                 ConnectionID = Guid.Empty, 
                 EntityGuid = entity.Guid, 
             };
-            _gameVM.Game.MessagePump.EnqueueIncomingMessage(subreq);
+            _gameVM.IncomingMessageHandler.Subscribe(subreq, this);   
             
-            
-            
-
-
         }
-
-        private void StoredEntities_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-
-        }
-
-        private void _storageDB_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Add)
-            {
-                CargoStorageByTypeVM storeType = new CargoStorageByTypeVM(_gameVM);
-                KeyValuePair<Guid, object> kvp = (KeyValuePair<Guid, object>)e.NewItems[0];
-                //storeType.Initalise(_cargoData, kvp.Key);
-                CargoStore.Add(storeType);               
-            }
-        }
-
 
         public void Update(BaseToClientMessage message)
         {
-            var dataMessage = (DatablobChangedMessage)message;
-            foreach (CargoDataChange change in dataMessage.Changes)
+            if (message is DatablobChangedMessage)
             {
-                switch (change.ChangeType)
+                var dataMessage = (DatablobChangedMessage)message;
+                foreach (CargoDataChange change in dataMessage.Changes.OfType<CargoDataChange>())
                 {
-                    case CargoDataChange.CargoChangeTypes.AddToCargo:
-                        break;
-                    case CargoDataChange.CargoChangeTypes.RemoveFromCargo:
-                        break;
-                    case CargoDataChange.CargoChangeTypes.CapacityChange:
-                        break;
-                    case CargoDataChange.CargoChangeTypes.TransferRateChange:
-                        break;
+                    switch (change.ChangeType)
+                    {
+                        case CargoDataChange.CargoChangeTypes.AmountChange:
+                            AmountChange(change);
+                            break;
+                        case CargoDataChange.CargoChangeTypes.CapacityChange: break;
+                        case CargoDataChange.CargoChangeTypes.TransferRateChange: break;
+                    }
                 }
             }
-
+            else if(message is DatablobDataMessage<CargoStorageDB>)
+            {
+                var datamessage = (DatablobDataMessage<CargoStorageDB>)message;
+                CargoStorageDB datablob = (CargoStorageDB)datamessage.DataBlob;
+                foreach (var kvp in datablob.StorageByType)
+                {
+                    if (!CargoDictionary.ContainsKey(kvp.Key))
+                    {
+                        CargoDictionary.Add(kvp.Key, new CargoStorageByTypeVM(_gameVM, kvp.Key, kvp.Value));
+                        CargoStore.Add(CargoDictionary[kvp.Key]);
+                    }
+                }                
+            }
         }
+
+        public void AmountChange(CargoDataChange change)
+        {
+            Guid storageType = change.TypeGuid;
+
+            if (CargoDictionary.ContainsKey(storageType))
+                CargoDictionary[storageType].AmountChange(change);
+            else
+            {
+                DataRequestMessage<CargoStorageDB> datarequest = new DataRequestMessage<CargoStorageDB>(_gameVM.ConnectionID, _entityGuid);
+                _gameVM.Game.MessagePump.EnqueueIncomingMessage(datarequest);
+            }
+        }  
     }
 
 
@@ -93,15 +98,22 @@ namespace Pulsar4X.ViewModel
         private string _typeName;
         public string HeaderText { get { return _typeName; } set { _typeName = value; OnPropertyChanged(); } }
         public ObservableCollection<CargoItemVM> TypeStore { get; } = new ObservableCollection<CargoItemVM>();
+        private Dictionary<Guid, CargoItemVM> TypeDictionary { get; } = new Dictionary<Guid, CargoItemVM>();
         public ObservableCollection<ComponentSpecificDesignVM> DesignStore { get; } = new ObservableCollection<ComponentSpecificDesignVM>();
         public bool HasComponents { get { if (DesignStore.Count > 0) return true; else return false; } }
+        
         public CargoStorageByTypeVM(GameVM gameVM)
         {
             _gameVM = gameVM;
             _dataStore = _gameVM.Game.StaticData;
         }
 
-        public void Initalise(CargoStorageTypeData storageData, Guid storageTypeID)
+        public CargoStorageByTypeVM(GameVM gameVM, Guid typeID, CargoStorageTypeData typeData) : this(gameVM)
+        {
+            Initalise(typeID, typeData);
+        }
+
+        public void Initalise(Guid storageTypeID, CargoStorageTypeData storageData)
         {
             _storageData = storageData;
             TypeID = storageTypeID;
@@ -124,6 +136,17 @@ namespace Pulsar4X.ViewModel
             //_storageData.StoredEntities.CollectionChanged += StoredEntities_CollectionChanged;
         }
 
+        internal void AmountChange(CargoDataChange change)
+        {
+            if(TypeDictionary.ContainsKey(change.ItemID))
+                TypeDictionary[change.ItemID].UpdateAmount(change);
+            else
+            {
+                TypeDictionary.Add(change.ItemID, new CargoItemVM(_gameVM, _storageData, _dataStore.GetICargoable(change.ItemID)));
+                TypeStore.Add(TypeDictionary[change.ItemID]);
+            }
+        }
+        
         private void InitEntities()
         {
             foreach (var item in _storageData.StoredEntities)
@@ -270,6 +293,12 @@ namespace Pulsar4X.ViewModel
                     DesignEntity.GetDataBlob<NameDB>().GetName(itemEntity.GetDataBlob<OwnedDB>().
                     ObjectOwner) ?? "Unknown Construct Type";
             }
+        }
+
+        internal void UpdateAmount(CargoDataChange change)
+        {
+            _storageData.StoredByItemID[change.ItemID] = change.Amount;
+            OnPropertyChanged(nameof(Amount));
         }
 
         private void ManagerSubpulses_SystemDateChangedEvent(DateTime newDate)

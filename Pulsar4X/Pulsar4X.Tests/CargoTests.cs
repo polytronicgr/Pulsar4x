@@ -45,7 +45,7 @@ namespace Pulsar4X.Tests
             CargoDataChange change = (CargoDataChange)_cargoStorageDB.Changes[0];
             
             Assert.True(change.Amount == 10000);
-            Assert.True(change.ChangeType == CargoDataChange.CargoChangeTypes.AddToCargo);
+            Assert.True(change.ChangeType == CargoDataChange.CargoChangeTypes.AmountChange);
             List<Entity> subscribedEntities = _cargoStorageDB.OwningEntity.Manager.GetAllEntitiesWithDataBlob<SubscribedEntityDB>();
             Assert.True(subscribedEntities.Count == 1);
         }

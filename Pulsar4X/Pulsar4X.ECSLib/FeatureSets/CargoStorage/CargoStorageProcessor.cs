@@ -50,7 +50,7 @@ namespace Pulsar4X.ECSLib
                         {
                             ChangeType = CargoDataChange.CargoChangeTypes.CapacityChange,
                             Amount = (uint)alowableCapacity,
-                            TypGuid = cargoTypeID
+                            TypeGuid = cargoTypeID
                         };
                         storageDB.Changes.Add(change);
                     }
@@ -95,10 +95,10 @@ namespace Pulsar4X.ECSLib
             {
                 CargoDataChange change = new CargoDataChange()
                 {
-                    ChangeType = CargoDataChange.CargoChangeTypes.AddToCargo,
-                    Amount = amountToMove,
+                    ChangeType = CargoDataChange.CargoChangeTypes.AmountChange,
+                    Amount = toCargo.StorageByType[cargoTypeID].StoredByItemID[cargoableItem.ID],
                     ItemID = cargoableItem.ID,
-                    TypGuid = cargoTypeID
+                    TypeGuid = cargoTypeID
                 };
                 toCargo.Changes.Add(change);
             }
@@ -136,15 +136,16 @@ namespace Pulsar4X.ECSLib
             {
                 CargoDataChange change = new CargoDataChange()
                 {
-                    ChangeType = CargoDataChange.CargoChangeTypes.RemoveFromCargo,
-                    Amount = amountToMove,
+                    ChangeType = CargoDataChange.CargoChangeTypes.AmountChange,
+                    Amount = fromCargo.StorageByType[cargoTypeID].StoredByItemID[cargoableItem.ID],
                     ItemID = cargoableItem.ID,
-                    TypGuid = cargoTypeID
+                    TypeGuid = cargoTypeID
                 };
                 fromCargo.Changes.Add(change);
             }
         }
 
+        
         internal static uint AmountMovable(CargoStorageDB cargoTo, ICargoable item)
         {
             float massPerItem = item.Mass;
@@ -229,7 +230,6 @@ namespace Pulsar4X.ECSLib
         internal static long SubtractValue(CargoStorageDB fromCargo, Guid itemID, uint value)
         {
             Guid cargoTypeID = fromCargo.ItemToTypeMap[itemID];
-            ICargoable cargoItem = fromCargo.StaticData.GetICargoable(itemID);
             long amountRemoved = 0;
             if (fromCargo.StorageByType.ContainsKey(cargoTypeID))
                 if (fromCargo.StorageByType[cargoTypeID].StoredByItemID.ContainsKey(itemID))
@@ -251,10 +251,10 @@ namespace Pulsar4X.ECSLib
                     {
                         CargoDataChange change = new CargoDataChange()
                         {
-                            ChangeType = CargoDataChange.CargoChangeTypes.RemoveFromCargo,
-                            Amount = (uint)amountRemoved,
+                            ChangeType = CargoDataChange.CargoChangeTypes.AmountChange,
+                            Amount = fromCargo.StorageByType[cargoTypeID].StoredByItemID[itemID],
                             ItemID = itemID,
-                            TypGuid = cargoTypeID
+                            TypeGuid = cargoTypeID
                         };
                         fromCargo.Changes.Add(change);
                     }

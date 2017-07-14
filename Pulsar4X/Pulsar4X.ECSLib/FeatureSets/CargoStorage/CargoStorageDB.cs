@@ -119,6 +119,7 @@ namespace Pulsar4X.ECSLib
 
         [JsonProperty]
         public DateTime LastRunDate { get; internal set; }
+
     }
 
     public class CargoStorageTypeData
@@ -145,17 +146,13 @@ namespace Pulsar4X.ECSLib
     {
         public enum CargoChangeTypes
         {
-            AddToCargo,
-            RemoveFromCargo,
+            AmountChange,
             CapacityChange,
             TransferRateChange
         }
         public CargoChangeTypes ChangeType;
-        public Guid TypGuid;
+        public Guid TypeGuid;
         public Guid ItemID;      
         public uint Amount;
-        
     }
-    
-
 }

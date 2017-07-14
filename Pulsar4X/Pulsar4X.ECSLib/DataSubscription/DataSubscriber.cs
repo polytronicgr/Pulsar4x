@@ -68,7 +68,7 @@ namespace Pulsar4X.ECSLib.DataSubscription
             {
                 foreach (var datablob in subscribedEntityDB.SubscribableDatablobs)
                 {
-                    DatablobChangedMessage changedMessage = new DatablobChangedMessage(datablob.OwningEntity.Guid, datablob.Changes, datablob.GetType().ToString());
+                    DatablobChangedMessage changedMessage = new DatablobChangedMessage(datablob.OwningEntity.Guid, datablob.Changes.ToList(), datablob.GetType().ToString());
                     datablob.Changes.Clear();
                     changedEntityMessages.Add(changedMessage);
                 }
@@ -140,7 +140,6 @@ namespace Pulsar4X.ECSLib.DataSubscription
 
     public abstract class DatablobChange
     {
-        
     }
 
     public class SubscribedEntityDB : BaseDataBlob
