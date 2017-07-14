@@ -1,46 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Copyright/License
+// Copyright© 2017 Daniel Phelps
+//     This file is part of Pulsar4x.
+// 
+//     Pulsar4x is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+// 
+//     Pulsar4x is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+#endregion
+
+using System;
 using Pulsar4X.ECSLib;
-using Pulsar4X.ECSLib.DataSubscription;
 
 namespace Pulsar4X.ViewModel
 {
     public class ClientMessageHandler
     {
+        #region Properties
         private MessagePump MessagePump { get; }
-        
-        private readonly Dictionary<Type, List<IHandleMessage>> _updatables = new Dictionary<Type, List<IHandleMessage>>();
+        #endregion
 
+        #region Constructors
         public ClientMessageHandler(MessagePump messagePump) { MessagePump = messagePump; }
+        #endregion
 
+        #region Public Methods
         public void Read()
         {
-            BaseToClientMessage message;
-            while( MessagePump.TryDequeueOutgoingMessage(Guid.Empty, out message))
+            while (MessagePump.TryDequeueOutgoingMessage(Guid.Empty, out string message))
             {
-                if(_updatables.ContainsKey(message.GetType()))
-                {
-                    foreach (var item in _updatables[message.GetType()])
-                    {
-                        item.Update(message);
-                    }
-                }                  
+                // TODO: UI Message handling
             }
         }
-
-        public void Subscribe<T>(SubscriptionRequestMessage<T> message, IHandleMessage requestingVM) where T: BaseToClientMessage
-        {
-            if(!_updatables.ContainsKey(typeof(T)))
-                _updatables.Add(typeof(T), new List<IHandleMessage>(){requestingVM});
-            else 
-                _updatables[typeof(T)].Add(requestingVM);
-            
-            MessagePump.EnqueueIncomingMessage(message);
-        }     
-    }
-
-    public interface IHandleMessage
-    {
-        void Update(BaseToClientMessage message);
+        #endregion
     }
 }

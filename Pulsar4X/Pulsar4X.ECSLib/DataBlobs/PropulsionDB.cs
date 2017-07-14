@@ -20,7 +20,6 @@
 
 using System;
 using System.Collections.Generic;
-using Pulsar4X.ECSLib.DataSubscription;
 
 namespace Pulsar4X.ECSLib
 {
@@ -50,45 +49,6 @@ namespace Pulsar4X.ECSLib
 
         #region Interfaces, Overrides, and Operators
         public override object Clone() => new PropulsionDB(this);
-        #endregion
-    }
-
-    public class MovementUIData : UIData
-    {
-        #region Types
-        public struct FuelUse
-        {
-            public string FuelName;
-            public double AmountPerKM;
-        }
-        #endregion
-
-        #region Properties
-        public int MaximumSpeed { get; set; }
-        public Vector4 CurrentSpeed { get; set; }
-        public int TotalEnginePower { get; set; }
-        public List<FuelUse> FuelUsePerKM { get; set; }
-
-        public override string GetDataCode { get; } = "MoveData";
-        #endregion
-
-        #region Constructors
-        public MovementUIData(StaticDataStore staticData, PropulsionDB db)
-        {
-            MaximumSpeed = db.MaximumSpeed;
-            CurrentSpeed = db.CurrentSpeed;
-            TotalEnginePower = db.TotalEnginePower;
-            foreach (KeyValuePair<Guid, double> kvp in db.FuelUsePerKM)
-            {
-                string name = staticData.GetICargoable(kvp.Key).Name;
-                var fuelUse = new FuelUse
-                              {
-                                  FuelName = name,
-                                  AmountPerKM = kvp.Value
-                              };
-                FuelUsePerKM.Add(fuelUse);
-            }
-        }
         #endregion
     }
 

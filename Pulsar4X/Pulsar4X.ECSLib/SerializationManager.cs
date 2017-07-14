@@ -32,7 +32,7 @@ namespace Pulsar4X.ECSLib
         public static string Export([NotNull] Game game, [NotNull] Entity entity, bool compress = false) => Export<ProtoEntity>(game, entity.Clone(), compress);
         public static string Export([NotNull] Game game, [NotNull] StarSystem system, bool compress = false) => Export<StarSystem>(game, system, compress);
         public static string Export([NotNull] Game game, [NotNull] EventLog eventLog, bool compress = false) => Export<EventLog>(game, eventLog, compress);
-        private static string Export<TObj>([NotNull] Game game, [NotNull] TObj obj, bool compress = false)
+        public static string Export<TObj>([NotNull] Game game, [NotNull] TObj obj, bool compress = false)
         {
             using (var stream = new MemoryStream())
             {

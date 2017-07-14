@@ -181,7 +181,6 @@
     <Compile Include="FeatureSets\CargoStorage\CargoOrder.cs" />
     <Compile Include="DataBlobs\CargoStorageAtbDB.cs" />
     <Compile Include="DataBlobs\CargoStorageDB.cs" />
-    <Compile Include="FeatureSets\CargoStorage\CargoStorageUIData.cs" />
     <Compile Include="Processors\EntityChangeEvent.cs" />
     <Compile Include="Processors\StorageSpaceProcessor.cs" />
     <Compile Include="FeatureSets\Orders\BaseAction.cs" />
@@ -189,7 +188,6 @@
     <Compile Include="FeatureSets\Orders\EnableDisableComponent.cs" />
     <Compile Include="DataBlobs\OrderableDB.cs" />
     <Compile Include="Processors\OrderProcessor.cs" />
-    <Compile Include="FeatureSets\Orders\OrdersUIData.cs" />
     <Compile Include="DataBlobs\EnginePowerAtbDB.cs" />
     <Compile Include="DataBlobs\PropulsionDB.cs" />
     <Compile Include="FeatureSets\TranslationMove\TranslationAction.cs" />

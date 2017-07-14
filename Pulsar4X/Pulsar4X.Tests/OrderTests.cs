@@ -24,7 +24,6 @@ using System.Threading;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Pulsar4X.ECSLib;
-using Pulsar4X.ECSLib.DataSubscription;
 using Pulsar4X.ViewModel;
 
 
@@ -119,47 +118,6 @@ namespace Pulsar4X.Tests
             string seralisedOrder = ObjectSerializer.SerializeObject(_cargoOrder);
             BaseOrder deserailisedOrder = ObjectSerializer.DeserializeObject<BaseOrder>(seralisedOrder);
             Assert.True(deserailisedOrder is CargoOrder);
-        }
-        
-        [Test]
-        public void TestOrderViaMessagePump()
-        {
-            _testGame.GameSettings.EnableMultiThreading = false;
-            ClientMessageHandler incommingMessageHandler = new ClientMessageHandler(_testGame.Game.MessagePump);
-            FakeVM fakeVM = new FakeVM();
-            SubscriptionRequestMessage<OrdersUIData> subreq = new SubscriptionRequestMessage<OrdersUIData>()
-            {
-                ConnectionID = Guid.Empty, 
-                EntityGuid = _testGame.DefaultShip.Guid,             
-            };
-
-            incommingMessageHandler.Subscribe(subreq, fakeVM);            
-            
-            _testGame.Game.MessagePump.EnqueueIncomingMessage(_cargoOrder);
-            _testGame.Game.GameLoop.Ticklength = TimeSpan.FromHours(1);
-            BaseToClientMessage message;
-            //while (!_testGame.Game.MessagePump.TryPeekOutgoingMessage(Guid.Empty, out message))
-            {
-                _testGame.Game.GameLoop.TimeStep();
-                OrderProcessor.ProcessManagerOrders(_testGame.EarthColony.Manager);
-                OrderProcessor.ProcessActionList(_testGame.Game.CurrentDateTime, _testGame.EarthColony.Manager);
-            }
-            
-            incommingMessageHandler.Read();
-            Assert.IsTrue(fakeVM.Name == "Cargo Transfer: Load from Venus Colony");
-        }
-        
-        public class FakeVM : IHandleMessage
-        {
-            public string Name { get; set; }
-            public string OrderStatus { get; set; }
-
-            public void Update(BaseToClientMessage message)
-            {
-                OrdersUIData data = (OrdersUIData)message;
-                Name = data.OrderUIDatas[0].Name;
-                OrderStatus = data.OrderUIDatas[0].Status;
-            }
         }
     }
 }

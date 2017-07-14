@@ -1,25 +1,46 @@
-﻿using System;
+﻿#region Copyright/License
+// Copyright© 2017 Daniel Phelps
+//     This file is part of Pulsar4x.
+// 
+//     Pulsar4x is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+// 
+//     Pulsar4x is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
+#endregion
+
+using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
 using Newtonsoft.Json;
-using Pulsar4X.ECSLib.DataSubscription;
 
 namespace Pulsar4X.ECSLib
 {
     public class MessagePump
     {
+        #region Fields
         private readonly ConcurrentQueue<BaseToServerMessage> _incomingMessages = new ConcurrentQueue<BaseToServerMessage>();
-        private readonly ConcurrentDictionary<Guid, ConcurrentQueue<BaseToClientMessage>> _outgoingQueues = new ConcurrentDictionary<Guid, ConcurrentQueue<BaseToClientMessage>>();
+        private readonly ConcurrentDictionary<Guid, ConcurrentQueue<string>> _outgoingQueues = new ConcurrentDictionary<Guid, ConcurrentQueue<string>>();
+        #endregion
 
+        #region Constructors
         public MessagePump()
         {
             //local UIconnection is an empty guid.
             AddNewConnection(Guid.Empty);
         }
+        #endregion
 
-        public void AddNewConnection(Guid connectionID) => _outgoingQueues.TryAdd(connectionID, new ConcurrentQueue<BaseToClientMessage>());
-        public void RemoveConnection(Guid connectionID) => _outgoingQueues.TryRemove(connectionID, out ConcurrentQueue<BaseToClientMessage> unusedValue);
+        #region Public Methods
+        public void AddNewConnection(Guid connectionID) { _outgoingQueues.TryAdd(connectionID, new ConcurrentQueue<string>()); }
+
+        public void RemoveConnection(Guid connectionID) { _outgoingQueues.TryRemove(connectionID, out ConcurrentQueue<string> unusedValue); }
 
         /// <summary>
         /// takes a seralised (derived type of)BaseToServerMessage as a string, deserialises it and enqueues it.
@@ -29,6 +50,7 @@ namespace Pulsar4X.ECSLib
         {
             EnqueueIncomingMessage(ObjectSerializer.DeserializeObject<BaseToServerMessage>(message));
         }
+
         /// <summary>
         /// Enqueus an message object
         /// </summary>
@@ -38,18 +60,17 @@ namespace Pulsar4X.ECSLib
             _incomingMessages.Enqueue(message);
         }
 
-        public void EnqueueOutgoingMessage(Guid toConnection, BaseToClientMessage message)
+        public void EnqueueOutgoingMessage(Guid toConnection, string message)
         {
-            if(_outgoingQueues.ContainsKey(toConnection))
-                _outgoingQueues[toConnection].Enqueue(message);
-            else
+            if (_outgoingQueues.ContainsKey(toConnection))
             {
-                //TODO: log NoConnection message.
+                _outgoingQueues[toConnection].Enqueue(message);
             }
         }
 
-        public bool TryPeekOutgoingMessage(Guid connction, out BaseToClientMessage message) => _outgoingQueues[connction].TryPeek(out message);
-        public bool TryDequeueOutgoingMessage(Guid connection, out BaseToClientMessage message) => _outgoingQueues[connection].TryDequeue(out message);
+        public bool TryPeekOutgoingMessage(Guid connction, out string message) { return _outgoingQueues[connction].TryPeek(out message); }
+
+        public bool TryDequeueOutgoingMessage(Guid connection, out string message) { return _outgoingQueues[connection].TryDequeue(out message); }
 
         public void ReadIncomingMessages(Game game)
         {
@@ -58,40 +79,52 @@ namespace Pulsar4X.ECSLib
                 message.HandleMessage(game);
             }
         }
+        #endregion
     }
 
 
     public abstract class BaseToServerMessage
     {
+        #region Properties
         [JsonProperty]
         public Guid FactionGuid { get; set; }
         [JsonProperty]
         public Guid ConnectionID { get; set; }
-        
+        #endregion
+
+        #region Internal Methods
         internal abstract void HandleMessage(Game game);
+        #endregion
     }
 
     public abstract class BaseToClientMessage
     {
+        #region Properties
         public abstract string GetDataCode { get; }
+        #endregion
     }
-    
+
     public class GameOrder : BaseToServerMessage
     {
+        #region Properties
         [JsonProperty]
         public IncomingMessageType MessageType { get; set; }
         [JsonProperty]
         private string Message { get; }
-        
+        #endregion
+
+        #region Constructors
         public GameOrder(IncomingMessageType messageType) { MessageType = messageType; }
-        
+        #endregion
+
+        #region Internal Methods
         internal override void HandleMessage(Game game)
         {
             switch (MessageType)
             {
                 case IncomingMessageType.Exit:
                     game.ExitRequested = true;
-                    break;                    
+                    break;
                 case IncomingMessageType.ExecutePulse:
                     // TODO: Pulse length parsing
                     game.GameLoop.TimeStep();
@@ -126,8 +159,6 @@ namespace Pulsar4X.ECSLib
                     */
             }
         }
+        #endregion
     }
-
-
-
 }

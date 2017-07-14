@@ -1,76 +1,154 @@
 ﻿#region Copyright/License
-/* 
- *Copyright© 2017 Daniel Phelps
-    This file is part of Pulsar4x.
-
-    Pulsar4x is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Pulsar4x is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright© 2017 Daniel Phelps
+//     This file is part of Pulsar4x.
+// 
+//     Pulsar4x is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+// 
+//     Pulsar4x is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Pulsar4x.  If not, see <http://www.gnu.org/licenses/>.
 #endregion
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using static Pulsar4X.ECSLib.EntityChangeEvent;
 
 namespace Pulsar4X.ECSLib
 {
-    [DebuggerDisplay("{" + nameof(PropertyName) + "}")]
-    public class EntityChangeEvent
-    {
-        #region Types
-        public enum EntityChangeType
-        {
-            EntityCreated, // Entity was freshly created.
-            EntityDestroyed, // Entity has been destroyed and is no longer valid.
-            EntityMovedIn, // Entity moved into an EntityManager from another.
-            EntityMovedOut, // Entity moved out of an EntityManager to another.
-            EntityDataBlobSet, // Entity has a new DataBlob set.
-            EntityDataBlobRemoved, // Entity had a DataBlob removed.
-            EntityDataBlobPropertyChanged, // DataBlob on an entity has changed data.
-            EntityDataBlobSubCollectionChanged // DataBlob on an entity had a SubCollection change.
-        }
-        #endregion
-
-        #region Fields
-        public object Data;
-        public Guid EntityGuid;
-        public string PropertyName;
-
-        public EntityChangeType Type;
-        #endregion
-
-        #region Constructors
-        public EntityChangeEvent(EntityChangeType type, Guid entityGuid, string propertyName = null, object data = null)
-        {
-            Type = type;
-            EntityGuid = entityGuid;
-            PropertyName = propertyName;
-            Data = data;
-        }
-        #endregion
-    }
-
     internal class EntityChangeProcessor
     {
         #region Fields
         private readonly Dictionary<Guid, List<EntityChangeEvent>> _entityChanges = new Dictionary<Guid, List<EntityChangeEvent>>();
         private readonly List<EntityChangeEvent> _entityEvents = new List<EntityChangeEvent>();
-        private readonly EntitySubscriptionManager _subscriptionManager = new EntitySubscriptionManager();
+
+        /// <summary>
+        /// </summary>
+        /// Key == EntityID
+        /// Value == List of ConnectionID's subscribed.
+        private readonly Dictionary<Guid, List<Guid>> _subscriptions = new Dictionary<Guid, List<Guid>>();
         #endregion
-        
+
         #region Internal Methods
+        internal void ClearEvents()
+        {
+            _entityChanges.Clear();
+            _entityEvents.Clear();
+        }
+
+        internal void UnsubscribeToEntity(Guid entityGuid, Guid connectionID)
+        {
+            if (entityGuid == Guid.Empty)
+            {
+                throw new ArgumentException("Cannot subscribe to an invalid entity.", nameof(entityGuid));
+            }
+
+            if (!HasSubscribers(entityGuid))
+            {
+                return;
+            }
+
+            _subscriptions[entityGuid].Remove(connectionID);
+            if (_subscriptions[entityGuid].Count == 0)
+            {
+                _subscriptions.Remove(entityGuid);
+            }
+        }
+
+        [NotNull]
+        [Pure]
+        internal List<Guid> GetSubscribers([NotNull] Entity entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+            return GetSubscribers(entity.Guid);
+        }
+
+        [NotNull]
+        [Pure]
+        internal List<Guid> GetSubscribers(Guid entityGuid)
+        {
+            var subscribers = new List<Guid>();
+
+            if (HasSubscribers(entityGuid))
+            {
+                subscribers.AddRange(_subscriptions[entityGuid]);
+            }
+
+            return subscribers;
+        }
+
+        [Pure]
+        internal bool HasSubscribers(Entity entity)
+        {
+            return entity != null && HasSubscribers(entity.Guid);
+        }
+
+        [Pure]
+        internal bool HasSubscribers(Guid entityGuid)
+        {
+            if (!_subscriptions.ContainsKey(entityGuid))
+            {
+                return false;
+            }
+
+            List<Guid> subList = _subscriptions[entityGuid];
+            if (subList.Count != 0)
+            {
+                return true;
+            }
+            _subscriptions.Remove(entityGuid);
+            return false;
+        }
+
+        internal void SubscribeToEntity([NotNull] Entity entity, Guid connectionID)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+            SubscribeToEntity(entity.Guid, connectionID);
+        }
+
+        internal void SubscribeToEntity(Guid entityGuid, Guid connectionID)
+        {
+            if (entityGuid == Guid.Empty)
+            {
+                throw new ArgumentException("Cannot subscribe to an invalid entity.", nameof(entityGuid));
+            }
+
+            if (HasSubscribers(entityGuid))
+            {
+                _subscriptions[entityGuid].Add(connectionID);
+            }
+            else
+            {
+                _subscriptions.Add(entityGuid,
+                                   new List<Guid>
+                                   {
+                                       connectionID
+                                   });
+            }
+        }
+
+        internal void UnsubscribeToEntity([NotNull] Entity entity, Guid connectionID)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+            UnsubscribeToEntity(entity.Guid, connectionID);
+        }
+
         internal void Initialize(IEnumerable<StarSystem> systems)
         {
             foreach (StarSystem system in systems)
@@ -79,14 +157,13 @@ namespace Pulsar4X.ECSLib
             }
         }
 
-        internal void Process()
+        internal void Process(Game game)
         {
             foreach (var(entityGuid, changes) in _entityChanges)
             {
-                foreach (Guid subscriber in _subscriptionManager.GetSubscribers(entityGuid))
+                foreach (Guid subscriber in GetSubscribers(entityGuid))
                 {
-                    // TODO: Use Actual MessagePump
-                    MessagePump mp;
+                    game.MessagePump.EnqueueOutgoingMessage(subscriber, SerializationManager.Export(game, changes));
                 }
             }
         }
@@ -109,6 +186,7 @@ namespace Pulsar4X.ECSLib
         }
         #endregion
 
+        #region Other Members
         private void AddEntity(Entity entity)
         {
             entity.EntityDestroyed += Entity_EntityDestroyed;
@@ -130,18 +208,17 @@ namespace Pulsar4X.ECSLib
             }
             else
             {
-                _entityChanges.Add(changeEvent.EntityGuid, new List<EntityChangeEvent>{changeEvent});
+                _entityChanges.Add(changeEvent.EntityGuid,
+                                   new List<EntityChangeEvent>
+                                   {
+                                       changeEvent
+                                   });
             }
             _entityEvents.Add(changeEvent);
         }
+        #endregion
 
-        public void ClearEvents()
-        {
-            _entityChanges.Clear();
-            _entityEvents.Clear();
-        }
-
-        #region EntityEventHandlers
+        #region EventHandlers
         private void EntityCreated(object sender, EntityEventArgs args)
         {
             var entityManager = (EntityManager)sender;
@@ -153,14 +230,12 @@ namespace Pulsar4X.ECSLib
         private void EntityMoved(object sender, EntityEventArgs args)
         {
             //var entityManager = (EntityManager)sender;
-
             AddChangeEvent(new EntityChangeEvent(args.Type, args.EntityGuid));
         }
 
         private void Entity_EntityDestroyed(object sender, EntityEventArgs args)
         {
             //var entity = (Entity)sender;
-
             AddChangeEvent(new EntityChangeEvent(args.Type, args.EntityGuid));
         }
 
@@ -202,6 +277,6 @@ namespace Pulsar4X.ECSLib
             var changeEvent = new EntityChangeEvent(EntityChangeType.EntityDataBlobPropertyChanged, dataBlob.OwningEntity.Guid, propertyChangedEventArgs.PropertyName, newValue);
             AddChangeEvent(changeEvent);
         }
-        #endregion EntityEventHandlers
+        #endregion
     }
 }
