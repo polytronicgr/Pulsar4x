@@ -134,8 +134,7 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Pauses the timeloop
         /// </summary>
-        [Obsolete("Use MessagePump messages instead.")]
-        public void PauseTime()
+        internal void PauseTime()
         {
             AutoRun = false;
         }
@@ -143,8 +142,7 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Starts the timeloop
         /// </summary>
-        [Obsolete("Use MessagePump messages instead.")]
-        public void StartTime()
+        internal void StartTime()
         {
             _timer.Start();
             AutoRun = true;
@@ -153,8 +151,7 @@ namespace Pulsar4X.ECSLib
         /// <summary>
         /// Takes a single step in time
         /// </summary>
-        [Obsolete("Use MessagePump messages instead.")]
-        public void TimeStep() => DoProcessing();
+        internal void TimeStep() => DoProcessing();
         #endregion
 
         #region Private Methods
