@@ -41,7 +41,7 @@ namespace Pulsar4X.ECSLib
             while (manager.OrderQueue.Count > 0) //process all the orders in the manager's order queue.
             {
                 BaseOrder nextOrder;
-                if(manager.OrderQueue.TryDequeue(out nextOrder));// should I do anything if it's false? (ie threadlocked due to writing) ie wait?
+                if(manager.OrderQueue.TryDequeue(out nextOrder))// should I do anything if it's false? (ie threadlocked due to writing) ie wait?
                 {                    
                     BaseAction action = nextOrder.CreateAction(manager.Game, nextOrder);
                     action.ThisEntity.GetDataBlob<OrderableDB>().ActionQueue.Add(action);
@@ -83,9 +83,6 @@ namespace Pulsar4X.ECSLib
                 else 
                     i++;
             }
-            
-            if(entity.Manager.Game.MessagePump.AreAnySubscribers<OrdersUIData>(entity.Guid))
-                entity.Manager.Game.MessagePump.NotifyConnectionsOfDataChanges<OrdersUIData>(entity.Guid, new OrdersUIData(orderableDB));
         }
 
         public static bool IsTargetClose(Game game, Entity thisEntity, Entity targetEntity, BaseAction order, int reqiredDistance)

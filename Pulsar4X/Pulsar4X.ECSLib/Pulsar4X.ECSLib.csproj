@@ -175,8 +175,6 @@
     <Compile Include="DataBlobs\ComponentInstanceDBs\WeaponStateDB.cs" />
     <Compile Include="DataBlobs\NewtonBalisticDB.cs" />
     <Compile Include="DataBlobs\ShipDBs\DesignInfoDB.cs" />
-    <Compile Include="DataSubscription\DataSubsciber.cs" />
-    <Compile Include="DataSubscription\EntitySubscriptionManager.cs" />
     <Compile Include="Factories\AsteroidFactory.cs" />
     <Compile Include="Factories\ShipComponents\ComponentInstanceFactory.cs" />
     <Compile Include="FeatureSets\CargoStorage\CargoAction.cs" />
@@ -184,6 +182,7 @@
     <Compile Include="DataBlobs\CargoStorageAtbDB.cs" />
     <Compile Include="DataBlobs\CargoStorageDB.cs" />
     <Compile Include="FeatureSets\CargoStorage\CargoStorageUIData.cs" />
+    <Compile Include="Processors\EntityChangeEvent.cs" />
     <Compile Include="Processors\StorageSpaceProcessor.cs" />
     <Compile Include="FeatureSets\Orders\BaseAction.cs" />
     <Compile Include="FeatureSets\Orders\BaseOrder.cs" />
